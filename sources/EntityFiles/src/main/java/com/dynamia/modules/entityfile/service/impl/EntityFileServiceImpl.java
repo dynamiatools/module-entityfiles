@@ -29,6 +29,7 @@ import com.dynamia.modules.entityfile.service.EntityFileService;
 import com.dynamia.modules.entityfile.utils.ImageUtil;
 import com.dynamia.tools.commons.StringUtils;
 import com.dynamia.tools.domain.AbstractEntity;
+import com.dynamia.tools.domain.query.Parameters;
 import com.dynamia.tools.domain.query.QueryConditions;
 import com.dynamia.tools.domain.query.QueryParameters;
 import com.dynamia.tools.domain.services.CrudService;
@@ -43,8 +44,13 @@ import org.springframework.transaction.annotation.Propagation;
 @Service
 public class EntityFileServiceImpl implements EntityFileService {
 
+    private final static String CONFIG_PARAM = "EntityFilesREPOLOCATION";
+
     @Autowired
     private CrudService crudService;
+
+    @Autowired
+    private Parameters appParams;
 
     @Override
     public EntityFile createSubdirectory(EntityFile parent, String name, String description) {
@@ -157,7 +163,7 @@ public class EntityFileServiceImpl implements EntityFileService {
          * if (parentDirectory == null) { params.add("parentDirectory",
          * QueryConditions.isNull()); } else { params.add("parentDirectory",
          * parentDirectory);
-        }
+         }
          */
         params.orderBy("type", true);
         return crudService.find(EntityImage.class, params);
@@ -166,6 +172,13 @@ public class EntityFileServiceImpl implements EntityFileService {
     @Override
     public FilesConfig getConfiguration() {
         FilesConfig fileConfig = Containers.get().findObject(FilesConfig.class);
+        if (fileConfig == null) {
+            String loc = appParams.getValue(CONFIG_PARAM);
+            if(loc!=null && !loc.isEmpty()){
+                fileConfig = new FilesConfig(loc);
+            }
+        }
+
         if (fileConfig == null) {
             fileConfig = new FilesConfig();
         }
@@ -197,63 +210,33 @@ public class EntityFileServiceImpl implements EntityFileService {
         String archivoDestino = getConfiguration().getRepository() + "/" + entityImage.getId();
         String archivoRedimencionado = getConfiguration().getRepository() + "/" + entityImage.getId();
         String archivoThumbnail = getConfiguration().getRepository() + "/t" + entityImage.getId();
-        try {            
-            
-            FilesConfig filesConfig=getConfiguration();
-            File file=File.createTempFile("img", "ent");
+        try {
+
+            FilesConfig filesConfig = getConfiguration();
+            File file = File.createTempFile("img", "ent");
             IOUtils.copy(fileInfo.getInputStream(), file);
-            
+
             File realFile = new File(archivoRedimencionado);
             realFile.createNewFile();
             ImageUtil.resizeJPEGImage(file, realFile, filesConfig.getMaxSize(), filesConfig.getMaxSize());
-            
+
             File thumbNail = new File(archivoThumbnail);
             thumbNail.createNewFile();
             ImageUtil.resizeJPEGImage(file, thumbNail, filesConfig.getMaxThumbnail(), filesConfig.getMaxThumbnail());
             //IOUtils.copy(fileInfo.getInputStream(), realFile);
             System.out.println("File Saved: " + thumbNail.getName() + "  length: " + thumbNail.length());
-            
+
             file.delete();
-            
+
             crudService.updateField(entityImage, "size", realFile.length());
 
         } catch (IOException e) {
             throw new EntityFileException("Error writing file " + fileInfo.getFullName() + " no new location " + archivoRedimencionado, e);
         }
-        
-        /*String newFileName = getConfiguration().getRepository() + "/" + entityImage.getId();
-        try {
-            File realFile = new File(newFileName);
-            realFile.createNewFile();
-            IOUtils.copy(fileInfo.getInputStream(), realFile);
-            System.out.println("File Saved: " + realFile.getName() + "  length: " + realFile.length());
-            crudService.updateField(entityImage, "size", realFile.length());
-
-        } catch (IOException e) {
-            throw new EntityFileException("Error writing file " + fileInfo.getFullName() + " no new location " + newFileName, e);
-        }*/
 
         return entityImage;
     }
 
-    /*
-     * (Media media, EntityImage entityImage, AbstractEntity targetEntity) {
-     *
-     * entityImage.setTargetEntity(targetEntity.getClass().getName());
-     * entityImage.setTargetEntityId((Long) targetEntity.getId());
-     * System.out.println("SAVE!!!!!!!!"); System.out.println("SAVE:" +
-     * entityImage.getName()); System.out.println("SAVE:" +
-     * entityImage.getType()); System.out.println("SAVE:" +
-     * entityImage.getTargetEntity()); EntityImage enp =
-     * crudService.save(entityImage, entityImage.getId()); String newFileName =
-     * getConfiguration().getRepository() + "/" + enp.getId(); try { File
-     * realFile = new File(newFileName); realFile.createNewFile();
-     * IOUtils.copy(enp.getFile(), realFile); System.out.println("File Saved: "
-     * + realFile.getName() + " length: " + realFile.length());
-     * crudService.updateField(entityImage, "size", realFile.length()); } catch
-     * (IOException e) { e.printStackTrace(); } return enp;
-    }
-     */
     @Override
     public EntityPhoto createEntityPhoto(EntityPhoto entityPhoto, AbstractEntity targetEntity) {
 
@@ -273,92 +256,35 @@ public class EntityFileServiceImpl implements EntityFileService {
         System.out.println("SAVE:" + entityPhoto.getTargetEntity());
         EntityPhoto enp = crudService.save(entityPhoto, entityPhoto.getId());
         String newFileName = getConfiguration().getRepository() + "/" + enp.getId();
-        
+
         String archivoDestino = getConfiguration().getRepository() + "/" + entityPhoto.getId();
         String archivoRedimencionado = getConfiguration().getRepository() + "/" + entityPhoto.getId();
         String archivoThumbnail = getConfiguration().getRepository() + "/t" + entityPhoto.getId();
-        try {            
-            
-            FilesConfig filesConfig=getConfiguration();
-            File file=File.createTempFile("img", "ent");
+        try {
+
+            FilesConfig filesConfig = getConfiguration();
+            File file = File.createTempFile("img", "ent");
             IOUtils.copy(enp.getFile(), file);
-            
+
             File realFile = new File(archivoRedimencionado);
             realFile.createNewFile();
             ImageUtil.resizeJPEGImage(file, realFile, filesConfig.getMaxSize(), filesConfig.getMaxSize());
-            
+
             File thumbNail = new File(archivoThumbnail);
             thumbNail.createNewFile();
             ImageUtil.resizeJPEGImage(file, thumbNail, filesConfig.getMaxThumbnail(), filesConfig.getMaxThumbnail());
             //IOUtils.copy(fileInfo.getInputStream(), realFile);
             System.out.println("File Saved: " + thumbNail.getName() + "  length: " + thumbNail.length());
-            
+
             file.delete();
-            
+
             crudService.updateField(entityPhoto, "size", realFile.length());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        /*try {
-            File realFile = new File(newFileName);
-            realFile.createNewFile();
-            IOUtils.copy(enp.getFile(), realFile);
-            System.out.println("File Saved: " + realFile.getName() + "  length: " + realFile.length());
-            crudService.updateField(entityPhoto, "size", realFile.length());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        
+
         return enp;
 
-
-
-
-
-        //if (entityPhoto.getNewEntityFile() != null) {
-            /*
-         * if (entityPhoto instanceof EntityNoPhoto) { EntityNoPhoto
-         * entityNoPhoto = (EntityNoPhoto) entityPhoto; if
-         * (entityNoPhoto.getNewEntityFile() != null) { EntityPhoto enp =
-         * crudService.save(entityNoPhoto.getNewEntityFile(),
-         * entityNoPhoto.getNewEntityFile().getId()); return enp; } } else {
-         */
-        //if (entityPhoto.getNewEntityFile() != null) {
-        //EntityPhoto enp = crudService.save(entityPhoto.getNewEntityFile(), entityPhoto.getNewEntityFile().getId());
-        //return enp;
-        //}
-        //}
-        //}
-        //return entityPhoto;
-
-        /*
-         * EntityPhoto entityFile = new EntityPhoto();
-         * entityFile.setContentType(targetEntity.);
-         * entityFile.setName(fileInfo.getFullName());
-         * entityFile.setExtension(StringUtils.getFilenameExtension(fileInfo.getFullName()));
-         * entityFile.setTargetEntity(targetEntity.getClass().getName());
-         * entityFile.setTargetEntityId((Long) targetEntity.getId());
-         * entityFile.setType(EntityFileType.FILE);
-         * entityFile.setParentDirectory(fileInfo.getParent());
-         * entityFile.setState(EntityFileState.VALID);
-         */
-        //crudService.save(entityPhoto, entityPhoto.getId());
-
-        /*
-         * String newFileName = getConfiguration().getRepository() + "/" +
-         * entityPhoto.getId(); try { File realFile = new File(newFileName);
-         * realFile.createNewFile(); IOUtils.copy(new
-         * FileInputStream(entityPhoto.getFile()), realFile);
-         * System.out.println("File Saved: " + realFile.getName() + " length: "
-         * + realFile.length()); crudService.updateField(entityPhoto, "size",
-         * realFile.length());
-         *
-         * } catch (IOException e) { throw new EntityFileException("Error
-         * writing file " + entityPhoto.getName() + "." +
-         * entityPhoto.getExtension() + " no new location " + newFileName, e); }
-         */
-
-        //return entityPhoto;
     }
 
     @Override
