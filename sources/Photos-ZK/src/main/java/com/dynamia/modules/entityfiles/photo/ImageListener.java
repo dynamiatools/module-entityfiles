@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.dynamia.modules.photo.controllers;
+package com.dynamia.modules.entityfiles.photo;
 
 import com.dynamia.modules.entityfile.domain.EntityImage;
 

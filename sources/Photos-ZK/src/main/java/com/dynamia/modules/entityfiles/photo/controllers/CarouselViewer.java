@@ -1,4 +1,4 @@
-package com.dynamia.modules.photo.controllers;
+package com.dynamia.modules.entityfiles.photo.controllers;
 
 /*
  * To change this template, choose Tools | Templates and open the template in
@@ -6,14 +6,12 @@ package com.dynamia.modules.photo.controllers;
  */
 import com.dynamia.modules.entityfile.domain.EntityImage;
 import com.dynamia.modules.entityfile.service.EntityFileService;
+import com.dynamia.modules.entityfiles.photo.ImageListener;
 import com.dynamia.tools.domain.AbstractEntity;
 import com.dynamia.tools.integration.Containers;
-import com.dynamia.tools.web.crud.CrudController;
 import com.dynamia.tools.web.util.ZKUtil;
 import java.util.LinkedList;
 import java.util.List;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.zkoss.image.AImage;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;

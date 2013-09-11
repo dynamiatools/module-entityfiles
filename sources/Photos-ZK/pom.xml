@@ -7,8 +7,8 @@
         <groupId>com.dynamia.modules</groupId>
         <version>3.0</version>
     </parent>
-    <name>Dynamia Modules - Photos - ZK  (${project.version})</name>
-    <artifactId>com.dynamia.modules.photo.zk</artifactId>
+    <name>Dynamia Modules - EntityPhotos (${project.version})</name>
+    <artifactId>com.dynamia.modules.entityfiles.photo</artifactId>
     <groupId>com.dynamia.modules</groupId>
     <version>${project.parent.version}</version>
     <url>http://maven.apache.org</url>
