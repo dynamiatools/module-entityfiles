@@ -5,7 +5,7 @@
     <parent>
         <artifactId>com.dynamia.modules.entityfiles.parent</artifactId>
         <groupId>com.dynamia.modules</groupId>
-        <version>3.0</version>
+        <version>3.1</version>
     </parent>
     <name>Dynamia Modules - EntityFiles - ZK  (${project.version})</name>
     <artifactId>com.dynamia.modules.entityfiles.zk</artifactId>

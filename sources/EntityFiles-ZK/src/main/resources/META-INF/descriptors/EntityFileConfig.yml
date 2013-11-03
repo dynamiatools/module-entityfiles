@@ -1,0 +1,12 @@
+view: config
+id: EntityFileCFG
+messages: com.dynamia.modules.entityfile
+
+fields:
+    filesLocation:        
+        label: Files Location
+        description: Server directory in wich will be saved
+        component: directorybox
+        
+
+    

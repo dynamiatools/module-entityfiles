@@ -30,7 +30,7 @@ public class NewDirectoryAction extends AbstractEntityFileAction {
 		String dirName = ZKUtil.showInputDialog("Nombre directorio", String.class);
 		if (dirName != null && !dirName.isEmpty()) {
 			if (evt.getEntityFile() != null && evt.getEntityFile().getType() == EntityFileType.DIRECTORY) {
-				service.createSubdirectory(evt.getEntityFile(), dirName, "");
+				service.createDirectory(evt.getEntityFile(), dirName, "");
 			} else {
 				service.createDirectory(evt.getTargetEntity(), dirName, "");
 			}

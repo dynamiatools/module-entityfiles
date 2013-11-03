@@ -10,4 +10,11 @@
                 <goal>deploy</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-New Version</actionName>
+            <displayName>New Version</displayName>
+            <goals>
+                <goal>versions:set</goal>
+            </goals>
+        </action>
     </actions>

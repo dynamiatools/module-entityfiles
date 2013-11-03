@@ -98,7 +98,7 @@ public class FilesController extends CrudController<EntityFile> {
             if (object instanceof EntityFile) {
                 EntityFile parentFolder = (EntityFile) object;
                 if (parentFolder.getType() == EntityFileType.DIRECTORY) {
-                    entityFileService.createSubdirectory(parentFolder, nombreCarpeta.getValue(), descripcionCarpeta.getValue());
+                    entityFileService.createDirectory(parentFolder, nombreCarpeta.getValue(), descripcionCarpeta.getValue());
                 } else {
                     ZKUtil.showMessage("Solo se pueden crear subcarpetas a carpetas");
                 }
@@ -144,25 +144,26 @@ public class FilesController extends CrudController<EntityFile> {
         for (Media media : uploadFiles) {
             System.out.println(media);
             /*UploadedFileInfo fileInfo = new UploadedFileInfo();
-            fileInfo.setFullName(media.getName());
-            fileInfo.setContentType(media.getContentType());
-            fileInfo.setInputStream(media.getStreamData());
-            EntityFile entityFile = efs.createEntityFile(fileInfo, entity);*/
+             fileInfo.setFullName(media.getName());
+             fileInfo.setContentType(media.getContentType());
+             fileInfo.setInputStream(media.getStreamData());
+             EntityFile entityFile = efs.createEntityFile(fileInfo, entity);*/
             EntityFile entityFile = adjuntar(entity, media);
-                    
+
             return entityFile;
         }
         return null;
     }
-    
+
     public static EntityFile adjuntar(final AbstractEntity entity, Media media) {
         EntityFileService efs = Containers.get().findObject(EntityFileService.class);
         UploadedFileInfo fileInfo = new UploadedFileInfo();
-            fileInfo.setFullName(media.getName());
-            fileInfo.setContentType(media.getContentType());
-            fileInfo.setInputStream(media.getStreamData());
-            return efs.createEntityFile(fileInfo, entity);
+        fileInfo.setFullName(media.getName());
+        fileInfo.setContentType(media.getContentType());
+        fileInfo.setInputStream(media.getStreamData());
+        return efs.createEntityFile(fileInfo, entity);
     }
+
     public void agregarArchivo() {
         try {
             adjuntar(targetEntity);
