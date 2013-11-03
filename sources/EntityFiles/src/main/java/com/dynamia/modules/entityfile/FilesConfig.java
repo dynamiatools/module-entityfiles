@@ -10,6 +10,8 @@ package com.dynamia.modules.entityfile;
  */
 public class FilesConfig {
 
+    public static final String FILES_LOCATION = "EntityFileCFG_FILESLOCATION";
+
     private String repository = System.getProperty("user.home") + "/files";
     private Integer maxSize = 1024;
     private Integer maxThumbnail = 100;

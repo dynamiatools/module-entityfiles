@@ -5,52 +5,53 @@ import java.io.InputStream;
 import com.dynamia.modules.entityfile.domain.EntityFile;
 
 public class UploadedFileInfo {
-	private String fullName;
-	private String contentType;
-	private InputStream inputStream;
-	private EntityFile parent;
 
-	public UploadedFileInfo() {
-		// TODO Auto-generated constructor stub
-	}
+    private String fullName;
+    private String contentType;
+    private InputStream inputStream;
+    private EntityFile parent;
 
-	public UploadedFileInfo(String fullName, String contentType, InputStream inputStream) {
-		super();
-		this.fullName = fullName;
-		this.contentType = contentType;
-		this.inputStream = inputStream;
-	}
+    public UploadedFileInfo() {
+        // TODO Auto-generated constructor stub
+    }
 
-	public EntityFile getParent() {
-		return parent;
-	}
+    public UploadedFileInfo(String fullName, String contentType, InputStream inputStream) {
+        super();
+        this.fullName = fullName;
+        this.contentType = contentType;
+        this.inputStream = inputStream;
+    }
 
-	public void setParent(EntityFile parent) {
-		this.parent = parent;
-	}
+    public EntityFile getParent() {
+        return parent;
+    }
 
-	public String getFullName() {
-		return fullName;
-	}
+    public void setParent(EntityFile parent) {
+        this.parent = parent;
+    }
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
+    public String getFullName() {
+        return fullName;
+    }
 
-	public String getContentType() {
-		return contentType;
-	}
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public InputStream getInputStream() {
-		return inputStream;
-	}
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
 
 }
