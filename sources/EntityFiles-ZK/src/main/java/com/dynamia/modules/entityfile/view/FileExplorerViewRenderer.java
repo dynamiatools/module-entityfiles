@@ -34,11 +34,11 @@ public class FileExplorerViewRenderer<T extends AbstractEntity> implements ViewR
 	private void renderHeaders(Tree tree) {
 		new Treecols().setParent(tree);
 
-		newcol("Nombre", "3", tree);
-		newcol("Descripcion", "5", tree);
-		newcol("Autor", "3", tree);
-		newcol("Fecha", "2", tree).setAlign("center");
-		newcol("Tamaño", "2", tree).setAlign("right");
+		newcol("Archivo", "5", tree);
+		//newcol("Descripcion", "5", tree);
+		newcol("Autor", "1", tree);
+		newcol("Fecha", "1", tree).setAlign("center");
+		newcol("Tamaño", "1", tree).setAlign("right");
 	}
 
 	private Treecol newcol(String label, String hflex, Tree tree) {

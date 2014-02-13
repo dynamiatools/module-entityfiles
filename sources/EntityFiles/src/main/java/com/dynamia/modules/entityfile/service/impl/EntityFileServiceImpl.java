@@ -4,6 +4,7 @@
  */
 package com.dynamia.modules.entityfile.service.impl;
 
+import com.dynamia.modules.entityfile.EntityFileAware;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -72,24 +73,23 @@ public class EntityFileServiceImpl implements EntityFileService {
 
     @Override
     @Transactional
-    public EntityFile createEntityFile(UploadedFileInfo fileInfo, String className, Long classId) {
-        return createEntityFile(fileInfo, className, classId, null);
-    }
-
-    @Override
-    @Transactional
-    public EntityFile createEntityFile(UploadedFileInfo fileInfo, String className, Long classId, String deString) {
+    public EntityFile createEntityFile(UploadedFileInfo fileInfo, AbstractEntity target, String description) {
         EntityFile entityFile = new EntityFile();
-        entityFile.setDescription(deString);
+        entityFile.setDescription(description);
         entityFile.setContentType(fileInfo.getContentType());
         entityFile.setName(fileInfo.getFullName());
         entityFile.setExtension(StringUtils.getFilenameExtension(fileInfo.getFullName()));
-        entityFile.setTargetEntity(className);
-        entityFile.setTargetEntityId(classId);
+        entityFile.setTargetEntity(target.getClass().getName());
+        if (target.getId() instanceof Long) {
+            entityFile.setTargetEntityId((Long) target.getId());
+        } else {
+            entityFile.setTargetEntitySId(target.getId().toString());
+        }
         entityFile.setType(EntityFileType.FILE);
         entityFile.setParent(fileInfo.getParent());
         entityFile.setState(EntityFileState.VALID);
         crudService.create(entityFile);
+        processEntityFileAware(target);
 
         String newFileName = getConfiguration().getRepository() + "/" + entityFile.getId();
         try {
@@ -108,8 +108,8 @@ public class EntityFileServiceImpl implements EntityFileService {
 
     @Override
     @Transactional
-    public EntityFile createEntityFile(UploadedFileInfo fileInfo, AbstractEntity targetEntity) {
-        return createEntityFile(fileInfo, targetEntity.getClass().getName(), ((Long) targetEntity.getId()));
+    public EntityFile createEntityFile(UploadedFileInfo fileInfo, AbstractEntity target) {
+        return createEntityFile(fileInfo, target, null);
     }
 
     @Override
@@ -133,15 +133,34 @@ public class EntityFileServiceImpl implements EntityFileService {
         QueryParameters params = new QueryParameters();
         params.setAutocreateSearcheableStrings(false);
         params.add("targetEntity", QueryConditions.eq(clazz.getName()));
-        params.add("targetEntityId", QueryConditions.eq(id));
+        if (id instanceof Long) {
+            params.add("targetEntityId", QueryConditions.eq(id));
+        } else {
+            params.add("targetEntitySId", QueryConditions.eq(id.toString()));
+        }
         params.add("state", QueryConditions.notEq(EntityFileState.DELETED));
         if (parentDirectory == null) {
-            params.add("parentDirectory", QueryConditions.isNull());
+            params.add("parent", QueryConditions.isNull());
         } else {
-            params.add("parentDirectory", parentDirectory);
+            params.add("parent", parentDirectory);
         }
         params.orderBy("type", true);
         return crudService.find(EntityFile.class, params);
+    }
+
+    private long counttEntityFiles(Class clazz, Serializable id) {
+        QueryParameters params = new QueryParameters();
+        params.setAutocreateSearcheableStrings(false);
+        params.add("targetEntity", QueryConditions.eq(clazz.getName()));
+        if (id instanceof Long) {
+            params.add("targetEntityId", QueryConditions.eq(id));
+        } else {
+            params.add("targetEntitySId", QueryConditions.eq(id.toString()));
+        }
+        params.add("state", QueryConditions.notEq(EntityFileState.DELETED));
+
+        params.orderBy("type", true);
+        return crudService.count(clazz, params);
     }
 
     @Override
@@ -169,6 +188,14 @@ public class EntityFileServiceImpl implements EntityFileService {
 
         String filePath = getConfiguration().getRepository() + "/" + file.getId();
         return new FileInputStream(new File(filePath));
+    }
+
+    private void processEntityFileAware(AbstractEntity target) {
+        if (target instanceof EntityFileAware) {
+            EntityFileAware efa = (EntityFileAware) target;
+            efa.setFilesCount(counttEntityFiles(target.getClass(), target.getId()));
+            crudService.update(target);
+        }
     }
 
 }

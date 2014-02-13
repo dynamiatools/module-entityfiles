@@ -28,7 +28,7 @@ public class FileExplorerItemRenderer extends EntityTreeItemRenderer {
         final EntityFile entityFile = (EntityFile) node.getEntity();
         if (entityFile != null) {
 
-            new Treecell(entityFile.getDescription()).setParent(row);
+            //new Treecell(entityFile.getDescription()).setParent(row);
             new Treecell(entityFile.getCreator()).setParent(row);
             new Treecell(formatter.format(entityFile.getCreationDate())).setParent(row);
             if (entityFile.getType() == EntityFileType.DIRECTORY) {

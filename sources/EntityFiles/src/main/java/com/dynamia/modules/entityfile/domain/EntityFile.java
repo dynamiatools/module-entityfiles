@@ -26,7 +26,8 @@ public class EntityFile extends BaseEntity {
     private List<EntityFile> children;
     @NotNull(message = "Ingrese clase dependencia valida")
     private String targetEntity;
-    private Long targetEntityId;
+    private Long targetEntityId;    
+    private String targetEntitySId;
     @NotNull(message = "Ingrese un nombre valido")
     private String name;
     @NotNull(message = "Ingrese tipo de archivo")
@@ -40,6 +41,14 @@ public class EntityFile extends BaseEntity {
     private Long size = 0l;
     private String description;
     private EntityFileState state;
+
+    public String getTargetEntitySId() {
+        return targetEntitySId;
+    }
+
+    public void setTargetEntitySId(String targetEntitySId) {
+        this.targetEntitySId = targetEntitySId;
+    }
 
     public String getContentType() {
         return contentType;
