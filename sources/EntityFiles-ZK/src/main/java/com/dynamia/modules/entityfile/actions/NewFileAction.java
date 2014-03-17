@@ -5,46 +5,49 @@ import org.zkoss.util.media.Media;
 import org.zkoss.zul.Fileupload;
 
 import com.dynamia.modules.entityfile.UploadedFileInfo;
-import com.dynamia.modules.entityfile.enums.EntityFileType;
 import com.dynamia.modules.entityfile.service.EntityFileService;
 import com.dynamia.modules.entityfile.util.EntityFileUtils;
 import com.dynamia.tools.web.actions.ActionGroup;
 import com.dynamia.tools.web.actions.InstallAction;
 import com.dynamia.tools.web.ui.MessageType;
-import com.dynamia.tools.web.util.ZKUtil;
+import com.dynamia.tools.web.ui.UIMessages;
+import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zk.ui.event.UploadEvent;
 
 @InstallAction
 public class NewFileAction extends AbstractEntityFileAction {
 
-	@Autowired
-	private EntityFileService service;
+    @Autowired
+    private EntityFileService service;
 
-	public NewFileAction() {
-		setName("Nuevo Archivo");
-		setImage("icons:add");
-		setGroup(ActionGroup.get("FILES"));
-	}
+    public NewFileAction() {
+        setName("Nuevo Archivo");
+        setImage("icons:add");
+        setGroup(ActionGroup.get("FILES"));
+    }
 
-	@Override
-	public EntityFileType getApplicableType() {
-		return EntityFileType.DIRECTORY;
-	}
+    @Override
+    public void actionPerformed(final EntityFileActionEvent evt) {
 
-	@Override
-	public void actionPerformed(EntityFileActionEvent evt) {
+        Fileupload.get(-1,new EventListener<UploadEvent>() {
 
-		Media[] medias = Fileupload.get(-1);
-		if (medias != null) {
-			for (Media media : medias) {
-				UploadedFileInfo info = EntityFileUtils.build(media);
-				info.setParent(evt.getEntityFile());
-				service.createEntityFile(info, evt.getTargetEntity());
-			}
-			evt.getView().getController().reloadSelectedNode();
-			ZKUtil.showMessage("Archivos Cargados Correctamente");
-		} else {
-			ZKUtil.showMessage("Debe seleccionar al menos un archivo", MessageType.ERROR);
-		}
+            @Override
+            public void onEvent(UploadEvent event) throws Exception {
+                
+                Media[] medias = event.getMedias();
+                if (medias != null) {
+                    for (Media media : medias) {
+                        UploadedFileInfo info = EntityFileUtils.build(media);
+                        info.setParent(evt.getEntityFile());
+                        service.createEntityFile(info, evt.getTargetEntity());
+                    }
+                    evt.getView().getController().doQuery();
+                    UIMessages.showMessage("Archivo(s) Cargado(s) Correctamente");
+                } else {
+                    UIMessages.showMessage("Debe seleccionar al menos un archivo", MessageType.ERROR);
+                }
+            }
+        });
 
-	}
+    }
 }

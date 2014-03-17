@@ -8,17 +8,13 @@ package com.dynamia.modules.entityfile;
  *
  * @author programador
  */
-import com.dynamia.modules.entityfile.domain.EntityFile;
 import com.dynamia.modules.entityfile.util.EntityFileUtils;
 import com.dynamia.tools.commons.Messages;
-import com.dynamia.tools.viewers.zk.ui.Viewer;
 import com.dynamia.tools.web.actions.ActionGroup;
 import com.dynamia.tools.web.actions.InstallAction;
 import com.dynamia.tools.web.crud.AbstractCrudAction;
 import com.dynamia.tools.web.crud.CrudActionEvent;
 import com.dynamia.tools.web.crud.CrudState;
-import com.dynamia.tools.web.ui.MessageType;
-import com.dynamia.tools.web.util.ZKUtil;
 
 /**
  *

@@ -16,6 +16,8 @@ import com.dynamia.tools.domain.BaseEntity;
 import com.dynamia.tools.io.IOUtils;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 @Entity
@@ -26,7 +28,7 @@ public class EntityFile extends BaseEntity {
     private List<EntityFile> children;
     @NotNull(message = "Ingrese clase dependencia valida")
     private String targetEntity;
-    private Long targetEntityId;    
+    private Long targetEntityId;
     private String targetEntitySId;
     @NotNull(message = "Ingrese un nombre valido")
     private String name;
@@ -39,7 +41,10 @@ public class EntityFile extends BaseEntity {
     private boolean shared;
     @Column(name = "fileSize")
     private Long size = 0l;
+    @Column(length = 1000)
     private String description;
+    @Column(name = "fileState")
+    @Enumerated(EnumType.ORDINAL)
     private EntityFileState state;
 
     public String getTargetEntitySId() {

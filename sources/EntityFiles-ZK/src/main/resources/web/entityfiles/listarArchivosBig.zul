@@ -16,7 +16,7 @@
             </vbox>
         </north>
         <center border="none" flex="true">
-            <listbox id="resultList" vflex="true" model="@{b$composer.queryResult,load-after='paginator.onPaging,newFile.onClick,eliminar.onClick,newFolder.onClick'}">
+            <listbox id="resultList" vflex="true" model="@{b$composer.queryResult.data,load-after='paginator.onPaging,newFile.onClick,eliminar.onClick,newFolder.onClick'}">
                 <listhead>
                     <listheader label="Codigo"/>
                 </listhead>

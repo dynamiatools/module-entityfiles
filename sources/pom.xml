@@ -5,7 +5,7 @@
     <groupId>com.dynamia.modules</groupId>
     <artifactId>com.dynamia.modules.entityfiles.parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.1</version>
+    <version>3.2.0</version>
     <name>Dynamia Modules - EntityFiles Parent (${project.version})</name>
     <url>http://www.dynamiasoluciones.com</url>
 
@@ -18,8 +18,9 @@
 
     <properties>
         <file.encoding>UTF-8</file.encoding>
-        <dynatools.version>2.1.0.RC</dynatools.version>
+        <dynatools.version>2.1.0.Final</dynatools.version>
         <spring.version>3.1.2.RELEASE</spring.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -43,13 +44,14 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <configuration>
-                    <encoding>${file.encoding}</encoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
            
@@ -60,7 +62,7 @@
     <distributionManagement>
         <repository>
             <id>nexus</id>
-            <url>http://vps.dynamiasoluciones.com:8081/nexus/content/repositories/releases</url>
+            <url>http://server.dynamiasoluciones.com:8081/nexus/content/repositories/releases</url>
         </repository>      
     </distributionManagement>
 

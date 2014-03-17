@@ -7,7 +7,8 @@ package com.dynamia.modules.entityfile.ui;
 
 import com.dynamia.tools.io.FileInfo;
 import com.dynamia.tools.web.ui.ChildrenLoader;
-import com.dynamia.tools.web.ui.LazyTreeNode;
+import com.dynamia.tools.web.ui.*;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -18,10 +19,7 @@ import java.util.List;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zul.DefaultTreeModel;
 import org.zkoss.zul.Tree;
-import org.zkoss.zul.TreeModel;
-import org.zkoss.zul.TreeNode;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.Window;
 
@@ -32,9 +30,9 @@ import org.zkoss.zul.Window;
 public class DirectoryExplorer extends Window implements ChildrenLoader<FileInfo>, EventListener<Event> {
 
     private String value;
-    private TreeModel<FileInfo> treeModel;
+    private EntityTreeModel<FileInfo> treeModel;
     private Tree tree;
-    private TreeNode rootNode;
+    private EntityTreeNode<FileInfo> rootNode;
     private boolean showHiddenFolders;
 
     public DirectoryExplorer() {
@@ -62,14 +60,16 @@ public class DirectoryExplorer extends Window implements ChildrenLoader<FileInfo
     private void initModel() {
         FileInfo file = new FileInfo(new File("/"));
 
-        rootNode = new DirectoryTreeNode(file);
-        loadChildren((LazyTreeNode<FileInfo>) rootNode);
-        treeModel = new DefaultTreeModel(rootNode);
+        rootNode = new EntityTreeNode<FileInfo>(file);
+        treeModel = new EntityTreeModel<FileInfo>(rootNode);
+        for (EntityTreeNode<FileInfo> entityTreeNode : getSubdirectories(file)) {
+            rootNode.addChild(entityTreeNode);
+        }
         tree.setModel(treeModel);
 
     }
 
-    private Collection<TreeNode<FileInfo>> getSubdirectories(FileInfo file) {
+    private Collection<EntityTreeNode<FileInfo>> getSubdirectories(FileInfo file) {
         File[] subs = file.getFile().listFiles(new FileFilter() {
 
             @Override
@@ -84,17 +84,17 @@ public class DirectoryExplorer extends Window implements ChildrenLoader<FileInfo
             }
         });
 
-        List<TreeNode<FileInfo>> subdirectories = new ArrayList<TreeNode<FileInfo>>();
+        List<EntityTreeNode<FileInfo>> subdirectories = new ArrayList<EntityTreeNode<FileInfo>>();
         if (subs != null) {
             for (File sub : subs) {
                 subdirectories.add(new DirectoryTreeNode(new FileInfo(sub), this));
             }
         }
 
-        Collections.sort(subdirectories, new Comparator<TreeNode<FileInfo>>() {
+        Collections.sort(subdirectories, new Comparator<EntityTreeNode<FileInfo>>() {
 
             @Override
-            public int compare(TreeNode<FileInfo> o1, TreeNode<FileInfo> o2) {
+            public int compare(EntityTreeNode<FileInfo> o1, EntityTreeNode<FileInfo> o2) {
                 return o1.getData().getName().compareTo(o2.getData().getName());
             }
         });
@@ -103,9 +103,9 @@ public class DirectoryExplorer extends Window implements ChildrenLoader<FileInfo
     }
 
     @Override
-    public void loadChildren(LazyTreeNode<FileInfo> node) {
-        for (TreeNode<FileInfo> treeNode : getSubdirectories(node.getData())) {
-            node.add(treeNode);
+    public void loadChildren(LazyEntityTreeNode<FileInfo> node) {
+        for (EntityTreeNode<FileInfo> treeNode : getSubdirectories(node.getData())) {
+            node.addChild(treeNode);
         }
     }
 

@@ -60,10 +60,15 @@ public class EntityFileServiceImpl implements EntityFileService {
         EntityFile entityFile = new EntityFile();
         entityFile.setParent(parent);
         entityFile.setName(name);
+        entityFile.setState(EntityFileState.VALID);
         entityFile.setDescription(descripcion);
         if (targetEntity != null) {
             entityFile.setTargetEntity(targetEntity.getClass().getName());
             entityFile.setTargetEntityId((Long) targetEntity.getId());
+        } else {
+            entityFile.setTargetEntity(parent.getTargetEntity());
+            entityFile.setTargetEntityId(parent.getTargetEntityId());
+            entityFile.setTargetEntitySId(parent.getTargetEntitySId());
         }
         entityFile.setShared(true);
         entityFile.setType(EntityFileType.DIRECTORY);
