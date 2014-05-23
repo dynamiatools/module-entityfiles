@@ -8,5 +8,13 @@ fields:
         description: Server directory in wich will be saved
         component: directorybox
         
+    reportsLocation:        
+        label: Reports Location        
+        description: Server directory in wich will loade
+        component: directorybox
+        params:
+            parameterName: GLOBAL_REPORTS_LOCATION
+    
+        
 
     
