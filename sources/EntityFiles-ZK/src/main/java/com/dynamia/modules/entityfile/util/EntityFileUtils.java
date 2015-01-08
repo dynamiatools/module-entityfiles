@@ -1,6 +1,10 @@
 package com.dynamia.modules.entityfile.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import com.dynamia.modules.entityfile.EntityFileController;
+
 import org.zkoss.util.media.Media;
 
 import com.dynamia.modules.entityfile.UploadedFileInfo;
@@ -14,25 +18,32 @@ import com.dynamia.tools.web.util.ZKUtil;
 
 public class EntityFileUtils {
 
-    public static UploadedFileInfo build(Media media) {
-        UploadedFileInfo info = new UploadedFileInfo(media.getName(), media.getContentType(), media.getStreamData());
+	public static UploadedFileInfo build(Media media) {
+		InputStream is = null;
+		if (media.isBinary()) {
+			is = media.getStreamData();
+		} else {
+			is = new ByteArrayInputStream(media.getStringData().getBytes());
+		}
 
-        return info;
-    }
+		UploadedFileInfo info = new UploadedFileInfo(media.getName(), media.getContentType(), is);
 
-    public static void showFileExplorer(Object obj) {
-        if (obj != null) {
+		return info;
+	}
 
-            Viewer viewer = new Viewer("crud", EntityFile.class);
-            CrudView view = (CrudView) viewer.getView();
-            EntityFileController controller = (EntityFileController) view.getController();
-            controller.setTargetEntity((AbstractEntity) obj);
-            controller.doQuery();
-            ZKUtil.showDialog("Archivos Asociados", viewer, "80%", "80%");
+	public static void showFileExplorer(Object obj) {
+		if (obj != null) {
 
-        } else {
-            UIMessages.showMessage("Debe seleccionar un elemento para ver los archivos asociados", MessageType.INFO);
-        }
-    }
+			Viewer viewer = new Viewer("crud", EntityFile.class);
+			CrudView view = (CrudView) viewer.getView();
+			EntityFileController controller = (EntityFileController) view.getController();
+			controller.setTargetEntity((AbstractEntity) obj);
+			controller.doQuery();
+			ZKUtil.showDialog("Archivos Asociados", viewer, "80%", "80%");
+
+		} else {
+			UIMessages.showMessage("Debe seleccionar un elemento para ver los archivos asociados", MessageType.INFO);
+		}
+	}
 
 }

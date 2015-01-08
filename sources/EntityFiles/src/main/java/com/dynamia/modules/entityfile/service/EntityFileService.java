@@ -8,11 +8,16 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
+import com.dynamia.modules.entityfile.EntityFileAware;
 import com.dynamia.modules.entityfile.FilesConfig;
 import com.dynamia.modules.entityfile.UploadedFileInfo;
 import com.dynamia.modules.entityfile.domain.EntityFile;
+import com.dynamia.tools.commons.BeanUtils;
 import com.dynamia.tools.domain.AbstractEntity;
+
 import java.io.Serializable;
+
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -39,5 +44,7 @@ public interface EntityFileService {
     public InputStream download(EntityFile file) throws FileNotFoundException;
 
     public abstract void delete(EntityFile entityFile);
+
+	public abstract void syncEntityFileAware();
 
 }

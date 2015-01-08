@@ -25,7 +25,7 @@ public class FileAction extends AbstractCrudAction {
 
     public FileAction() {
         setName(Messages.get(getClass(), "Archivos"));
-        setImage("icons:attachment");
+        setImage("attachment");
         setGroup(ActionGroup.get("CRUD_OTHER"));
         setMenuSupported(true);
 

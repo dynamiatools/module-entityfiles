@@ -1,40 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Document : lang-addon.xml Created on : 17 de noviembre de 2010, 11:14 
-AM Author : mario Description: Purpose of the document follows. -->
+<!-- Document : lang-addon.xml Created on : 17 de noviembre de 2010, 11:14 AM Author : mario Description: Purpose of the document follows. -->
 
 <language-addon>
-    <addon-name>entityfiles</addon-name>
-    <language-name>xul/html</language-name>
+	<addon-name>entityfiles</addon-name>
+	<language-name>xul/html</language-name>
 
-    <component>
-        <component-name>directorybox</component-name>
-        <component-class>com.dynamia.modules.entityfile.ui.DirectoryBox
-        </component-class>
-        <widget-class>zul.inp.Bandbox</widget-class>
-        <annotation>
-            <annotation-name>default-bind</annotation-name>
-            <property-name>value</property-name>
-            <attribute>
-                <attribute-name>access</attribute-name>
-                <attribute-value>both</attribute-value>
-            </attribute>
-            <attribute>
-                <attribute-name>save-when</attribute-name>
-                <attribute-value>self.onChange</attribute-value>
-            </attribute>
-        </annotation>
-        <mold>
-            <mold-name>default</mold-name>
-            <mold-uri>mold/bandbox.js</mold-uri>
-            <css-uri>css/combo.css.dsp</css-uri>
-        </mold>
-        <mold>
-            <mold-name>rounded</mold-name>
-            <mold-uri>mold/bandbox.js</mold-uri>
-            <css-uri>css/combo.css.dsp</css-uri>
-        </mold>
-    </component>
+	<component>
+		<component-name>directorybox</component-name>
+		<component-class>com.dynamia.modules.entityfile.ui.DirectoryBox
+		</component-class>
+		<widget-class>zul.inp.Bandbox</widget-class>
+		<annotation>
+			<annotation-name>default-bind</annotation-name>
+			<property-name>value</property-name>
+			<attribute>
+				<attribute-name>access</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>save-when</attribute-name>
+				<attribute-value>self.onChange</attribute-value>
+			</attribute>
+		</annotation>
+		<mold>
+			<mold-name>default</mold-name>
+			<mold-uri>mold/bandbox.js</mold-uri>
+			<css-uri>css/combo.css.dsp</css-uri>
+		</mold>
+		<mold>
+			<mold-name>rounded</mold-name>
+			<mold-uri>mold/bandbox.js</mold-uri>
+			<css-uri>css/combo.css.dsp</css-uri>
+		</mold>
+	</component>
 
-   
+	<component>
+		<component-name>filescountimage</component-name>
+		<component-class>com.dynamia.modules.entityfile.ui.FilesCountImage</component-class>
+		<widget-class>zul.wgt.A</widget-class>
+		<text-as childable="true">label</text-as>
+		<!-- treat text within the element as the label property if no element inside -->
+		<mold>
+			<mold-name>default</mold-name>
+			<mold-uri>mold/a.js</mold-uri>
+			<css-uri>css/a.css.dsp</css-uri>
+		</mold>
+		<preserve-blank />
+
+		<annotation>
+			<annotation-name>default-bind</annotation-name>
+			<property-name>value</property-name>
+			<attribute>
+				<attribute-name>access</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>save-when</attribute-name>
+				<attribute-value>self.onChange</attribute-value>
+			</attribute>
+		</annotation>
+
+	</component>
+
 </language-addon>
