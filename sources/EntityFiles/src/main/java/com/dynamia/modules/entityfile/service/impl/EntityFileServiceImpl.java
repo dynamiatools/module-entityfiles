@@ -110,9 +110,8 @@ public class EntityFileServiceImpl implements EntityFileService {
 		crudService.create(entityFile);
 		processEntityFileAware(target);
 
-		String newFileName = createFilePath(entityFile);
+		File realFile = getRealFile(entityFile);
 		try {
-			File realFile = new File(newFileName);
 			realFile.getParentFile().mkdirs();
 			realFile.createNewFile();
 			realFile.setExecutable(false);
@@ -122,7 +121,8 @@ public class EntityFileServiceImpl implements EntityFileService {
 			crudService.updateField(entityFile, "size", realFile.length());
 
 		} catch (IOException e) {
-			throw new EntityFileException("Error writing file " + fileInfo.getFullName() + " no new location " + newFileName, e);
+			throw new EntityFileException(
+					"Error writing file " + fileInfo.getFullName() + " on new location " + realFile.getAbsolutePath(), e);
 		}
 
 		return entityFile;
@@ -208,8 +208,8 @@ public class EntityFileServiceImpl implements EntityFileService {
 			throw new FileNotFoundException("EntityFile is null");
 		}
 
-		String filePath = createFilePath(file);
-		return new FileInputStream(new File(filePath));
+		File realFile = getRealFile(file);
+		return new FileInputStream(realFile);
 	}
 
 	@Override
@@ -240,9 +240,10 @@ public class EntityFileServiceImpl implements EntityFileService {
 		}
 	}
 
-	private String createFilePath(EntityFile file) {
+	@Override
+	public File getRealFile(EntityFile file) {
 		String filePath = getConfiguration().getRepository() + "/Account" + file.getAccount().getId() + "/" + file.getId();
-		return filePath;
+		return new File(filePath);
 	}
 
 	private void processEntityFileAware(AbstractEntity target) {

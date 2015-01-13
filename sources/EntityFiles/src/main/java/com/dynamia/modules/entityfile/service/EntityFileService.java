@@ -4,6 +4,7 @@
  */
 package com.dynamia.modules.entityfile.service;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -46,5 +47,7 @@ public interface EntityFileService {
     public abstract void delete(EntityFile entityFile);
 
 	public abstract void syncEntityFileAware();
+
+	public abstract File getRealFile(EntityFile file);
 
 }
