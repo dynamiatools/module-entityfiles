@@ -37,6 +37,7 @@ import com.dynamia.tools.domain.query.Parameters;
 import com.dynamia.tools.domain.query.QueryConditions;
 import com.dynamia.tools.domain.query.QueryParameters;
 import com.dynamia.tools.domain.services.CrudService;
+import com.dynamia.tools.domain.util.DomainUtils;
 import com.dynamia.tools.integration.Containers;
 import com.dynamia.tools.integration.scheduling.Task;
 import com.dynamia.tools.io.IOUtils;
@@ -62,11 +63,11 @@ public class EntityFileServiceImpl implements EntityFileService {
 	}
 
 	@Override
-	public EntityFile createDirectory(AbstractEntity entity, String name, String description) {
+	public EntityFile createDirectory(Object entity, String name, String description) {
 		return createDir(null, entity, name, description);
 	}
 
-	private EntityFile createDir(EntityFile parent, AbstractEntity targetEntity, String name, String descripcion) {
+	private EntityFile createDir(EntityFile parent, Object targetEntity, String name, String descripcion) {
 		EntityFile entityFile = new EntityFile();
 		entityFile.setAccount(AccountContext.getCurrent().getAccount());
 		entityFile.setParent(parent);
@@ -74,9 +75,8 @@ public class EntityFileServiceImpl implements EntityFileService {
 		entityFile.setState(EntityFileState.VALID);
 		entityFile.setDescription(descripcion);
 		if (targetEntity != null) {
-			entityFile.setTargetEntity(targetEntity.getClass().getName());
-			entityFile.setTargetEntityId((Long) targetEntity.getId());
-		} else {
+			configureEntityFile(targetEntity, entityFile);
+		} else if (parent != null) {
 			entityFile.setTargetEntity(parent.getTargetEntity());
 			entityFile.setTargetEntityId(parent.getTargetEntityId());
 			entityFile.setTargetEntitySId(parent.getTargetEntitySId());
@@ -89,7 +89,7 @@ public class EntityFileServiceImpl implements EntityFileService {
 
 	@Override
 	@Transactional
-	public EntityFile createEntityFile(UploadedFileInfo fileInfo, AbstractEntity target, String description) {
+	public EntityFile createEntityFile(UploadedFileInfo fileInfo, Object target, String description) {
 		target = crudService.reload(target);
 		logger.info("Creating new entity file for " + target + ", file: " + fileInfo.getFullName());
 		EntityFile entityFile = new EntityFile();
@@ -98,13 +98,10 @@ public class EntityFileServiceImpl implements EntityFileService {
 		entityFile.setContentType(fileInfo.getContentType());
 		entityFile.setName(fileInfo.getFullName());
 		entityFile.setExtension(StringUtils.getFilenameExtension(fileInfo.getFullName()));
-		entityFile.setTargetEntity(target.getClass().getName());
-		if (target.getId() instanceof Long) {
-			entityFile.setTargetEntityId((Long) target.getId());
-		} else {
-			entityFile.setTargetEntitySId(target.getId().toString());
-		}
-		entityFile.setType(EntityFileType.FILE);
+
+		configureEntityFile(target, entityFile);
+
+		entityFile.setType(EntityFileType.getFileType(entityFile.getExtension()));
 		entityFile.setParent(fileInfo.getParent());
 		entityFile.setState(EntityFileState.VALID);
 		crudService.create(entityFile);
@@ -129,9 +126,43 @@ public class EntityFileServiceImpl implements EntityFileService {
 	}
 
 	@Override
+	public void configureEntityFile(Object target, EntityFile entityFile) {
+		if (target != null) {
+			if (DomainUtils.isJPAEntity(target)) {
+				entityFile.setTargetEntity(target.getClass().getName());
+				Serializable id = DomainUtils.getJPAIdValue(target);
+
+				if (id == null) {
+					throw new EntityFileException("Null id for entity " + target.getClass() + " -> " + target);
+				}
+
+				if (id instanceof Long) {
+					entityFile.setTargetEntityId((Long) id);
+				} else {
+					entityFile.setTargetEntitySId(id.toString());
+				}
+			} else {
+				throw new EntityFileException("Target entity " + target.getClass() + " -> " + target + " is not a JPA Entity");
+			}
+		} else {
+			entityFile.setTargetEntity("temporal");
+		}
+	}
+
+	@Override
 	@Transactional
-	public EntityFile createEntityFile(UploadedFileInfo fileInfo, AbstractEntity target) {
+	public EntityFile createEntityFile(UploadedFileInfo fileInfo, Object target) {
 		return createEntityFile(fileInfo, target, null);
+	}
+
+	@Override
+	@Transactional
+	public EntityFile createTemporalEntityFile(UploadedFileInfo fileInfo) {
+		EntityFile temp = createEntityFile(fileInfo, null);
+		temp.setTargetEntity("temporal");
+		temp.setTargetEntityId(System.currentTimeMillis());
+
+		return temp;
 	}
 
 	@Override
@@ -141,13 +172,14 @@ public class EntityFileServiceImpl implements EntityFileService {
 	}
 
 	@Override
-	public List<EntityFile> getEntityFiles(AbstractEntity entity) {
-		return getEntityFiles(entity.getClass(), entity.getId(), null);
+	public List<EntityFile> getEntityFiles(Object entity) {
+
+		return getEntityFiles(entity.getClass(), DomainUtils.getJPAIdValue(entity), null);
 	}
 
 	@Override
-	public List<EntityFile> getEntityFiles(AbstractEntity entity, EntityFile parentDirectory) {
-		return getEntityFiles(entity.getClass(), entity.getId(), parentDirectory);
+	public List<EntityFile> getEntityFiles(Object entity, EntityFile parentDirectory) {
+		return getEntityFiles(entity.getClass(), DomainUtils.getJPAIdValue(entity), parentDirectory);
 	}
 
 	@Override
@@ -155,6 +187,7 @@ public class EntityFileServiceImpl implements EntityFileService {
 		QueryParameters params = new QueryParameters();
 		params.setAutocreateSearcheableStrings(false);
 		params.add("targetEntity", QueryConditions.eq(clazz.getName()));
+
 		if (id instanceof Long) {
 			params.add("targetEntityId", QueryConditions.eq(id));
 		} else {
@@ -219,22 +252,23 @@ public class EntityFileServiceImpl implements EntityFileService {
 		if (targetEntities != null) {
 			logger.info("Syncing EntityFileAware entities");
 			for (final String entityClassName : targetEntities) {
-				Object object = BeanUtils.newInstance(entityClassName);
-				if (object instanceof EntityFileAware) {
-					crudService.executeWithinTransaction(new Task() {
-						@Override
-						public void doWork() {
-							logger.info("Processing batch EntityFileAware for " + entityClassName);
-							String updateQuery = "update "
-									+ entityClassName
-									+ " e set e.filesCount = (select count(ef.id) from EntityFile ef where ef.targetEntityId = e.id and ef.state = :state and ef.type = :type and ef.targetEntity='"
-									+ entityClassName + "')";
-							QueryParameters parameters = QueryParameters.with("state", EntityFileState.VALID)
-									.add("type", EntityFileType.FILE);
-							crudService.execute(updateQuery, parameters);
-						}
-					});
-
+				if (!entityClassName.equals("temporal")) {
+					Object object = BeanUtils.newInstance(entityClassName);
+					if (object instanceof EntityFileAware) {
+						crudService.executeWithinTransaction(new Task() {
+							@Override
+							public void doWork() {
+								logger.info("Processing batch EntityFileAware for " + entityClassName);
+								String updateQuery = "update "
+										+ entityClassName
+										+ " e set e.filesCount = (select count(ef.id) from EntityFile ef where ef.targetEntityId = e.id and ef.state = :state and ef.type = :type and ef.targetEntity='"
+										+ entityClassName + "')";
+								QueryParameters parameters = QueryParameters.with("state", EntityFileState.VALID)
+										.add("type", EntityFileType.FILE);
+								crudService.execute(updateQuery, parameters);
+							}
+						});
+					}
 				}
 			}
 		}
@@ -246,11 +280,11 @@ public class EntityFileServiceImpl implements EntityFileService {
 		return new File(filePath);
 	}
 
-	private void processEntityFileAware(AbstractEntity target) {
-		if (target instanceof EntityFileAware) {
+	private void processEntityFileAware(Object target) {
+		if (target != null && target instanceof EntityFileAware) {
 			logger.info("Processing EntityFileAware for " + target.getClass() + " - " + target);
 			EntityFileAware efa = (EntityFileAware) target;
-			efa.setFilesCount(counttEntityFiles(target.getClass(), target.getId()));
+			efa.setFilesCount(counttEntityFiles(target.getClass(), DomainUtils.getJPAIdValue(target)));
 			crudService.update(target);
 		}
 	}

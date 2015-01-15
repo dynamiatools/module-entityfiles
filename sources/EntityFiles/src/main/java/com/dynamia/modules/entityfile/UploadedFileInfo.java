@@ -1,8 +1,11 @@
 package com.dynamia.modules.entityfile;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import com.dynamia.modules.entityfile.domain.EntityFile;
+import com.dynamia.tools.io.FileInfo;
 
 public class UploadedFileInfo {
 
@@ -13,6 +16,11 @@ public class UploadedFileInfo {
 
 	public UploadedFileInfo() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public UploadedFileInfo(FileInfo info) throws FileNotFoundException {
+		this.fullName = info.getName();
+		this.inputStream = new FileInputStream(info.getFile());
 	}
 
 	public UploadedFileInfo(String fullName, InputStream inputStream) {

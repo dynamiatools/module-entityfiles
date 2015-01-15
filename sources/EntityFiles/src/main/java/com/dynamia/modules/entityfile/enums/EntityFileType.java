@@ -10,5 +10,14 @@ package com.dynamia.modules.entityfile.enums;
  */
 public enum EntityFileType {
 
-    DIRECTORY, FILE;
+	DIRECTORY, FILE, IMAGE;
+
+	public static EntityFileType getFileType(String extension) {
+		final String IMAGE_EXTENSIONS = "png,jpg,gif,jpeg,tiff,svg";
+		if (IMAGE_EXTENSIONS.contains(extension)) {
+			return EntityFileType.IMAGE;
+		} else {
+			return EntityFileType.FILE;
+		}
+	}
 }

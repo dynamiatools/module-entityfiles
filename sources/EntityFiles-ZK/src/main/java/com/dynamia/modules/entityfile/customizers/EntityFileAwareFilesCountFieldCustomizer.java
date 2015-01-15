@@ -1,4 +1,4 @@
-package com.dynamia.modules.entityfile;
+package com.dynamia.modules.entityfile.customizers;
 
 import com.dynamia.modules.entityfile.ui.FilesCountImage;
 import com.dynamia.tools.integration.sterotypes.Component;

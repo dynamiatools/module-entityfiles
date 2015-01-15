@@ -4,26 +4,30 @@
  */
 package com.dynamia.modules.entityfile.domain;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
-
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
-
-import com.dynamia.modules.entityfile.domain.enums.EntityFileState;
-import com.dynamia.modules.entityfile.enums.EntityFileType;
-import com.dynamia.modules.saas.AccountAware;
-import com.dynamia.modules.saas.domain.Account;
-import com.dynamia.modules.saas.domain.BaseEntitySaaS;
-import com.dynamia.tools.domain.BaseEntity;
-import com.dynamia.tools.io.IOUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import com.dynamia.modules.entityfile.EntityFileException;
+import com.dynamia.modules.entityfile.domain.enums.EntityFileState;
+import com.dynamia.modules.entityfile.enums.EntityFileType;
+import com.dynamia.modules.entityfile.service.EntityFileService;
+import com.dynamia.modules.saas.AccountAware;
+import com.dynamia.modules.saas.domain.Account;
+import com.dynamia.tools.domain.BaseEntity;
+import com.dynamia.tools.integration.Containers;
+import com.dynamia.tools.io.IOUtils;
+import com.dynamia.tools.io.ImageUtil;
 
 @Entity
 @Table(name = "mod_entity_files")
@@ -180,6 +184,36 @@ public class EntityFile extends BaseEntity implements AccountAware {
 
 	public void setAccount(Account account) {
 		this.account = account;
+	}
+
+	public File getRealFile() {
+		EntityFileService service = Containers.get().findObject(EntityFileService.class);
+		if (service == null) {
+			throw new NullPointerException("No EntityService war found to create Real File");
+		}
+		return service.getRealFile(this);
+	}
+
+	public File getThumbnail(int height, int width) {
+		try {
+			File realFile = getRealFile();
+			File thumbFile = new File(realFile.getParentFile().getAbsolutePath() + "/thumbnails/" + height + "x" + width + "/", getId()
+					.toString());
+			if (!thumbFile.exists()) {
+				thumbFile.getParentFile().mkdirs();
+				thumbFile.createNewFile();
+				if (extension.equals("png")) {
+					ImageUtil.resizeImage(realFile, thumbFile, "png", width, height);
+				} else {
+					ImageUtil.resizeJPEGImage(realFile, thumbFile, width, height);
+				}
+			}
+
+			return thumbFile;
+
+		} catch (IOException e) {
+			throw new EntityFileException("Error creating EntityFile thumbnails " + getName() + ". ID: " + getId(), e);
+		}
 	}
 
 }

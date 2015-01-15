@@ -3,7 +3,7 @@ beanClass: com.dynamia.modules.entityfile.domain.EntityFile
 messages: com.dynamia.modules.entityfile
 autofields: false
 
-sortFields: [name,creationDate,creator,sizeAsString,description]
+sortFields: [name,creationDate,creationTime,creator,sizeAsString,description]
 
 fields:
     
