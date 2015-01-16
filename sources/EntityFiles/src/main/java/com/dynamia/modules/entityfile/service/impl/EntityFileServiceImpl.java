@@ -265,7 +265,7 @@ public class EntityFileServiceImpl implements EntityFileService {
 										+ " e set e.filesCount = (select count(ef.id) from EntityFile ef where ef.targetEntityId = e.id and ef.state = :state and ef.type in (:types) and ef.targetEntity='"
 										+ entityClassName + "')";
 								QueryParameters parameters = QueryParameters.with("state", EntityFileState.VALID)
-										.add("type", Arrays.asList(EntityFileType.FILE, EntityFileType.IMAGE));
+										.add("types", Arrays.asList(EntityFileType.FILE, EntityFileType.IMAGE));
 								crudService.execute(updateQuery, parameters);
 							}
 						});
