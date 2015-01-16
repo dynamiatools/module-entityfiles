@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dynamia.modules.entityfile.EntityFileAware;
 import com.dynamia.modules.entityfile.domain.EntityFile;
 import com.dynamia.modules.entityfile.service.EntityFileService;
 import com.dynamia.tools.commons.BeanUtils;
@@ -28,6 +29,7 @@ public class TemporalEntityFileCrudListener extends CrudServiceListenerAdapter<O
 
 	@Override
 	public void afterCreate(Object entity) {
+		
 		checkEntityFiles(entity);
 	}
 
@@ -37,7 +39,7 @@ public class TemporalEntityFileCrudListener extends CrudServiceListenerAdapter<O
 	}
 
 	private void checkEntityFiles(Object entity) {
-		if (DomainUtils.isJPAEntity(entity)) {
+		if (DomainUtils.isJPAEntity(entity) && !(entity instanceof EntityFile)) {
 			List<PropertyInfo> properties = BeanUtils.getPropertiesInfo(entity.getClass());
 			for (PropertyInfo propertyInfo : properties) {
 				if (propertyInfo.is(EntityFile.class)) {
@@ -51,9 +53,18 @@ public class TemporalEntityFileCrudListener extends CrudServiceListenerAdapter<O
 		try {
 
 			EntityFile entityFile = (EntityFile) BeanUtils.invokeGetMethod(entity, propertyInfo);
-			if (entityFile!=null && entityFile.getTargetEntity() != null && entityFile.getTargetEntity().equals("temporal")) {
+			if (entityFile != null && entityFile.getTargetEntity() != null && entityFile.getTargetEntity().equals("temporal")) {
 				service.configureEntityFile(entity, entityFile);
 				crudService.update(entityFile);
+				if (entity instanceof EntityFileAware) {
+					EntityFileAware entityFileAware = (EntityFileAware) entity;
+					if (entityFileAware.getFilesCount() == null) {
+						entityFileAware.setFilesCount(1L);
+					} else {
+						entityFileAware.setFilesCount(entityFileAware.getFilesCount() + 1);
+					}
+					crudService.update(entity);
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Error updating entity file for entity " + entity + ". Property: " + propertyInfo.getName(), e);

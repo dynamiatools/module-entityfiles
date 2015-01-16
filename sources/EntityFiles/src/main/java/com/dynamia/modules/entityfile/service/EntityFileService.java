@@ -171,4 +171,6 @@ public interface EntityFileService {
 	 */
 	public abstract void configureEntityFile(Object target, EntityFile entityFile);
 
+	public abstract void syncEntityFileAware(Object target);
+
 }

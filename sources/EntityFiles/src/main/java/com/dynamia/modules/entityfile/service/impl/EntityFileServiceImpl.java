@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -105,7 +106,7 @@ public class EntityFileServiceImpl implements EntityFileService {
 		entityFile.setParent(fileInfo.getParent());
 		entityFile.setState(EntityFileState.VALID);
 		crudService.create(entityFile);
-		processEntityFileAware(target);
+		syncEntityFileAware(target);
 
 		File realFile = getRealFile(entityFile);
 		try {
@@ -213,7 +214,7 @@ public class EntityFileServiceImpl implements EntityFileService {
 			params.add("targetEntitySId", QueryConditions.eq(id.toString()));
 		}
 		params.add("state", EntityFileState.VALID);
-		params.add("type", EntityFileType.FILE);
+		params.add("type", QueryConditions.in(EntityFileType.FILE, EntityFileType.IMAGE));
 
 		return crudService.count(EntityFile.class, params);
 	}
@@ -261,10 +262,10 @@ public class EntityFileServiceImpl implements EntityFileService {
 								logger.info("Processing batch EntityFileAware for " + entityClassName);
 								String updateQuery = "update "
 										+ entityClassName
-										+ " e set e.filesCount = (select count(ef.id) from EntityFile ef where ef.targetEntityId = e.id and ef.state = :state and ef.type = :type and ef.targetEntity='"
+										+ " e set e.filesCount = (select count(ef.id) from EntityFile ef where ef.targetEntityId = e.id and ef.state = :state and ef.type in (:types) and ef.targetEntity='"
 										+ entityClassName + "')";
 								QueryParameters parameters = QueryParameters.with("state", EntityFileState.VALID)
-										.add("type", EntityFileType.FILE);
+										.add("type", Arrays.asList(EntityFileType.FILE, EntityFileType.IMAGE));
 								crudService.execute(updateQuery, parameters);
 							}
 						});
@@ -280,7 +281,9 @@ public class EntityFileServiceImpl implements EntityFileService {
 		return new File(filePath);
 	}
 
-	private void processEntityFileAware(Object target) {
+	@Override
+	@Transactional
+	public void syncEntityFileAware(Object target) {
 		if (target != null && target instanceof EntityFileAware) {
 			logger.info("Processing EntityFileAware for " + target.getClass() + " - " + target);
 			EntityFileAware efa = (EntityFileAware) target;
