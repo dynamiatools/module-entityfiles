@@ -22,7 +22,7 @@ import org.zkoss.zul.Bandpopup;
 public class DirectoryBox extends Bandbox {
 
     static {
-        BindingComponentIndex.getInstance().put("value", EntityPickerBox.class);
+        BindingComponentIndex.getInstance().put("value", DirectoryBox.class);
         ComponentAliasIndex.getInstance().add(DirectoryBox.class);
     }
 

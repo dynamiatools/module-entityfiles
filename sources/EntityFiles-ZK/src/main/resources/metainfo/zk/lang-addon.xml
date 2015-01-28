@@ -8,8 +8,7 @@
 
 	<component>
 		<component-name>directorybox</component-name>
-		<component-class>com.dynamia.modules.entityfile.ui.DirectoryBox
-		</component-class>
+		<component-class>com.dynamia.modules.entityfile.ui.DirectoryBox</component-class>
 		<widget-class>zul.inp.Bandbox</widget-class>
 		<annotation>
 			<annotation-name>default-bind</annotation-name>
