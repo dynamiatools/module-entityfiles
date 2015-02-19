@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
+		<groupId>tools.dynamia.modules</groupId>
+		<version>5.0.0.Beta</version>
+	</parent>
+	<name>Dynamia Modules - EntityFiles - UI (${project.version})</name>
+	<artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
+	<groupId>tools.dynamia.modules</groupId>
+	<version>5.0.0.Beta</version>
+	<url>http://www.dynamia.tools/modules/entityfiles</url>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<encoding>${source.encoding}</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>1.8.0.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>tools.dynamia.modules.entityfiles</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>tools.dynamia</groupId>
+			<artifactId>tools.dynamia.zk.crud</artifactId>
+			<version>${dynatools.version}</version>
+			<type>jar</type>
+		</dependency>
+	</dependencies>
+
+</project>

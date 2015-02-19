@@ -1,0 +1,31 @@
+view: crud
+beanClass: tools.dynamia.modules.entityfile.domain.EntityFile
+dataSetView: tree
+parentName: parent
+controller: tools.dynamia.modules.entityfile.EntityFileController
+
+actions:
+    NewAction:        
+        enabled: false
+        
+    DeleteAction:
+        enabled: false
+        
+    FileAction:
+        enabled: false
+        
+    SaveAndEditAction:
+        enabled: false
+        
+    SaveAndNewAction:
+        enabled: false
+    
+    FindAction:
+        attributes:
+            searchFields: [name,extension,description,creator]
+        
+        
+    
+        
+
+    
