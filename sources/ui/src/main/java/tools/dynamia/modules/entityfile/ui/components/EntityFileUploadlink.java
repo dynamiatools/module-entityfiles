@@ -1,8 +1,5 @@
 package tools.dynamia.modules.entityfile.ui.components;
 
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
-
 import tools.dynamia.integration.Containers;
 import tools.dynamia.io.FileInfo;
 import tools.dynamia.modules.entityfile.EntityFileException;
@@ -28,19 +25,9 @@ public class EntityFileUploadlink extends Uploadlink {
 	private EntityFile entityFile;
 	private EntityFileService service = Containers.get().findObject(EntityFileService.class);
 
-	public EntityFileUploadlink() {
-		addEventListener(ON_FILE_UPLOADED, new EventListener<Event>() {
-
-			@Override
-			public void onEvent(Event event) throws Exception {
-				createEntityFile();
-			}
-		});
-	}
-
 	public EntityFile getValue() {
 		if (entityFile == null && getUploadedFile() != null) {
-			createEntityFile();
+			onFileUpload();
 		}
 
 		return entityFile;
@@ -58,7 +45,9 @@ public class EntityFileUploadlink extends Uploadlink {
 		setLabel(entityFile.getName());
 	}
 
-	private void createEntityFile() {
+	@Override
+	protected void onFileUpload() {
+
 		try {
 			entityFile = service.createTemporalEntityFile(new UploadedFileInfo(getUploadedFile()));
 			setLabel(entityFile.getName());

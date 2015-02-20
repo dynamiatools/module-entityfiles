@@ -27,9 +27,13 @@ public class TemporalEntityFileCrudListener extends CrudServiceListenerAdapter<O
 
 	private LoggingService logger = new SLF4JLoggingService(TemporalEntityFileCrudListener.class);
 
+	public TemporalEntityFileCrudListener() {
+		System.out.println("Init " + getClass());
+	}
+
 	@Override
 	public void afterCreate(Object entity) {
-		
+
 		checkEntityFiles(entity);
 	}
 

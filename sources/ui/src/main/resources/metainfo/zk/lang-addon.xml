@@ -22,6 +22,19 @@
 				<attribute-value>self.onChange</attribute-value>
 			</attribute>
 		</annotation>
+		
+		<annotation>
+			<annotation-name>ZKBIND</annotation-name>
+			<property-name>value</property-name>
+			<attribute>
+				<attribute-name>ACCESS</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>SAVE_EVENT</attribute-name>
+				<attribute-value>onChange</attribute-value>
+			</attribute>
+		</annotation>
 		<mold>
 			<mold-name>default</mold-name>
 			<mold-uri>mold/bandbox.js</mold-uri>
@@ -78,6 +91,19 @@
 			<attribute>
 				<attribute-name>save-when</attribute-name>
 				<attribute-value>self.onFileUploaded</attribute-value>
+			</attribute>
+		</annotation>
+
+		<annotation>
+			<annotation-name>ZKBIND</annotation-name>
+			<property-name>value</property-name>
+			<attribute>
+				<attribute-name>ACCESS</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>SAVE_EVENT</attribute-name>
+				<attribute-value>onFileUploaded</attribute-value>
 			</attribute>
 		</annotation>
 		<mold>

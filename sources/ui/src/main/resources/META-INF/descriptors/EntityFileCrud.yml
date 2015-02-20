@@ -2,7 +2,7 @@ view: crud
 beanClass: tools.dynamia.modules.entityfile.domain.EntityFile
 dataSetView: tree
 parentName: parent
-controller: tools.dynamia.modules.entityfile.EntityFileController
+controller: tools.dynamia.modules.entityfile.ui.EntityFileController
 
 actions:
     NewAction:        

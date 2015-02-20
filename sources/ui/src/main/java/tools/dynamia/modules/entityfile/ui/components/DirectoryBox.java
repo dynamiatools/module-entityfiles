@@ -7,7 +7,6 @@ package tools.dynamia.modules.entityfile.ui.components;
 
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Bandbox;
 import org.zkoss.zul.Bandpopup;
@@ -21,7 +20,12 @@ import tools.dynamia.zk.ComponentAliasIndex;
  */
 public class DirectoryBox extends Bandbox {
 
-    static {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7769832324226733919L;
+
+	static {
         BindingComponentIndex.getInstance().put("value", DirectoryBox.class);
         ComponentAliasIndex.getInstance().add(DirectoryBox.class);
     }
@@ -44,14 +48,10 @@ public class DirectoryBox extends Bandbox {
         
         appendChild(popup);
 
-        explorer.addEventListener(Events.ON_CHANGE, new EventListener<Event>() {
-
-            @Override
-            public void onEvent(Event event) throws Exception {
-                setValue(event.getData().toString());
-                Events.postEvent(new Event(Events.ON_CHANGE, DirectoryBox.this, getValue()));
-            }
-        });
+        explorer.addEventListener(Events.ON_CHANGE, event -> {
+		    setValue(event.getData().toString());
+		    Events.postEvent(new Event(Events.ON_CHANGE, DirectoryBox.this, getValue()));
+		});
 
     }
 
