@@ -252,21 +252,25 @@ public class EntityFileServiceImpl implements EntityFileService {
 			logger.info("Syncing EntityFileAware entities");
 			for (final String entityClassName : targetEntities) {
 				if (!entityClassName.equals("temporal")) {
-					Object object = BeanUtils.newInstance(entityClassName);
-					if (object instanceof EntityFileAware) {
-						crudService.executeWithinTransaction(new Task() {
-							@Override
-							public void doWork() {
-								logger.info("Processing batch EntityFileAware for " + entityClassName);
-								String updateQuery = "update "
-										+ entityClassName
-										+ " e set e.filesCount = (select count(ef.id) from EntityFile ef where ef.targetEntityId = e.id and ef.state = :state and ef.type in (:types) and ef.targetEntity='"
-										+ entityClassName + "')";
-								QueryParameters parameters = QueryParameters.with("state", EntityFileState.VALID)
-										.add("types", Arrays.asList(EntityFileType.FILE, EntityFileType.IMAGE));
-								crudService.execute(updateQuery, parameters);
-							}
-						});
+					try {
+						Object object = BeanUtils.newInstance(entityClassName);
+						if (object instanceof EntityFileAware) {
+							crudService.executeWithinTransaction(new Task() {
+								@Override
+								public void doWork() {
+									logger.info("Processing batch EntityFileAware for " + entityClassName);
+									String updateQuery = "update "
+											+ entityClassName
+											+ " e set e.filesCount = (select count(ef.id) from EntityFile ef where ef.targetEntityId = e.id and ef.state = :state and ef.type in (:types) and ef.targetEntity='"
+											+ entityClassName + "')";
+									QueryParameters parameters = QueryParameters.with("state", EntityFileState.VALID)
+											.add("types", Arrays.asList(EntityFileType.FILE, EntityFileType.IMAGE));
+									crudService.execute(updateQuery, parameters);
+								}
+							});
+						}
+					} catch (Exception e) {
+						logger.warn("Cannot sync EntityFile " + entityClassName + ". Error: " + e.getMessage());
 					}
 				}
 			}
