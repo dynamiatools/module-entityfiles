@@ -11,6 +11,7 @@ import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.ui.EntityFileController;
 import tools.dynamia.ui.MessageType;
 import tools.dynamia.ui.UIMessages;
+import tools.dynamia.viewers.util.Viewers;
 import tools.dynamia.zk.crud.CrudView;
 import tools.dynamia.zk.util.ZKUtil;
 import tools.dynamia.zk.viewers.ui.Viewer;
@@ -33,12 +34,11 @@ public class EntityFileUtils {
 	public static void showFileExplorer(Object obj) {
 		if (obj != null) {
 
-			Viewer viewer = new Viewer("crud", EntityFile.class);
-			CrudView view = (CrudView) viewer.getView();
+			CrudView view = (CrudView) Viewers.getView(EntityFile.class, "crud", null);
 			EntityFileController controller = (EntityFileController) view.getController();
 			controller.setTargetEntity((AbstractEntity) obj);
 			controller.doQuery();
-			ZKUtil.showDialog("Archivos Asociados", viewer, "80%", "80%");
+			ZKUtil.showDialog("Archivos Asociados", view, "80%", "80%");
 
 		} else {
 			UIMessages.showMessage("Debe seleccionar un elemento para ver los archivos asociados", MessageType.INFO);
