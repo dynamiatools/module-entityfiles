@@ -1,6 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Dynamia Soluciones IT S.A.S Todos los Derechos Reservados (c) - 2015
+ *
+ * Prohibida la reproduccion parcial o total de este archivo de código fuente en proyectos de software NO realizados por Dynamia Soluciones IT S.A.S. Cualquier
+ * otro archivo de código fuente o librería que haga referencia a este tendrá la misma licencia.
+ *
+ * mas info: http://www.dynamiasoluciones.com/licencia.html
+ *
+ * Desarrollado por: Ing. Mario A. Serrano Leones 
+ * Email: mario@dynamiasoluciones.com
  */
 package tools.dynamia.modules.entityfile.domain;
 
@@ -189,7 +196,7 @@ public class EntityFile extends BaseEntity implements AccountAware {
 	public File getRealFile() {
 		EntityFileService service = Containers.get().findObject(EntityFileService.class);
 		if (service == null) {
-			throw new NullPointerException("No EntityService war found to create Real File");
+			throw new NullPointerException("No EntityService was found to create Real File");
 		}
 		return service.getRealFile(this);
 	}
@@ -214,6 +221,16 @@ public class EntityFile extends BaseEntity implements AccountAware {
 		} catch (IOException e) {
 			throw new EntityFileException("Error creating EntityFile thumbnails " + getName() + ". ID: " + getId(), e);
 		}
+	}
+
+	
+	/**
+	 * Gets the thumbnail. 50x50
+	 *
+	 * @return the thumbnail
+	 */
+	public File getThumbnail() {
+		return getThumbnail(50, 50);
 	}
 
 }

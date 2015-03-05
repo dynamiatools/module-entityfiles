@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.zkoss.image.AImage;
 import org.zkoss.zul.Image;
 
+import tools.dynamia.io.IOUtils;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
@@ -25,6 +26,7 @@ public class EntityFileImage extends Image {
 	private boolean thumbnail = false;
 	private int thumbnailHeight = 64;
 	private int thumbnailWidth = 64;
+	private String noPhotoPath = "classpath:/web/tools/images/no-photo.jpg";
 
 	public EntityFile getValue() {
 		return entityFile;
@@ -47,7 +49,15 @@ public class EntityFileImage extends Image {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
+		} else {
+			try {
+				if (noPhotoPath != null) {
+					setContent(new AImage(IOUtils.getResource(noPhotoPath).getFile()));
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -76,6 +86,15 @@ public class EntityFileImage extends Image {
 	public void setThumbnailWidth(int thumbnailWidth) {
 		this.thumbnailWidth = thumbnailWidth;
 		loadImage();
+	}
+
+	public String getNoPhotoPath() {
+		return noPhotoPath;
+	}
+
+	public void setNoPhotoPath(String noPhotoPath) {
+		this.noPhotoPath = noPhotoPath;
+		setValue(getValue());
 	}
 
 }
