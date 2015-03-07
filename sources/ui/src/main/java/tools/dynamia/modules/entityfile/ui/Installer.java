@@ -21,17 +21,15 @@ public class Installer implements ModuleProvider {
 
 	@Override
 	public Module getModule() {
-		Module module = new Module("system", "Sistema");
-		module.setPosition(Integer.MAX_VALUE);
-		module.setIcon("icons:tool");
-		{
-			PageGroup pg = new PageGroup("config", "Configuracion");
-			module.addPageGroup(pg);
-			{
-				pg.addPage(new ConfigPage("entityFile", "Archivos", "EntityFileCFG"));
+		Module module = Module.getRef("system");
 
-			}
+		PageGroup pg = new PageGroup("config", "Configuracion");
+		module.addPageGroup(pg);
+		{
+			pg.addPage(new ConfigPage("entityFile", "Archivos", "EntityFileCFG"));
+
 		}
+
 		return module;
 	}
 

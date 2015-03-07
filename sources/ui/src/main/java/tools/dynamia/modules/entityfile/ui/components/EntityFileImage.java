@@ -6,6 +6,7 @@ import org.zkoss.image.AImage;
 import org.zkoss.zul.Image;
 
 import tools.dynamia.io.IOUtils;
+import tools.dynamia.io.Resource;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
@@ -52,7 +53,8 @@ public class EntityFileImage extends Image {
 		} else {
 			try {
 				if (noPhotoPath != null) {
-					setContent(new AImage(IOUtils.getResource(noPhotoPath).getFile()));
+					Resource photoResource = IOUtils.getResource(noPhotoPath);
+					setContent(new AImage(photoResource.getFilename(), photoResource.getInputStream()));
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
