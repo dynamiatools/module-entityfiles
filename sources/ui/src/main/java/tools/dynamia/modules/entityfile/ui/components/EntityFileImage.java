@@ -61,6 +61,12 @@ public class EntityFileImage extends Image {
 				e.printStackTrace();
 			}
 		}
+
+		if (isThumbnail()) {
+			setStyle("max-height: " + thumbnailHeight + "px; max-width: " + thumbnailWidth + "px");
+		} else {
+			setStyle(null);
+		}
 	}
 
 	public boolean isThumbnail() {
