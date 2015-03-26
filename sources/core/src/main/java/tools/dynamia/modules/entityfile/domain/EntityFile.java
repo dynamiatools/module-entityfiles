@@ -25,11 +25,14 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import tools.dynamia.commons.StringUtils;
 import tools.dynamia.domain.BaseEntity;
+import tools.dynamia.domain.contraints.NotEmpty;
 import tools.dynamia.integration.Containers;
 import tools.dynamia.io.IOUtils;
 import tools.dynamia.io.ImageUtil;
 import tools.dynamia.modules.entityfile.EntityFileException;
+import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
@@ -42,13 +45,13 @@ public class EntityFile extends BaseEntity implements AccountAware {
 
 	@OneToMany(mappedBy = "parent")
 	private List<EntityFile> children;
-	@NotNull(message = "Ingrese clase dependencia valida")
+	@NotNull(message = "Enter EntityFile targetEntity name")
 	private String targetEntity;
 	private Long targetEntityId;
 	private String targetEntitySId;
-	@NotNull(message = "Ingrese un nombre valido")
+	@NotNull(message = "Enter EntityFile name")
 	private String name;
-	@NotNull(message = "Ingrese tipo de archivo")
+	@NotNull(message = "Enter EntityFile tyoe")
 	private EntityFileType type;
 	private String extension = "dir";
 	private String contentType;
@@ -62,12 +65,32 @@ public class EntityFile extends BaseEntity implements AccountAware {
 	@Column(name = "fileState")
 	@Enumerated(EnumType.ORDINAL)
 	private EntityFileState state;
+	@NotEmpty
+	private String uuid = StringUtils.randomString();
+	@Column(length = 1000)
+	private String storageInfo;
 
 	@OneToOne
 	private Account account;
 
 	public String getTargetEntitySId() {
 		return targetEntitySId;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public String getStorageInfo() {
+		return storageInfo;
+	}
+
+	public void setStorageInfo(String storageInfo) {
+		this.storageInfo = storageInfo;
 	}
 
 	public void setTargetEntitySId(String targetEntitySId) {
@@ -193,44 +216,18 @@ public class EntityFile extends BaseEntity implements AccountAware {
 		this.account = account;
 	}
 
-	public File getRealFile() {
+	/**
+	 * Download this EntityFile. Internally its use
+	 * EntityFileService.download(this);
+	 * 
+	 * @return StoredEntityFile
+	 */
+	public StoredEntityFile getStoredEntityFile() {
 		EntityFileService service = Containers.get().findObject(EntityFileService.class);
 		if (service == null) {
-			throw new NullPointerException("No EntityService was found to create Real File");
+			throw new NullPointerException("No EntityService was found to download Entity File");
 		}
-		return service.getRealFile(this);
-	}
-
-	public File getThumbnail(int height, int width) {
-		try {
-			File realFile = getRealFile();
-			File thumbFile = new File(realFile.getParentFile().getAbsolutePath() + "/thumbnails/" + height + "x" + width + "/", getId()
-					.toString());
-			if (!thumbFile.exists()) {
-				thumbFile.getParentFile().mkdirs();
-				thumbFile.createNewFile();
-				if (extension.equals("png")) {
-					ImageUtil.resizeImage(realFile, thumbFile, "png", width, height);
-				} else {
-					ImageUtil.resizeJPEGImage(realFile, thumbFile, width, height);
-				}
-			}
-
-			return thumbFile;
-
-		} catch (IOException e) {
-			throw new EntityFileException("Error creating EntityFile thumbnails " + getName() + ". ID: " + getId(), e);
-		}
-	}
-
-	
-	/**
-	 * Gets the thumbnail. 50x50
-	 *
-	 * @return the thumbnail
-	 */
-	public File getThumbnail() {
-		return getThumbnail(50, 50);
+		return service.download(this);
 	}
 
 }

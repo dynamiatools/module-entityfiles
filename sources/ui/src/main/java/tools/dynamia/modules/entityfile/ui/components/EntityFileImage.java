@@ -1,12 +1,11 @@
 package tools.dynamia.modules.entityfile.ui.components;
 
-import java.io.IOException;
-
 import org.zkoss.image.AImage;
 import org.zkoss.zul.Image;
 
 import tools.dynamia.io.IOUtils;
 import tools.dynamia.io.Resource;
+import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
@@ -40,21 +39,23 @@ public class EntityFileImage extends Image {
 
 	private void loadImage() {
 		if (entityFile != null) {
-			try {
-				setTooltiptext(entityFile.getDescription());
-				if (isThumbnail()) {
-					setContent(new AImage(entityFile.getThumbnail(thumbnailHeight, thumbnailWidth)));
-				} else {
-					setContent(new AImage(entityFile.getRealFile()));
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+
+			StoredEntityFile sef = entityFile.getStoredEntityFile();
+			setTooltiptext(entityFile.getDescription());
+			if (isThumbnail()) {
+				setSrc(sef.getThumbnailUrl(thumbnailWidth, thumbnailHeight));
+			} else {
+				setSrc(sef.getUrl());
 			}
 		} else {
 			try {
 				if (noPhotoPath != null) {
-					Resource photoResource = IOUtils.getResource(noPhotoPath);
-					setContent(new AImage(photoResource.getFilename(), photoResource.getInputStream()));
+					if (noPhotoPath.startsWith("classpath")) {
+						Resource photoResource = IOUtils.getResource(noPhotoPath);
+						setContent(new AImage(photoResource.getFilename(), photoResource.getInputStream()));
+					} else {
+						setSrc(noPhotoPath);
+					}
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

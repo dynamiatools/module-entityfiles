@@ -4,14 +4,10 @@
  */
 package tools.dynamia.modules.entityfile.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -30,14 +26,15 @@ import tools.dynamia.domain.services.CrudService;
 import tools.dynamia.domain.util.DomainUtils;
 import tools.dynamia.integration.Containers;
 import tools.dynamia.integration.scheduling.Task;
-import tools.dynamia.io.IOUtils;
 import tools.dynamia.modules.entityfile.EntityFileAware;
 import tools.dynamia.modules.entityfile.EntityFileException;
-import tools.dynamia.modules.entityfile.FilesConfig;
+import tools.dynamia.modules.entityfile.EntityFileStorage;
+import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.UploadedFileInfo;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
+import tools.dynamia.modules.entityfile.local.LocalEntityFileStorage;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
 import tools.dynamia.modules.saas.AccountContext;
 
@@ -46,15 +43,17 @@ import tools.dynamia.modules.saas.AccountContext;
  * @author djinn
  */
 @Service
-public class EntityFileServiceImpl implements EntityFileService {
+class EntityFileServiceImpl implements EntityFileService {
+
+	@Autowired
+	private Parameters appParams;
+
+	private static final String DEFAULT_STORAGE = "DEFAULT_STORAGE_ID";
 
 	private LoggingService logger = new SLF4JLoggingService(EntityFileService.class);
 
 	@Autowired
 	private CrudService crudService;
-
-	@Autowired
-	private Parameters appParams;
 
 	@Override
 	public EntityFile createDirectory(EntityFile parent, String name, String description) {
@@ -103,23 +102,11 @@ public class EntityFileServiceImpl implements EntityFileService {
 		entityFile.setType(EntityFileType.getFileType(entityFile.getExtension()));
 		entityFile.setParent(fileInfo.getParent());
 		entityFile.setState(EntityFileState.VALID);
+
+		getCurrentStorage().upload(entityFile, fileInfo);
+
 		crudService.create(entityFile);
 		syncEntityFileAware(target);
-
-		File realFile = getRealFile(entityFile);
-		try {
-			realFile.getParentFile().mkdirs();
-			realFile.createNewFile();
-			realFile.setExecutable(false);
-
-			IOUtils.copy(fileInfo.getInputStream(), realFile);
-			System.out.println("File Saved: " + realFile.getName() + "  length: " + realFile.length());
-			crudService.updateField(entityFile, "size", realFile.length());
-
-		} catch (IOException e) {
-			throw new EntityFileException(
-					"Error writing file " + fileInfo.getFullName() + " on new location " + realFile.getAbsolutePath(), e);
-		}
 
 		return entityFile;
 	}
@@ -218,34 +205,6 @@ public class EntityFileServiceImpl implements EntityFileService {
 	}
 
 	@Override
-	public FilesConfig getConfiguration() {
-		FilesConfig fileConfig = Containers.get().findObject(FilesConfig.class);
-		if (fileConfig == null) {
-			String loc = appParams.getValue(FilesConfig.FILES_LOCATION);
-			if (loc != null && !loc.isEmpty()) {
-				fileConfig = new FilesConfig(loc);
-			}
-		}
-
-		if (fileConfig == null) {
-			fileConfig = new FilesConfig();
-		}
-		return fileConfig;
-
-	}
-
-	@Override
-	public InputStream download(EntityFile file) throws FileNotFoundException {
-		if (file == null || file.getId() == null) {
-			throw new FileNotFoundException("EntityFile is null");
-		}
-
-		File realFile = getRealFile(file);
-		return new FileInputStream(realFile);
-	}
-
-	@Override
-	@PostConstruct
 	public void syncEntityFileAware() {
 		List<String> targetEntities = crudService.getPropertyValues(EntityFile.class, "targetEntity");
 		if (targetEntities != null) {
@@ -278,9 +237,13 @@ public class EntityFileServiceImpl implements EntityFileService {
 	}
 
 	@Override
-	public File getRealFile(EntityFile file) {
-		String filePath = getConfiguration().getRepository() + "/Account" + file.getAccount().getId() + "/" + file.getId();
-		return new File(filePath);
+	public StoredEntityFile download(EntityFile file) {
+		return getCurrentStorage().download(file);
+	}
+
+	@Override
+	public EntityFile getEntityFile(String uuid) {
+		return crudService.findSingle(EntityFile.class, "uuid", uuid);
 	}
 
 	@Override
@@ -292,6 +255,41 @@ public class EntityFileServiceImpl implements EntityFileService {
 			efa.setFilesCount(counttEntityFiles(target.getClass(), DomainUtils.getJPAIdValue(target)));
 			crudService.update(target);
 		}
+	}
+
+	private EntityFileStorage getCurrentStorage() {
+		String storageId = appParams.getValue(DEFAULT_STORAGE, LocalEntityFileStorage.ID);
+
+		Optional<EntityFileStorage> storage = Containers.get().findObjects(EntityFileStorage.class)
+				.stream()
+				.filter(s -> s.getId().equals(storageId))
+				.findFirst();
+
+		if (storage.isPresent()) {
+			return storage.get();
+		} else {
+			throw new EntityFileException("No default " + EntityFileStorage.class.getSimpleName() + " configured");
+		}
+
+	}
+
+	@PostConstruct
+	private void init() {
+		fixuuid();
+		syncEntityFileAware();
+
+	}
+
+	private void fixuuid() {
+		crudService.executeWithinTransaction(new Task() {
+			@Override
+			public void doWork() {
+				logger.info("Fixing null UUIDs");
+				String updateQuery = "update " + EntityFile.class.getSimpleName() + " e set e.uuid = e.id where e.uuid is null";
+				crudService.execute(updateQuery, new QueryParameters());
+			}
+		});
+
 	}
 
 }

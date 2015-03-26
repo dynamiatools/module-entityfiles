@@ -1,21 +1,11 @@
 package tools.dynamia.modules.entityfile.service;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.List;
 import java.io.Serializable;
+import java.util.List;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.transaction.annotation.Transactional;
-
-import tools.dynamia.commons.BeanUtils;
-import tools.dynamia.domain.AbstractEntity;
-import tools.dynamia.domain.util.DomainUtils;
-import tools.dynamia.modules.entityfile.EntityFileAware;
-import tools.dynamia.modules.entityfile.EntityFileException;
-import tools.dynamia.modules.entityfile.FilesConfig;
+import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.UploadedFileInfo;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 
@@ -78,13 +68,6 @@ public interface EntityFileService {
 	public EntityFile createEntityFile(UploadedFileInfo fileInfo, Object targetEntity);
 
 	/**
-	 * Gets the configuration.
-	 *
-	 * @return the configuration
-	 */
-	public abstract FilesConfig getConfiguration();
-
-	/**
 	 * Gets the entity files.
 	 *
 	 * @param clazz
@@ -118,17 +101,6 @@ public interface EntityFileService {
 	public abstract List<EntityFile> getEntityFiles(Object entity);
 
 	/**
-	 * Download.
-	 *
-	 * @param file
-	 *            the file
-	 * @return the input stream
-	 * @throws FileNotFoundException
-	 *             the file not found exception
-	 */
-	public InputStream download(EntityFile file) throws FileNotFoundException;
-
-	/**
 	 * Delete.
 	 *
 	 * @param entityFile
@@ -142,13 +114,13 @@ public interface EntityFileService {
 	public abstract void syncEntityFileAware();
 
 	/**
-	 * Gets the real file.
+	 * Gets the StoreEntityFile from current EntityFileStorage file.
 	 *
 	 * @param file
 	 *            the file
 	 * @return the real file
 	 */
-	public abstract File getRealFile(EntityFile file);
+	public abstract StoredEntityFile download(EntityFile file);
 
 	/**
 	 * Creates the temporal entity file.
@@ -171,5 +143,7 @@ public interface EntityFileService {
 	public abstract void configureEntityFile(Object target, EntityFile entityFile);
 
 	public abstract void syncEntityFileAware(Object target);
+
+	public EntityFile getEntityFile(String uuid);
 
 }

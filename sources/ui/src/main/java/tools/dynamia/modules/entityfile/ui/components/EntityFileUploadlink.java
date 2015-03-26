@@ -1,5 +1,7 @@
 package tools.dynamia.modules.entityfile.ui.components;
 
+import java.io.File;
+
 import tools.dynamia.integration.Containers;
 import tools.dynamia.io.FileInfo;
 import tools.dynamia.modules.entityfile.EntityFileException;
@@ -41,7 +43,7 @@ public class EntityFileUploadlink extends Uploadlink {
 	}
 
 	private void configureFileInfo() {
-		setUploadedFile(new FileInfo(entityFile.getRealFile()));
+		setUploadedFile(new FileInfo(new File("")));
 		setLabel(entityFile.getName());
 	}
 
