@@ -68,7 +68,7 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 	}
 
 	private File getRealFile(EntityFile entityFile) {
-		String filePath = "Account" + entityFile.getAccount().getId() + "/" + entityFile.getUuid();
+		String filePath = "Account" + entityFile.getAccountId() + "/" + entityFile.getUuid();
 		File parentDir = getParentDir();
 		File realFile = new File(parentDir, filePath);
 		return realFile;

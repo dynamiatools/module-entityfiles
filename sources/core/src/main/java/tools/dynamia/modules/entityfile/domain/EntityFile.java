@@ -11,8 +11,6 @@
  */
 package tools.dynamia.modules.entityfile.domain;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -21,7 +19,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -30,14 +27,11 @@ import tools.dynamia.domain.BaseEntity;
 import tools.dynamia.domain.contraints.NotEmpty;
 import tools.dynamia.integration.Containers;
 import tools.dynamia.io.IOUtils;
-import tools.dynamia.io.ImageUtil;
-import tools.dynamia.modules.entityfile.EntityFileException;
 import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
-import tools.dynamia.modules.saas.AccountAware;
-import tools.dynamia.modules.saas.domain.Account;
+import tools.dynamia.modules.saas.api.AccountAware;
 
 @Entity
 @Table(name = "mod_entity_files")
@@ -70,8 +64,7 @@ public class EntityFile extends BaseEntity implements AccountAware {
 	@Column(length = 1000)
 	private String storageInfo;
 
-	@OneToOne
-	private Account account;
+	private Long accountId;
 
 	public String getTargetEntitySId() {
 		return targetEntitySId;
@@ -208,12 +201,12 @@ public class EntityFile extends BaseEntity implements AccountAware {
 		return state;
 	}
 
-	public Account getAccount() {
-		return account;
+	public Long getAccountId() {
+		return accountId;
 	}
 
-	public void setAccount(Account account) {
-		this.account = account;
+	public void setAccountId(Long accountId) {
+		this.accountId = accountId;
 	}
 
 	/**

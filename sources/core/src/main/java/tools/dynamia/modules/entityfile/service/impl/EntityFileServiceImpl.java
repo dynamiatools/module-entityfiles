@@ -36,7 +36,6 @@ import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.local.LocalEntityFileStorage;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
-import tools.dynamia.modules.saas.AccountContext;
 
 /**
  *
@@ -67,7 +66,6 @@ class EntityFileServiceImpl implements EntityFileService {
 
 	private EntityFile createDir(EntityFile parent, Object targetEntity, String name, String descripcion) {
 		EntityFile entityFile = new EntityFile();
-		entityFile.setAccount(AccountContext.getCurrent().getAccount());
 		entityFile.setParent(parent);
 		entityFile.setName(name);
 		entityFile.setState(EntityFileState.VALID);
@@ -91,7 +89,6 @@ class EntityFileServiceImpl implements EntityFileService {
 		target = crudService.reload(target);
 		logger.info("Creating new entity file for " + target + ", file: " + fileInfo.getFullName());
 		EntityFile entityFile = new EntityFile();
-		entityFile.setAccount(AccountContext.getCurrent().getAccount());
 		entityFile.setDescription(description);
 		entityFile.setContentType(fileInfo.getContentType());
 		entityFile.setName(fileInfo.getFullName());
