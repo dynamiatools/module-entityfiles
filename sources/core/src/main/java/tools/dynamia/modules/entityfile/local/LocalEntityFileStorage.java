@@ -13,10 +13,14 @@ import tools.dynamia.modules.entityfile.EntityFileStorage;
 import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.UploadedFileInfo;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
+import tools.dynamia.modules.saas.api.AccountServiceAPI;
 import tools.dynamia.web.util.HttpUtils;
 
 @Service
 public class LocalEntityFileStorage implements EntityFileStorage {
+
+	@Autowired
+	private AccountServiceAPI accountServiceAPI;
 
 	public static final String ID = "LocalStorage";
 	private static final String LOCAL_FILES_LOCATION = "LOCAL_FILES_LOCATION";
@@ -68,9 +72,17 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 	}
 
 	private File getRealFile(EntityFile entityFile) {
-		String filePath = "Account" + entityFile.getAccountId() + "/" + entityFile.getUuid();
+		String filePath = "Account" + accountServiceAPI.getCurrentAccountId() + "/" + entityFile.getUuid();
 		File parentDir = getParentDir();
 		File realFile = new File(parentDir, filePath);
+		try {
+
+			if (!realFile.getParentFile().exists()) {
+				realFile.getParentFile().mkdirs();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		return realFile;
 	}
 
