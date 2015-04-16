@@ -19,6 +19,9 @@ actions:
         
     SaveAndNewAction:
         enabled: false
+        
+    ViewDateAction:
+        enabled: false
     
     FindAction:
         attributes:

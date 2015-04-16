@@ -62,7 +62,7 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 
 	private String generateURL(EntityFile entityFile) {
 		String serverPath = HttpUtils.getServerPath();
-		String url = serverPath + LOCAL_FILE_HANDLER + entityFile.getUuid();
+		String url = serverPath + LOCAL_FILE_HANDLER + entityFile.getName() + "?uuid=" + entityFile.getUuid();
 		return url;
 	}
 
@@ -100,7 +100,7 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 
 		@Override
 		public String getThumbnailUrl(int width, int height) {
-			return getUrl() + "?w=" + width + "&h=" + height;
+			return getUrl() + "&w=" + width + "&h=" + height;
 		}
 
 	}

@@ -16,7 +16,6 @@ import tools.dynamia.ui.UIMessages;
 import tools.dynamia.viewers.util.Viewers;
 import tools.dynamia.zk.crud.CrudView;
 import tools.dynamia.zk.util.ZKUtil;
-import tools.dynamia.zk.viewers.ui.Viewer;
 
 public class EntityFileUtils {
 
@@ -50,6 +49,7 @@ public class EntityFileUtils {
 	public static void showDownloadDialog(StoredEntityFile sef) {
 		A downloadLink = new A("Descargar " + sef.getEntityFile().getName());
 		downloadLink.setHref(sef.getUrl());
+		downloadLink.setTarget("_blank");
 
 		ZKUtil.showDialog("Descarga de Archivo", downloadLink, "300px", "200px");
 

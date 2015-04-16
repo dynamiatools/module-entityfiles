@@ -5,7 +5,6 @@ import java.io.File;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
@@ -33,8 +32,11 @@ public class LocalEntityFileStorageHandler extends ResourceHttpRequestHandler {
 		}
 
 		File file = null;
-		String uuid = request.getRequestURI();
-		uuid = uuid.substring(uuid.lastIndexOf("/")+1);
+		String uuid = getParam(request, "uuid", null);
+		if (uuid == null) {
+			return null;
+		}
+
 		EntityFile entityFile = service.getEntityFile(uuid);
 
 		if (entityFile != null) {
