@@ -6,6 +6,7 @@ import tools.dynamia.ui.icons.IconSize;
 import tools.dynamia.ui.icons.IconsTheme;
 import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
+import tools.dynamia.zk.util.ZKUtil;
 
 public class FilesCountImage extends A {
 
@@ -34,10 +35,11 @@ public class FilesCountImage extends A {
 		try {
 			int count = value;
 			if (count > 0) {
-				setImage(IconsTheme.get().getIcon(icon).getRealPath(iconSize));
+				ZKUtil.configureComponentIcon(icon, this, iconSize);
 				setTooltiptext(count + " archivos adjuntos");
 			} else {
 				setImage(null);
+				getChildren().clear();
 				setTooltiptext(null);
 			}
 			setLabel("");
