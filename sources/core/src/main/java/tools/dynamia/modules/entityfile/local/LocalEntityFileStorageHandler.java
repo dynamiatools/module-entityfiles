@@ -16,11 +16,13 @@ import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
+import tools.dynamia.modules.saas.api.AccountServiceAPI;
 
 public class LocalEntityFileStorageHandler extends ResourceHttpRequestHandler {
 
 	private LocalEntityFileStorage storage;
 	private EntityFileService service;
+	private AccountServiceAPI accountServiceAPI;
 
 	@Override
 	protected Resource getResource(HttpServletRequest request) {
@@ -31,15 +33,20 @@ public class LocalEntityFileStorageHandler extends ResourceHttpRequestHandler {
 			storage = Containers.get().findObject(LocalEntityFileStorage.class);
 		}
 
+		if (accountServiceAPI == null) {
+			accountServiceAPI = Containers.get().findObject(AccountServiceAPI.class);
+		}
+
 		File file = null;
 		String uuid = getParam(request, "uuid", null);
 		if (uuid == null) {
 			return null;
 		}
 
+		Long currentAccountId = accountServiceAPI.getCurrentAccountId();
 		EntityFile entityFile = service.getEntityFile(uuid);
 
-		if (entityFile != null) {
+		if (entityFile != null && (entityFile.isShared() || entityFile.getAccountId().equals(currentAccountId))) {
 
 			StoredEntityFile storedEntityFile = entityFile.getStoredEntityFile();
 

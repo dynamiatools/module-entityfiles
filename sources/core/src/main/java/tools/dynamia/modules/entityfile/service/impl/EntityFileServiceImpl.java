@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +55,9 @@ class EntityFileServiceImpl implements EntityFileService {
 
 	@Autowired
 	private CrudService crudService;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Override
 	public EntityFile createDirectory(EntityFile parent, String name, String description) {
@@ -240,7 +245,14 @@ class EntityFileServiceImpl implements EntityFileService {
 
 	@Override
 	public EntityFile getEntityFile(String uuid) {
-		return crudService.findSingle(EntityFile.class, "uuid", uuid);
+		try {
+			return (EntityFile) entityManager.createQuery("select e from " + EntityFile.class.getSimpleName() + " e where e.uuid = :uuid")
+					.setParameter("uuid", uuid).getSingleResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
 	}
 
 	@Override

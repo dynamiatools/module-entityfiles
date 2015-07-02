@@ -26,6 +26,7 @@ public class EntityFileUploadlink extends Uploadlink {
 
 	private EntityFile entityFile;
 	private EntityFileService service = Containers.get().findObject(EntityFileService.class);
+	private boolean shared;
 
 	public EntityFile getValue() {
 		if (entityFile == null && getUploadedFile() != null) {
@@ -52,10 +53,20 @@ public class EntityFileUploadlink extends Uploadlink {
 
 		try {
 			entityFile = service.createTemporalEntityFile(new UploadedFileInfo(getUploadedFile()));
+			entityFile.setShared(isShared());
 			setLabel(entityFile.getName());
 		} catch (Exception e) {
 			throw new EntityFileException(e);
 		}
 
 	}
+
+	public boolean isShared() {
+		return shared;
+	}
+
+	public void setShared(boolean shared) {
+		this.shared = shared;
+	}
+
 }
