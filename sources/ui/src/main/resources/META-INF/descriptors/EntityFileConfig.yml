@@ -8,7 +8,7 @@ fields:
         params:
             parameterName: DEFAULT_STORAGE_ID
     filesLocation:
-        label: Local Files Location
+        label: Files Location
         description: Server directory in wich will be saved
         component: directorybox
         params:

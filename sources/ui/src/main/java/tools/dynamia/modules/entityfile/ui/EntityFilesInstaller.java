@@ -18,18 +18,18 @@ import tools.dynamia.zk.crud.cfg.ConfigPage;
 @Provider
 public class EntityFilesInstaller implements ModuleProvider {
 
-	@Override
-	public Module getModule() {
-		Module module = Module.getRef("system");
+    @Override
+    public Module getModule() {
+        Module module = Module.getRef("system");
 
-		PageGroup pg = new PageGroup("config", "Configuracion");
-		module.addPageGroup(pg);
-		{
-			pg.addPage(new ConfigPage("entityFile", "Archivos", "EntityFileCFG"));
+        PageGroup pg = new PageGroup("config", "Configuracion");
+        module.addPageGroup(pg);
+        {
+            pg.addPage(new ConfigPage("entityFile", "Archivos", "EntityFileCFG"));
 
-		}
+        }
 
-		return module;
-	}
+        return module;
+    }
 
 }

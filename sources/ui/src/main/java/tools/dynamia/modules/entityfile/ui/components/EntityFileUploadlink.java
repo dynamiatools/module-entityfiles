@@ -14,59 +14,61 @@ import tools.dynamia.zk.ui.Uploadlink;
 
 public class EntityFileUploadlink extends Uploadlink {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2182747459195865750L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -2182747459195865750L;
 
-	static {
-		BindingComponentIndex.getInstance().put("value", EntityFileUploadlink.class);
-		ComponentAliasIndex.getInstance().put("entityfileUploadlink", EntityFileUploadlink.class);
-	}
+    static {
+        BindingComponentIndex.getInstance().put("value", EntityFileUploadlink.class);
+        ComponentAliasIndex.getInstance().put("entityfileUploadlink", EntityFileUploadlink.class);
+    }
 
-	private EntityFile entityFile;
-	private EntityFileService service = Containers.get().findObject(EntityFileService.class);
-	private boolean shared;
+    private EntityFile entityFile;
+    private EntityFileService service = Containers.get().findObject(EntityFileService.class);
+    private boolean shared;
 
-	public EntityFile getValue() {
-		if (entityFile == null && getUploadedFile() != null) {
-			onFileUpload();
-		}
+    public EntityFile getValue() {
+        if (entityFile == null && getUploadedFile() != null) {
+            onFileUpload();
+        }
 
-		return entityFile;
-	}
+        return entityFile;
+    }
 
-	public void setValue(EntityFile entityFile) {
-		this.entityFile = entityFile;
-		if (entityFile != null) {
-			configureFileInfo();
-		}
-	}
+    public void setValue(EntityFile entityFile) {
+        this.entityFile = entityFile;
+        if (entityFile != null) {
+            configureFileInfo();
+        }
+    }
 
-	private void configureFileInfo() {
-		setUploadedFile(new FileInfo(new File("")));
-		setLabel(entityFile.getName());
-	}
+    private void configureFileInfo() {
+        setUploadedFile(new FileInfo(new File("")));
+        setLabel(entityFile.getName());
+    }
 
-	@Override
-	protected void onFileUpload() {
+    @Override
+    protected void onFileUpload() {
 
-		try {
-			entityFile = service.createTemporalEntityFile(new UploadedFileInfo(getUploadedFile()));
-			entityFile.setShared(isShared());
-			setLabel(entityFile.getName());
-		} catch (Exception e) {
-			throw new EntityFileException(e);
-		}
+        try {
+            UploadedFileInfo uploadedFileInfo = new UploadedFileInfo(getUploadedFile());
+            uploadedFileInfo.setShared(isShared());
+            entityFile = service.createTemporalEntityFile(uploadedFileInfo);
+            
+            setLabel(entityFile.getName());
+        } catch (Exception e) {
+            throw new EntityFileException(e);
+        }
 
-	}
+    }
 
-	public boolean isShared() {
-		return shared;
-	}
+    public boolean isShared() {
+        return shared;
+    }
 
-	public void setShared(boolean shared) {
-		this.shared = shared;
-	}
+    public void setShared(boolean shared) {
+        this.shared = shared;
+    }
 
 }
