@@ -18,14 +18,14 @@ public class NewDirectoryAction extends AbstractEntityFileAction {
 
 	public NewDirectoryAction() {
 		setName("Nuevo Directorio");
-		setImage("icons:addfolder");
+		setImage("folder2");
 		setGroup(ActionGroup.get("FILES"));
 		setMenuSupported(true);
 	}
 
 	@Override
 	public void actionPerformed(final EntityFileActionEvent evt) {
-		InputPanel inputPanel = new InputPanel("Nombre de Directorio", null, String.class);
+		InputPanel inputPanel = new InputPanel("Nombre de Directorio", "", String.class);
 		inputPanel.showDialog();
 		inputPanel.addEventListener(InputPanel.ON_INPUT, event -> {
 			String dirName = (String) event.getData();
