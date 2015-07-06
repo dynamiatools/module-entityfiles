@@ -1,19 +1,25 @@
 package tools.dynamia.modules.entityfiles.s3;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.Protocol;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import tools.dynamia.commons.logger.LoggingService;
+import tools.dynamia.commons.logger.SLF4JLoggingService;
+import tools.dynamia.io.ImageUtil;
+import tools.dynamia.modules.entityfile.EntityFileException;
 import tools.dynamia.modules.entityfile.EntityFileStorage;
 import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.UploadedFileInfo;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -26,214 +32,207 @@ import com.amazonaws.services.s3.model.GroupGrantee;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.Permission;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import tools.dynamia.commons.logger.LoggingService;
-import tools.dynamia.commons.logger.SLF4JLoggingService;
-import tools.dynamia.domain.query.Parameters;
-import tools.dynamia.io.ImageUtil;
-import tools.dynamia.modules.entityfile.EntityFileException;
 
 @Service
 public class S3EntityFileStorage implements EntityFileStorage {
 
-    private LoggingService logger = new SLF4JLoggingService(S3EntityFileStorage.class);
+	private LoggingService logger = new SLF4JLoggingService(S3EntityFileStorage.class);
 
-    private final Map<String, String> URL_CACHE = new HashMap<String, String>();
+	private final Map<String, String> URL_CACHE = new HashMap<String, String>();
 
-    public static final String ID = "AWSS3Storage";
+	public static final String ID = "AWSS3Storage";
 
-    private final String accessKey = System.getenv("AWS_ACCESS_KEY_ID");
-    private final String secretKey = System.getenv("AWS_SECRET_KEY");
-    private final String endpoint = System.getenv("AWS_S3_ENDPOINT");
+	private final String accessKey = System.getenv("AWS_ACCESS_KEY_ID");
+	private final String secretKey = System.getenv("AWS_SECRET_KEY");
+	private final String endpoint = System.getenv("AWS_S3_ENDPOINT");
+	private final String bucketName = System.getenv("AWS_S3_BUCKET");
 
-    private static final String LOCAL_FILES_LOCATION = "LOCAL_FILES_LOCATION";
+	private AmazonS3 connection;
 
-    @Autowired
-    private Parameters appParams;
+	@Override
+	public String getId() {
+		return ID;
+	}
 
-    private AmazonS3 connection;
+	@Override
+	public String getName() {
+		return "AWS S3 Storage";
+	}
 
-    @Override
-    public String getId() {
-        return ID;
-    }
+	@Override
+	public void upload(EntityFile entityFile, UploadedFileInfo fileInfo) {
+		try {
 
-    @Override
-    public String getName() {
-        return "AWS S3 Storage";
-    }
+			String folder = getAccountFolderName(entityFile.getAccountId());
+			String fileName = getFileName(entityFile);
 
-    @Override
-    public void upload(EntityFile entityFile, UploadedFileInfo fileInfo) {
-        try {
-            String bucketName = getBucketName();
-            String folder = getAccountFolderName(entityFile.getAccountId());
-            String fileName = getFileName(entityFile);
+			// Metadata
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.addUserMetadata("name", entityFile.getName());
+			metadata.addUserMetadata("accountId", entityFile.getAccountId().toString());
+			metadata.addUserMetadata("uuid", entityFile.getUuid());
+			metadata.addUserMetadata("creator", entityFile.getCreator());
 
-            //Metadata
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.addUserMetadata("name", entityFile.getName());
-            metadata.addUserMetadata("accountId", entityFile.getAccountId().toString());
-            metadata.addUserMetadata("uuid", entityFile.getUuid());
-            metadata.addUserMetadata("creator", entityFile.getCreator());
+			PutObjectRequest request = new PutObjectRequest(getBucketName(), folder + fileName, fileInfo.getInputStream(), metadata);
+			request.setCannedAcl(CannedAccessControlList.Private);
+			AccessControlList acl = new AccessControlList();
+			request.setAccessControlList(acl);
+			
 
-            PutObjectRequest request = new PutObjectRequest(bucketName, folder + fileName, fileInfo.getInputStream(), metadata);
+			// ACL
+			if (entityFile.isShared()) {
+				acl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
+				request.setCannedAcl(CannedAccessControlList.PublicRead);
+			}
 
-            //ACL
-            if (entityFile.isShared()) {
-                AccessControlList acl = new AccessControlList();
-                acl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
-                request.setAccessControlList(acl);
-            }
+			getConnection().putObject(request);
 
-            getConnection().putObject(request);
+		} catch (AmazonClientException amazonClientException) {
+			logger.error("Error uploading entity file " + entityFile.getName() + " to S3", amazonClientException);
+			throw new EntityFileException("Error uploading file " + entityFile.getName(), amazonClientException);
+		}
+	}
 
-        } catch (AmazonClientException amazonClientException) {
-            logger.error("Error uploading entity file " + entityFile.getName() + " to S3", amazonClientException);
-            throw new EntityFileException("Error uploading file " + entityFile.getName(), amazonClientException);
-        }
-    }
+	@Override
+	public StoredEntityFile download(EntityFile entityFile) {
+		String urlKey = entityFile.getUuid();
+		String url = URL_CACHE.get(urlKey);
+		String fileName = getFileName(entityFile);
 
-    @Override
-    public StoredEntityFile download(EntityFile entityFile) {
-        String urlKey = entityFile.getUuid();
-        String url = URL_CACHE.get(urlKey);
-        String fileName = getFileName(entityFile);
-      
-        if (url == null) {
-            String bucketName = getBucketName();
-            String folder = getAccountFolderName(entityFile.getAccountId());
-            if (entityFile.isShared()) {
-                url = generateStaticURL(bucketName, folder + fileName);
-                URL_CACHE.put(urlKey, url);
-            } else {
-                url = generateSignedURL(bucketName, folder + fileName);
-            }
-        }
+		if (url == null) {
 
-        StoredEntityFile storedEntityFile = new S3StoredEntityFile(entityFile, url, new File(fileName));
+			String folder = getAccountFolderName(entityFile.getAccountId());
+			if (entityFile.isShared()) {
+				url = generateStaticURL(getBucketName(), folder + fileName);
+				URL_CACHE.put(urlKey, url);
+			} else {
+				url = generateSignedURL(getBucketName(), folder + fileName);
+			}
+		}
 
-        return storedEntityFile;
-    }
+		StoredEntityFile storedEntityFile = new S3StoredEntityFile(entityFile, url, new File(fileName));
 
-    private String generateSignedURL(String bucketName, String fileName) {
-        try {
-            GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, fileName);
-            return getConnection().generatePresignedUrl(request).toString();
+		return storedEntityFile;
+	}
 
-        } catch (AmazonClientException amazonClientException) {
-            logger.error("Error generating URL for " + bucketName + " => " + fileName, amazonClientException);
-            return "#";
-        }
-    }
+	private String generateSignedURL(String bucketName, String fileName) {
+		try {
+			GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, fileName);
+			return getConnection().generatePresignedUrl(request).toString();
 
-    private String generateStaticURL(String bucketName, String fileName) {
-        return String.format("http://%s.%s/%s", bucketName, endpoint, fileName);
-    }
+		} catch (AmazonClientException amazonClientException) {
+			logger.error("Error generating URL for " + bucketName + " => " + fileName, amazonClientException);
+			return "#";
+		}
+	}
 
-    private String getFileName(EntityFile entityFile) {
-        return entityFile.getUuid() + "_" + entityFile.getName();
-    }
+	private String generateStaticURL(String bucketName, String fileName) {
+		return String.format("http://%s.%s/%s", bucketName, endpoint, fileName);
+	}
 
-    private AmazonS3 getConnection() {
-        if (connection == null) {
-            ClientConfiguration clientConfig = new ClientConfiguration();
-            clientConfig.setProtocol(Protocol.HTTP);
+	private String getFileName(EntityFile entityFile) {
+		return entityFile.getUuid() + "_" + entityFile.getName();
+	}
 
-            AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
-            connection = new AmazonS3Client(credentials, clientConfig);
-            connection.setEndpoint(endpoint);
-        }
-        return connection;
-    }
+	private AmazonS3 getConnection() {
 
-    private String getAccountFolderName(Long accountId) {
-        String name = "account" + accountId + "/";
-        return name;
-    }
+		if (connection == null) {
+			ClientConfiguration clientConfig = new ClientConfiguration();
+			clientConfig.setProtocol(Protocol.HTTP);
 
-    private String generateThumbnailURL(EntityFile entityFile, int w, int h) {
-        if (entityFile.getType() == EntityFileType.IMAGE) {
-            String urlKey = entityFile.getUuid() + w + "x" + h;
-            String url = URL_CACHE.get(urlKey);
-            if (url == null) {
-                String bucketName = getBucketName();
-                String folder = getAccountFolderName(entityFile.getAccountId());
-                String fileName = getFileName(entityFile);
-                String thumbfileName = "thumbs/" + w + "x" + h + "/" + fileName;
+			AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
+			connection = new AmazonS3Client(credentials, clientConfig);
+			connection.setEndpoint(endpoint);
 
-                if (!objectExists(bucketName, folder + thumbfileName)) {
-                    createAndUploadThumbnail(entityFile, bucketName, folder, fileName, thumbfileName, w, h);
-                }
+			if (!connection.doesBucketExist(bucketName)) {
+				connection.createBucket(bucketName);
+			}
 
-                url = generateStaticURL(bucketName, folder + thumbfileName);
-                URL_CACHE.put(urlKey, url);
-            }
-            return url;
-        } else {
-            return "#";
-        }
-    }
+		}
+		return connection;
+	}
 
-    private void createAndUploadThumbnail(EntityFile entityFile, String bucketName, String folder, String fileName, String thumbfileName, int w, int h) throws AmazonClientException {
-        try {
-            File localDestination = File.createTempFile(System.currentTimeMillis() + "file", entityFile.getName());
-            File localThumbDestination = File.createTempFile(System.currentTimeMillis() + "thumb", entityFile.getName());
+	private String getAccountFolderName(Long accountId) {
+		String name = "account" + accountId + "/";
+		return name;
+	}
 
-            getConnection().getObject(new GetObjectRequest(bucketName, folder + fileName), localDestination);
+	private String generateThumbnailURL(EntityFile entityFile, int w, int h) {
+		if (entityFile.getType() == EntityFileType.IMAGE) {
+			String urlKey = entityFile.getUuid() + w + "x" + h;
+			String url = URL_CACHE.get(urlKey);
+			if (url == null) {
+				String folder = getAccountFolderName(entityFile.getAccountId());
+				String fileName = getFileName(entityFile);
+				String thumbfileName = "thumbs/" + w + "x" + h + "/" + fileName;
 
-            ImageUtil.resizeImage(localDestination, localThumbDestination, entityFile.getExtension(), w, h);
+				if (!objectExists(getBucketName(), folder + thumbfileName)) {
+					createAndUploadThumbnail(entityFile, getBucketName(), folder, fileName, thumbfileName, w, h);
+				}
 
-            PutObjectRequest request = new PutObjectRequest(bucketName, folder + thumbfileName, localThumbDestination);
+				url = generateStaticURL(getBucketName(), folder + thumbfileName);
+				URL_CACHE.put(urlKey, url);
+			}
+			return url;
+		} else {
+			return "#";
+		}
+	}
 
-            //metadata
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("image/" + entityFile.getExtension());
-            request.setMetadata(metadata);
+	private void createAndUploadThumbnail(EntityFile entityFile, String bucketName, String folder, String fileName, String thumbfileName,
+			int w, int h) throws AmazonClientException {
+		try {
+			File localDestination = File.createTempFile(System.currentTimeMillis() + "file", entityFile.getName());
+			File localThumbDestination = File.createTempFile(System.currentTimeMillis() + "thumb", entityFile.getName());
 
-            //ACL
-            AccessControlList acl = new AccessControlList();
-            acl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
-            request.setAccessControlList(acl);
-            getConnection().putObject(request);
+			getConnection().getObject(new GetObjectRequest(bucketName, folder + fileName), localDestination);
 
-        } catch (Exception e) {
-            logger.error("Error creating thumbnail for " + entityFile.getName(), e);
-        }
-    }
+			ImageUtil.resizeImage(localDestination, localThumbDestination, entityFile.getExtension(), w, h);
 
-    public boolean objectExists(String bucketName, String key) {
-        try {
-            getConnection().getObjectMetadata(bucketName, key);
-        } catch (AmazonServiceException e) {
-            return false;
-        }
-        return true;
-    }
+			PutObjectRequest request = new PutObjectRequest(bucketName, folder + thumbfileName, localThumbDestination);
 
-    private String getBucketName() {
-        String name = appParams.getValue(LOCAL_FILES_LOCATION);
+			// metadata
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentType("image/" + entityFile.getExtension());
+			request.setMetadata(metadata);
 
-        if (name != null && !getConnection().doesBucketExist(name)) {
-            getConnection().createBucket(name);
-        }
+			// ACL
+			AccessControlList acl = new AccessControlList();			
+			acl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
+			request.setCannedAcl(CannedAccessControlList.PublicRead);
+			request.setAccessControlList(acl);
+			getConnection().putObject(request);
 
-        return name;
-    }
+		} catch (Exception e) {
+			logger.error("Error creating thumbnail for " + entityFile.getName() + "  " + w + "x" + h + "  " + fileName, e);
+		}
+	}
 
-    class S3StoredEntityFile extends StoredEntityFile {
+	public boolean objectExists(String bucketName, String key) {
+		try {
+			getConnection().getObjectMetadata(bucketName, key);
+		} catch (AmazonServiceException e) {
+			return false;
+		}
+		return true;
+	}
 
-        public S3StoredEntityFile(EntityFile entityFile, String url, File realFile) {
-            super(entityFile, url, realFile);
-        }
+	private String getBucketName() {
 
-        @Override
-        public String getThumbnailUrl(int width, int height) {
-            return generateThumbnailURL(getEntityFile(), width, width);
-        }
+		return bucketName;
+	}
 
-    }
+	class S3StoredEntityFile extends StoredEntityFile {
+
+		public S3StoredEntityFile(EntityFile entityFile, String url, File realFile) {
+			super(entityFile, url, realFile);
+		}
+
+		@Override
+		public String getThumbnailUrl(int width, int height) {
+			return generateThumbnailURL(getEntityFile(), width, width);
+		}
+
+	}
 
 }
