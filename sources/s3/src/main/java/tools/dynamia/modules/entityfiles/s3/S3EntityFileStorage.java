@@ -42,10 +42,10 @@ public class S3EntityFileStorage implements EntityFileStorage {
 
 	public static final String ID = "AWSS3Storage";
 
-	private final String accessKey = System.getenv("AWS_ACCESS_KEY_ID");
-	private final String secretKey = System.getenv("AWS_SECRET_KEY");
-	private final String endpoint = System.getenv("AWS_S3_ENDPOINT");
-	private final String bucketName = System.getenv("AWS_S3_BUCKET");
+	private final String accessKey = System.getProperty("AWS_ACCESS_KEY_ID", System.getenv("AWS_ACCESS_KEY_ID"));
+	private final String secretKey = System.getProperty("AWS_SECRET_KEY", System.getenv("AWS_SECRET_KEY"));
+	private final String endpoint = System.getProperty("AWS_S3_ENDPOINT", System.getenv("AWS_S3_ENDPOINT"));
+	private final String bucketName = System.getProperty("AWS_S3_BUCKET", System.getenv("AWS_S3_BUCKET"));
 
 	private AmazonS3 connection;
 
@@ -77,7 +77,6 @@ public class S3EntityFileStorage implements EntityFileStorage {
 			request.setCannedAcl(CannedAccessControlList.Private);
 			AccessControlList acl = new AccessControlList();
 			request.setAccessControlList(acl);
-			
 
 			// ACL
 			if (entityFile.isShared()) {
@@ -131,7 +130,12 @@ public class S3EntityFileStorage implements EntityFileStorage {
 	}
 
 	private String getFileName(EntityFile entityFile) {
-		return entityFile.getUuid() + "_" + entityFile.getName();
+		String subfolder = "";
+		if (entityFile.getSubfolder() != null) {
+			subfolder = entityFile.getSubfolder() + "/";
+		}
+
+		return subfolder + entityFile.getUuid() + "_" + entityFile.getName();
 	}
 
 	private AmazonS3 getConnection() {
@@ -197,7 +201,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
 			request.setMetadata(metadata);
 
 			// ACL
-			AccessControlList acl = new AccessControlList();			
+			AccessControlList acl = new AccessControlList();
 			acl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
 			request.setCannedAcl(CannedAccessControlList.PublicRead);
 			request.setAccessControlList(acl);

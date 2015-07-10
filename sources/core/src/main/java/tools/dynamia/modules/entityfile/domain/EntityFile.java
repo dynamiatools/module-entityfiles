@@ -63,6 +63,7 @@ public class EntityFile extends BaseEntity implements AccountAware {
 	private String uuid = StringUtils.randomString();
 	@Column(length = 1000)
 	private String storageInfo;
+	private String subfolder;
 
 	private Long accountId;
 
@@ -207,6 +208,14 @@ public class EntityFile extends BaseEntity implements AccountAware {
 
 	public void setAccountId(Long accountId) {
 		this.accountId = accountId;
+	}
+
+	public String getSubfolder() {
+		return subfolder;
+	}
+
+	public void setSubfolder(String subfolder) {
+		this.subfolder = subfolder;
 	}
 
 	/**
