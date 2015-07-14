@@ -15,6 +15,7 @@ public class UploadedFileInfo {
 	private EntityFile parent;
 	private boolean shared;
 	private String subfolder;
+	private String storedFileName;
 
 	public UploadedFileInfo() {
 		// TODO Auto-generated constructor stub
@@ -36,6 +37,14 @@ public class UploadedFileInfo {
 		this.fullName = fullName;
 		this.contentType = contentType;
 		this.inputStream = inputStream;
+	}
+
+	public String getStoredFileName() {
+		return storedFileName;
+	}
+
+	public void setStoredFileName(String storedFileName) {
+		this.storedFileName = storedFileName;
 	}
 
 	public EntityFile getParent() {

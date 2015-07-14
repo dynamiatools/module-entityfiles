@@ -4,7 +4,11 @@
  */
 package tools.dynamia.modules.entityfile.service.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +32,7 @@ import tools.dynamia.domain.services.CrudService;
 import tools.dynamia.domain.util.DomainUtils;
 import tools.dynamia.integration.Containers;
 import tools.dynamia.integration.scheduling.Task;
+import tools.dynamia.io.IOUtils;
 import tools.dynamia.modules.entityfile.EntityFileAware;
 import tools.dynamia.modules.entityfile.EntityFileException;
 import tools.dynamia.modules.entityfile.EntityFileStorage;
@@ -105,6 +110,7 @@ class EntityFileServiceImpl implements EntityFileService {
 		entityFile.setExtension(StringUtils.getFilenameExtension(fileInfo.getFullName()));
 		entityFile.setShared(fileInfo.isShared());
 		entityFile.setSubfolder(fileInfo.getSubfolder());
+		entityFile.setStoredFileName(fileInfo.getStoredFileName());
 		configureEntityFile(target, entityFile);
 
 		entityFile.setType(EntityFileType.getFileType(entityFile.getExtension()));
@@ -247,6 +253,18 @@ class EntityFileServiceImpl implements EntityFileService {
 	@Override
 	public StoredEntityFile download(EntityFile file) {
 		return getCurrentStorage().download(file);
+	}
+
+	@Override
+	public void download(EntityFile entityFile, File outputFile) {
+		try {
+			StoredEntityFile storedEntityFile = download(entityFile);
+			if (storedEntityFile != null) {
+				IOUtils.copy(new URL(storedEntityFile.getUrl()).openStream(), outputFile);
+			}
+		} catch (Exception e) {
+			throw new EntityFileException("Error downloading entity file to local file", e);
+		}
 	}
 
 	@Override

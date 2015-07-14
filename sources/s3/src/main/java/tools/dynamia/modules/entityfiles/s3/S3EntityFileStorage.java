@@ -135,7 +135,12 @@ public class S3EntityFileStorage implements EntityFileStorage {
 			subfolder = entityFile.getSubfolder() + "/";
 		}
 
-		return subfolder + entityFile.getUuid() + "_" + entityFile.getName();
+		String storedFileName = entityFile.getUuid() + "_" + entityFile.getName();
+		if (entityFile.getStoredFileName() != null && !entityFile.getStoredFileName().isEmpty()) {
+			storedFileName = entityFile.getStoredFileName();
+		}
+
+		return subfolder + storedFileName;
 	}
 
 	private AmazonS3 getConnection() {

@@ -22,6 +22,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.omg.CORBA.PRIVATE_MEMBER;
+
 import tools.dynamia.commons.StringUtils;
 import tools.dynamia.domain.BaseEntity;
 import tools.dynamia.domain.contraints.NotEmpty;
@@ -64,8 +66,17 @@ public class EntityFile extends BaseEntity implements AccountAware {
 	@Column(length = 1000)
 	private String storageInfo;
 	private String subfolder;
+	private String storedFileName;
 
 	private Long accountId;
+
+	public String getStoredFileName() {
+		return storedFileName;
+	}
+
+	public void setStoredFileName(String storedFileName) {
+		this.storedFileName = storedFileName;
+	}
 
 	public String getTargetEntitySId() {
 		return targetEntitySId;
@@ -155,6 +166,14 @@ public class EntityFile extends BaseEntity implements AccountAware {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getNameWithoutExtension() {
+		if (name.endsWith("." + extension)) {
+			return name.substring(0, name.indexOf("." + extension));
+		} else {
+			return name;
+		}
 	}
 
 	public boolean isShared() {

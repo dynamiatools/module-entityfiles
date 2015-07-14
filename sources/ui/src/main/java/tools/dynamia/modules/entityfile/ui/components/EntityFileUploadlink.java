@@ -28,6 +28,7 @@ public class EntityFileUploadlink extends Uploadlink {
 	private EntityFileService service = Containers.get().findObject(EntityFileService.class);
 	private boolean shared;
 	private String subfolder;
+	private String storedFileName;
 
 	public EntityFile getValue() {
 		if (entityFile == null && getUploadedFile() != null) {
@@ -56,6 +57,13 @@ public class EntityFileUploadlink extends Uploadlink {
 			UploadedFileInfo uploadedFileInfo = new UploadedFileInfo(getUploadedFile());
 			uploadedFileInfo.setShared(isShared());
 			uploadedFileInfo.setSubfolder(getSubfolder());
+			if (storedFileName != null && !storedFileName.isEmpty()) {
+				if (storedFileName.equals("real")) {
+					uploadedFileInfo.setStoredFileName(getUploadedFile().getName());
+				} else {
+					uploadedFileInfo.setStoredFileName(storedFileName);
+				}
+			}
 			entityFile = service.createTemporalEntityFile(uploadedFileInfo);
 
 			setLabel(entityFile.getName());
@@ -79,6 +87,14 @@ public class EntityFileUploadlink extends Uploadlink {
 
 	public void setSubfolder(String subfolder) {
 		this.subfolder = subfolder;
+	}
+
+	public String getStoredFileName() {
+		return storedFileName;
+	}
+
+	public void setStoredFileName(String storedFileName) {
+		this.storedFileName = storedFileName;
 	}
 
 }

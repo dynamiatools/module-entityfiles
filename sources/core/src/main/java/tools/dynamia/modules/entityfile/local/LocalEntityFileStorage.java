@@ -73,7 +73,12 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 			subfolder = entityFile.getSubfolder() + "/";
 		}
 
-		String filePath = "Account" + entityFile.getAccountId() + "/" + subfolder + entityFile.getUuid();
+		String storedFileName = entityFile.getUuid();
+		if (entityFile.getStoredFileName() != null && !entityFile.getStoredFileName().isEmpty()) {
+			storedFileName = entityFile.getStoredFileName();
+		}
+
+		String filePath = "Account" + entityFile.getAccountId() + "/" + subfolder + storedFileName;
 		File parentDir = getParentDir();
 		File realFile = new File(parentDir, filePath);
 		try {
@@ -90,8 +95,8 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 	private class LocalStoredEntityFile extends StoredEntityFile {
 
 		/**
-         *
-         */
+		 *
+		 */
 		private static final long serialVersionUID = -6295813096900514353L;
 
 		public LocalStoredEntityFile(EntityFile entityFile, String url, File realFile) {

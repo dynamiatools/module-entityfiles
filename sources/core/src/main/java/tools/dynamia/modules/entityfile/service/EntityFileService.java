@@ -1,5 +1,6 @@
 package tools.dynamia.modules.entityfile.service;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -120,7 +121,15 @@ public interface EntityFileService {
 	 *            the file
 	 * @return the real file
 	 */
-	public abstract StoredEntityFile download(EntityFile file);
+	public abstract StoredEntityFile download(EntityFile entityFile);
+
+	/**
+	 * Download the EntityFile internal file to a local output file, this is usefull when entityfiles 
+	 * are stored in difernte localtion
+	 * @param entityFile
+	 * @param outputFile
+	 */
+	public abstract void download(EntityFile entityFile, File outputFile);
 
 	/**
 	 * Creates the temporal entity file.
