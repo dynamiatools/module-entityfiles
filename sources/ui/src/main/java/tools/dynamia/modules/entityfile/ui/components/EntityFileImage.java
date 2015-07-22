@@ -1,6 +1,7 @@
 package tools.dynamia.modules.entityfile.ui.components;
 
 import org.zkoss.image.AImage;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zul.Image;
 
 import tools.dynamia.io.IOUtils;
@@ -52,13 +53,15 @@ public class EntityFileImage extends Image {
 				if (noPhotoPath != null) {
 					if (noPhotoPath.startsWith("classpath")) {
 						Resource photoResource = IOUtils.getResource(noPhotoPath);
-						setContent(new AImage(photoResource.getFilename(), photoResource.getInputStream()));
+						if (photoResource.exists()) {
+							setContent(new AImage(photoResource.getFilename(), photoResource.getInputStream()));
+						}
+
 					} else {
 						setSrc(noPhotoPath);
 					}
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -76,7 +79,7 @@ public class EntityFileImage extends Image {
 
 	public void setThumbnail(boolean thumbnail) {
 		this.thumbnail = thumbnail;
-		loadImage();
+
 	}
 
 	public int getThumbnailHeight() {
@@ -85,7 +88,7 @@ public class EntityFileImage extends Image {
 
 	public void setThumbnailHeight(int thumbnailHeight) {
 		this.thumbnailHeight = thumbnailHeight;
-		loadImage();
+
 	}
 
 	public int getThumbnailWidth() {
@@ -94,7 +97,7 @@ public class EntityFileImage extends Image {
 
 	public void setThumbnailWidth(int thumbnailWidth) {
 		this.thumbnailWidth = thumbnailWidth;
-		loadImage();
+
 	}
 
 	public String getNoPhotoPath() {
@@ -103,7 +106,13 @@ public class EntityFileImage extends Image {
 
 	public void setNoPhotoPath(String noPhotoPath) {
 		this.noPhotoPath = noPhotoPath;
-		setValue(getValue());
+
+	}
+
+	@Override
+	public void setParent(Component parent) {
+		super.setParent(parent);
+		loadImage();
 	}
 
 }

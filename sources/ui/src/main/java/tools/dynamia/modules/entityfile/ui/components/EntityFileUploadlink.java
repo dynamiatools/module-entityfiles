@@ -2,6 +2,9 @@ package tools.dynamia.modules.entityfile.ui.components;
 
 import java.io.File;
 
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.Events;
+
 import tools.dynamia.integration.Containers;
 import tools.dynamia.io.FileInfo;
 import tools.dynamia.modules.entityfile.EntityFileException;
@@ -67,6 +70,7 @@ public class EntityFileUploadlink extends Uploadlink {
 			entityFile = service.createTemporalEntityFile(uploadedFileInfo);
 
 			setLabel(entityFile.getName());
+			
 		} catch (Exception e) {
 			throw new EntityFileException(e);
 		}
