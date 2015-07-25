@@ -14,7 +14,7 @@ public enum EntityFileType {
 
 	public static EntityFileType getFileType(String extension) {
 		final String IMAGE_EXTENSIONS = "png,jpg,gif,jpeg,tiff,svg";
-		if (IMAGE_EXTENSIONS.contains(extension)) {
+		if (extension!=null && IMAGE_EXTENSIONS.contains(extension)) {
 			return EntityFileType.IMAGE;
 		} else {
 			return EntityFileType.FILE;
