@@ -10,6 +10,7 @@ import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
+import tools.dynamia.zk.ImageCache;
 
 public class EntityFileImage extends Image {
 
@@ -27,7 +28,7 @@ public class EntityFileImage extends Image {
 	private boolean thumbnail = false;
 	private int thumbnailHeight = 64;
 	private int thumbnailWidth = 64;
-	private String noPhotoPath = "classpath:/web/tools/images/no-photo.jpg";
+	private String noPhotoPath = "/zkau/web/tools/images/no-photo.jpg";
 
 	public EntityFile getValue() {
 		return entityFile;
@@ -52,9 +53,17 @@ public class EntityFileImage extends Image {
 			try {
 				if (noPhotoPath != null) {
 					if (noPhotoPath.startsWith("classpath")) {
-						Resource photoResource = IOUtils.getResource(noPhotoPath);
-						if (photoResource.exists()) {
-							setContent(new AImage(photoResource.getFilename(), photoResource.getInputStream()));
+						AImage imageContent = ImageCache.get(noPhotoPath);
+						if (imageContent == null) {
+							Resource resource = IOUtils.getResource(noPhotoPath);
+							if (resource.exists()) {
+								imageContent = new AImage(resource.getFilename(), resource.getInputStream());
+								ImageCache.add(noPhotoPath, imageContent);
+							}
+						}
+
+						if (imageContent != null) {
+							setContent(imageContent);
 						}
 
 					} else {
