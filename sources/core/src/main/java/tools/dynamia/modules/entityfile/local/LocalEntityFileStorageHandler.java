@@ -48,7 +48,7 @@ public class LocalEntityFileStorageHandler extends ResourceHttpRequestHandler {
 
 		if (entityFile != null && (entityFile.isShared() || entityFile.getAccountId().equals(currentAccountId))) {
 
-			StoredEntityFile storedEntityFile = entityFile.getStoredEntityFile();
+			StoredEntityFile storedEntityFile = storage.download(entityFile);
 
 			file = storedEntityFile.getRealFile();
 
