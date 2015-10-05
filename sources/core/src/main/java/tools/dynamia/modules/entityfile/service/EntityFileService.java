@@ -115,17 +115,16 @@ public interface EntityFileService {
 	public abstract void syncEntityFileAware();
 
 	/**
-	 * Gets the StoreEntityFile from current EntityFileStorage file.
-	 *
-	 * @param file
-	 *            the file
-	 * @return the real file
+	 * Get an stored entity file instance for download
+	 * @param entityFile
+	 * @return
 	 */
 	public abstract StoredEntityFile download(EntityFile entityFile);
 
 	/**
-	 * Download the EntityFile internal file to a local output file, this is usefull when entityfiles 
-	 * are stored in difernte localtion
+	 * Download the EntityFile internal file to a local output file, this is
+	 * usefull when entityfiles are stored in difernte localtion
+	 * 
 	 * @param entityFile
 	 * @param outputFile
 	 */
