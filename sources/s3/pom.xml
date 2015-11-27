@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>tools.dynamia.modules</groupId>
 		<artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
-		<version>5.0.0.Beta</version>
+		<version>5.0.0</version>
 	</parent>
 
 	<name>Dynamia Modules - EntityFiles - S3 (${project.version})</name>
 	<artifactId>tools.dynamia.modules.entityfiles.s3</artifactId>
 	<groupId>tools.dynamia.modules</groupId>
-	<version>5.0.0.Beta</version>
+	<version>5.0.0</version>
 	<url>http://www.dynamia.tools/modules/entityfiles</url>
 
 	<build>

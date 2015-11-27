@@ -5,12 +5,12 @@
 	<parent>
 		<artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
 		<groupId>tools.dynamia.modules</groupId>
-		<version>5.0.0.Beta</version>
+		<version>5.0.0</version>
 	</parent>
 	<name>Dynamia Modules - EntityFiles - UI (${project.version})</name>
 	<artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
 	<groupId>tools.dynamia.modules</groupId>
-	<version>5.0.0.Beta</version>
+	<version>5.0.0</version>
 	<url>http://www.dynamia.tools/modules/entityfiles</url>
 
 	<build>
