@@ -7,15 +7,18 @@ fields:
         component: storagebox
         params:
             parameterName: DEFAULT_STORAGE_ID
+            cacheable: true
     filesLocation:
         label: Files Location
         description: Server directory in wich will be saved
         component: directorybox
         params:
             parameterName: LOCAL_FILES_LOCATION
+            cacheable: true
     reportsLocation:
         label: Reports Location
         description: Server directory in wich will loaded
         component: directorybox
         params:
             parameterName: GLOBAL_REPORTS_LOCATION
+            cacheable: true

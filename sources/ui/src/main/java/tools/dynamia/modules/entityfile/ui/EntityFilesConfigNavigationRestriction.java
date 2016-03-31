@@ -11,28 +11,28 @@ import tools.dynamia.navigation.NavigationRestriction;
 @Component
 public class EntityFilesConfigNavigationRestriction implements NavigationRestriction {
 
-	@Autowired
-	private AccountServiceAPI accountServiceAPI;
+    @Autowired
+    private AccountServiceAPI accountServiceAPI;
 
-	@Override
-	public Boolean allowAccess(NavigationElement element) {
-		if (element.getVirtualPath().equals("system/config/entityFile")) {
-			Long accountId = accountServiceAPI.getCurrentAccountId();
-			if (accountId != null) {
-				AccountInfo accountInfo = accountServiceAPI.getAccountInfo(accountId);
-				if (accountInfo != null && !accountInfo.getType().equals("admin")) {
-					return false;
-				}
-			}
+    @Override
+    public Boolean allowAccess(NavigationElement element) {
+        if (element.getVirtualPath().equals("system/config/entityFile")) {
+            Long accountId = accountServiceAPI.getCurrentAccountId();
+            if (accountId != null) {
+                AccountInfo accountInfo = accountServiceAPI.getAccountInfo(accountId);
+                if (accountInfo != null && !accountInfo.getType().equals("admin")) {
+                    return false;
+                }
+            }
 
-		}
-		return null;
-	}
+        }
+        return null;
+    }
 
-	@Override
-	public int getOrder() {
+    @Override
+    public int getOrder() {
 
-		return 0;
-	}
+        return 0;
+    }
 
 }
