@@ -167,7 +167,12 @@ class EntityFileServiceImpl implements EntityFileService {
     @Override
     @Transactional
     public void delete(EntityFile entityFile) {
-        crudService.updateField(entityFile, "state", EntityFileState.DELETED);
+        EntityFileStorage storage = findStorage(entityFile.getStorageInfo());
+        if (storage == null) {
+            storage = getCurrentStorage();
+        }
+
+        storage.delete(entityFile);
     }
 
     @Override

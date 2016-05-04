@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import tools.dynamia.domain.query.Parameters;
+import tools.dynamia.domain.services.CrudService;
 import tools.dynamia.integration.sterotypes.Service;
 import tools.dynamia.io.IOUtils;
 import tools.dynamia.modules.entityfile.EntityFileException;
@@ -13,6 +14,7 @@ import tools.dynamia.modules.entityfile.EntityFileStorage;
 import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.UploadedFileInfo;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
+import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.web.util.HttpUtils;
 
 @Service
@@ -25,6 +27,9 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 
     @Autowired
     private Parameters appParams;
+
+    @Autowired
+    private CrudService crudService;
 
     @Override
     public String getId() {
@@ -89,6 +94,20 @@ public class LocalEntityFileStorage implements EntityFileStorage {
             // TODO: handle exception
         }
         return realFile;
+    }
+
+    @Override
+    public void delete(EntityFile entityFile) {
+        try {
+            File realFile = getRealFile(entityFile);
+            if (realFile != null && realFile.exists()) {
+                realFile.delete();
+            }
+            entityFile.setState(EntityFileState.DELETED);
+            crudService.update(entityFile);
+        } catch (Exception e) {
+            throw new EntityFileException("Error deleting entity file " + entityFile, e);
+        }
     }
 
     private class LocalStoredEntityFile extends StoredEntityFile {
