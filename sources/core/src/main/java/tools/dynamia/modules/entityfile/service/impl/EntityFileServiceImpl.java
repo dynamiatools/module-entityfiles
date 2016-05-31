@@ -31,6 +31,7 @@ import tools.dynamia.domain.util.DomainUtils;
 import tools.dynamia.integration.Containers;
 import tools.dynamia.integration.scheduling.Task;
 import tools.dynamia.io.IOUtils;
+import tools.dynamia.modules.entityfile.EntityFileAccountProvider;
 import tools.dynamia.modules.entityfile.EntityFileAware;
 import tools.dynamia.modules.entityfile.EntityFileException;
 import tools.dynamia.modules.entityfile.EntityFileStorage;
@@ -41,7 +42,6 @@ import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.local.LocalEntityFileStorage;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
-import tools.dynamia.modules.saas.api.AccountServiceAPI;
 
 /**
  *
@@ -59,9 +59,6 @@ class EntityFileServiceImpl implements EntityFileService {
 
     @Autowired
     private CrudService crudService;
-
-    @Autowired
-    private AccountServiceAPI accountServiceAPI;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -101,7 +98,6 @@ class EntityFileServiceImpl implements EntityFileService {
         target = crudService.reload(target);
         logger.info("Creating new entity file for " + target + ", file: " + fileInfo.getFullName());
         EntityFile entityFile = new EntityFile();
-        entityFile.setAccountId(accountServiceAPI.getCurrentAccountId());
         entityFile.setDescription(description);
         entityFile.setContentType(fileInfo.getContentType());
         entityFile.setName(fileInfo.getFullName());
@@ -110,7 +106,7 @@ class EntityFileServiceImpl implements EntityFileService {
         entityFile.setSubfolder(fileInfo.getSubfolder());
         entityFile.setStoredFileName(fileInfo.getStoredFileName());
         configureEntityFile(target, entityFile);
-
+        configureEntityFileAccount(entityFile);
         entityFile.setType(EntityFileType.getFileType(entityFile.getExtension()));
         entityFile.setParent(fileInfo.getParent());
         entityFile.setState(EntityFileState.VALID);
@@ -347,6 +343,13 @@ class EntityFileServiceImpl implements EntityFileService {
             }
         });
 
+    }
+
+    private void configureEntityFileAccount(EntityFile entityFile) {
+        EntityFileAccountProvider provider = Containers.get().findObject(EntityFileAccountProvider.class);
+        if (provider != null) {
+            entityFile.setAccountId(provider.getAccountId());
+        }
     }
 
 }

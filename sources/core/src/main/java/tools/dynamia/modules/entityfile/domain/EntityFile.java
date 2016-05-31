@@ -22,8 +22,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.omg.CORBA.PRIVATE_MEMBER;
-
 import tools.dynamia.commons.StringUtils;
 import tools.dynamia.domain.BaseEntity;
 import tools.dynamia.domain.contraints.NotEmpty;
@@ -33,11 +31,10 @@ import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
-import tools.dynamia.modules.saas.api.AccountAware;
 
 @Entity
 @Table(name = "mod_entity_files")
-public class EntityFile extends BaseEntity implements AccountAware {
+public class EntityFile extends BaseEntity {
 
     @OneToMany(mappedBy = "parent")
     private List<EntityFile> children;
@@ -222,6 +219,9 @@ public class EntityFile extends BaseEntity implements AccountAware {
     }
 
     public Long getAccountId() {
+        if (accountId == null) {
+            accountId = 0L;
+        }
         return accountId;
     }
 
