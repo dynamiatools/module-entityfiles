@@ -21,6 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import org.hibernate.annotations.BatchSize;
 
 import tools.dynamia.commons.StringUtils;
 import tools.dynamia.domain.BaseEntity;
@@ -34,6 +35,7 @@ import tools.dynamia.modules.entityfile.service.EntityFileService;
 
 @Entity
 @Table(name = "mod_entity_files")
+@BatchSize(size = 50)
 public class EntityFile extends BaseEntity {
 
     @OneToMany(mappedBy = "parent")
