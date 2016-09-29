@@ -338,7 +338,7 @@ class EntityFileServiceImpl implements EntityFileService {
             public void doWork() {
                 logger.info("Fixing null UUIDs");
                 String updateQuery = "update " + EntityFile.class
-                        .getSimpleName() + " e set e.uuid = e.id where e.uuid is null";
+                        .getName() + " e set e.uuid = e.id where e.uuid is null";
                 crudService.execute(updateQuery, new QueryParameters());
             }
         });
