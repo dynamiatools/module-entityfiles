@@ -184,8 +184,7 @@ class EntityFileServiceImpl implements EntityFileService {
 
     @Override
     public List<EntityFile> getEntityFiles(Class clazz, Serializable id, EntityFile parentDirectory) {
-        QueryParameters params = new QueryParameters();
-        params.setAutocreateSearcheableStrings(false);
+        QueryParameters params = new QueryParameters();        
         params.add("targetEntity", QueryConditions.eq(clazz.getName()));
 
         if (id instanceof Long) {
