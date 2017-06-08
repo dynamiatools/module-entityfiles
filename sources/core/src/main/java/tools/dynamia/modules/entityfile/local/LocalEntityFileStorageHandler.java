@@ -8,6 +8,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
+import tools.dynamia.commons.StringUtils;
 import tools.dynamia.integration.Containers;
 import tools.dynamia.io.IOUtils;
 import tools.dynamia.io.ImageUtil;
@@ -20,7 +21,8 @@ import tools.dynamia.modules.entityfile.service.EntityFileService;
 
 public class LocalEntityFileStorageHandler extends ResourceHttpRequestHandler {
 
-    private LocalEntityFileStorage storage;
+    private static final String UUID = "/uuid/";
+	private LocalEntityFileStorage storage;
     private EntityFileService service;
     private EntityFileAccountProvider accountProvider;
 
@@ -42,6 +44,15 @@ public class LocalEntityFileStorageHandler extends ResourceHttpRequestHandler {
 
         File file = null;
         String uuid = getParam(request, "uuid", null);
+        
+        if(uuid==null){
+        	String path = request.getPathInfo();
+        	if(path.contains(UUID)){
+        		uuid = path.substring(path.lastIndexOf(UUID)+UUID.length());
+        		uuid = StringUtils.removeFilenameExtension(uuid);
+        	}
+        }
+        
         if (uuid == null) {
             return null;
         }
