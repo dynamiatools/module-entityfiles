@@ -1,18 +1,16 @@
 <?xml version="1.0"?>
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>tools.dynamia.modules</groupId>
 		<artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
-		<version>6.0.0</version>
+		<groupId>tools.dynamia.modules</groupId>
+		<version>5.0.0</version>
 	</parent>
-
-	<name>Dynamia Modules - EntityFiles - S3 (${project.version})</name>
-	<artifactId>tools.dynamia.modules.entityfiles.s3</artifactId>
+	<name>Dynamia Modules - EntityFiles - UI (${project.version})</name>
+	<artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
 	<groupId>tools.dynamia.modules</groupId>
-	<version>6.0.0</version>
+	<version>5.0.0</version>
 	<url>http://www.dynamia.tools/modules/entityfiles</url>
 
 	<build>
@@ -32,21 +30,22 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>1.8.0.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>tools.dynamia.modules.entityfiles</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-s3</artifactId>
-			<version>1.10.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
+			<groupId>tools.dynamia</groupId>
+			<artifactId>tools.dynamia.zk.crud</artifactId>
+			<version>${dynatools.version}</version>
+			<type>jar</type>
 		</dependency>
 	</dependencies>
+
 </project>

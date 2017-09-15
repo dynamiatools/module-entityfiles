@@ -4,21 +4,9 @@
  */
 package tools.dynamia.modules.entityfile.service.impl;
 
-import java.io.File;
-import java.io.Serializable;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import tools.dynamia.commons.BeanUtils;
 import tools.dynamia.commons.StringUtils;
 import tools.dynamia.commons.logger.LoggingService;
@@ -29,22 +17,25 @@ import tools.dynamia.domain.query.QueryParameters;
 import tools.dynamia.domain.services.CrudService;
 import tools.dynamia.domain.util.DomainUtils;
 import tools.dynamia.integration.Containers;
-import tools.dynamia.integration.scheduling.Task;
 import tools.dynamia.io.IOUtils;
-import tools.dynamia.modules.entityfile.EntityFileAccountProvider;
-import tools.dynamia.modules.entityfile.EntityFileAware;
-import tools.dynamia.modules.entityfile.EntityFileException;
-import tools.dynamia.modules.entityfile.EntityFileStorage;
-import tools.dynamia.modules.entityfile.StoredEntityFile;
-import tools.dynamia.modules.entityfile.UploadedFileInfo;
+import tools.dynamia.modules.entityfile.*;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.local.LocalEntityFileStorage;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.io.File;
+import java.io.Serializable;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 /**
- *
  * @author djinn
  */
 @Service
@@ -184,7 +175,7 @@ class EntityFileServiceImpl implements EntityFileService {
 
     @Override
     public List<EntityFile> getEntityFiles(Class clazz, Serializable id, EntityFile parentDirectory) {
-        QueryParameters params = new QueryParameters();        
+        QueryParameters params = new QueryParameters();
         params.add("targetEntity", QueryConditions.eq(clazz.getName()));
 
         if (id instanceof Long) {
@@ -227,18 +218,17 @@ class EntityFileServiceImpl implements EntityFileService {
                     try {
                         Object object = BeanUtils.newInstance(entityClassName);
                         if (object instanceof EntityFileAware) {
-                            crudService.executeWithinTransaction(new Task() {
-                                @Override
-                                public void doWork() {
-                                    logger.info("Processing batch EntityFileAware for " + entityClassName);
-                                    String updateQuery = "update "
-                                            + entityClassName
-                                            + " e set e.filesCount = (select count(ef.id) from EntityFile ef where ef.targetEntityId = e.id and ef.state = :state and ef.type in (:types) and ef.targetEntity='"
-                                            + entityClassName + "')";
-                                    QueryParameters parameters = QueryParameters.with("state", EntityFileState.VALID)
-                                            .add("types", Arrays.asList(EntityFileType.FILE, EntityFileType.IMAGE));
-                                    crudService.execute(updateQuery, parameters);
-                                }
+                            crudService.executeWithinTransaction(() -> {
+
+                                logger.info("Processing batch EntityFileAware for " + entityClassName);
+                                String updateQuery = "update "
+                                        + entityClassName
+                                        + " e set e.filesCount = (select count(ef.id) from EntityFile ef where ef.targetEntityId = e.id and ef.state = :state and ef.type in (:types) and ef.targetEntity='"
+                                        + entityClassName + "')";
+                                QueryParameters parameters = QueryParameters.with("state", EntityFileState.VALID)
+                                        .add("types", Arrays.asList(EntityFileType.FILE, EntityFileType.IMAGE));
+                                crudService.execute(updateQuery, parameters);
+
                             });
                         }
                     } catch (Exception e) {
@@ -278,7 +268,7 @@ class EntityFileServiceImpl implements EntityFileService {
 
     @Override
     public EntityFile
-            getEntityFile(String uuid) {
+    getEntityFile(String uuid) {
         try {
             return (EntityFile) entityManager.createQuery("select e from " + EntityFile.class
                     .getSimpleName() + " e where e.uuid = :uuid")
@@ -332,14 +322,13 @@ class EntityFileServiceImpl implements EntityFileService {
     }
 
     private void fixuuid() {
-        crudService.executeWithinTransaction(new Task() {
-            @Override
-            public void doWork() {
-                logger.info("Fixing null UUIDs");
-                String updateQuery = "update " + EntityFile.class
-                        .getName() + " e set e.uuid = e.id where e.uuid is null";
-                crudService.execute(updateQuery, new QueryParameters());
-            }
+        crudService.executeWithinTransaction(() -> {
+
+            logger.info("Fixing null UUIDs");
+            String updateQuery = "update " + EntityFile.class
+                    .getName() + " e set e.uuid = e.id where e.uuid is null";
+            crudService.execute(updateQuery, new QueryParameters());
+
         });
 
     }
