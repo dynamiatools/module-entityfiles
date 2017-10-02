@@ -36,6 +36,8 @@ public class EntityFileUtils {
 		if (obj != null) {
 
 			CrudView view = (CrudView) Viewers.getView(EntityFile.class, "crud", null);
+
+			view.setHeight(null);
 			EntityFileController controller = (EntityFileController) view.getController();
 			controller.setTargetEntity((AbstractEntity) obj);
 			controller.doQuery();

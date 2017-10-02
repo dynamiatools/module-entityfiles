@@ -9,13 +9,14 @@ import org.zkoss.zk.ui.Executions;
 
 import tools.dynamia.actions.ActionGroup;
 import tools.dynamia.actions.InstallAction;
+import tools.dynamia.actions.ReadableOnly;
 import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.ui.MessageType;
 import tools.dynamia.ui.UIMessages;
 
 @InstallAction
-public class DownloadFileAction extends AbstractEntityFileAction {
+public class DownloadFileAction extends AbstractEntityFileAction implements ReadableOnly{
 
 	public DownloadFileAction() {
 		setName("Descargar Archivo");
