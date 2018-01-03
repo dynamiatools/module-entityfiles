@@ -13,7 +13,7 @@ package tools.dynamia.modules.entityfile;
  */
 public interface EntityFileAware {
 
-    public Long getFilesCount();
+    Long getFilesCount();
 
-    public void setFilesCount(Long cout);
+    void setFilesCount(Long cout);
 }

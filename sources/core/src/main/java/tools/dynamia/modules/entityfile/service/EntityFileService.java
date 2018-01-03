@@ -29,7 +29,7 @@ public interface EntityFileService {
 	 *            the description
 	 * @return the entity file
 	 */
-	public EntityFile createDirectory(Object ownerEntity, String name, String description);
+    EntityFile createDirectory(Object ownerEntity, String name, String description);
 
 	/**
 	 * Creates the directory.
@@ -42,7 +42,7 @@ public interface EntityFileService {
 	 *            the description
 	 * @return the entity file
 	 */
-	public EntityFile createDirectory(EntityFile parent, String name, String description);
+    EntityFile createDirectory(EntityFile parent, String name, String description);
 
 	/**
 	 * Creates the entity file.
@@ -55,7 +55,7 @@ public interface EntityFileService {
 	 *            the desc
 	 * @return the entity file
 	 */
-	public EntityFile createEntityFile(UploadedFileInfo fileInfo, Object target, String desc);
+    EntityFile createEntityFile(UploadedFileInfo fileInfo, Object target, String desc);
 
 	/**
 	 * Creates the entity file.
@@ -66,7 +66,7 @@ public interface EntityFileService {
 	 *            the target entity
 	 * @return the entity file
 	 */
-	public EntityFile createEntityFile(UploadedFileInfo fileInfo, Object targetEntity);
+    EntityFile createEntityFile(UploadedFileInfo fileInfo, Object targetEntity);
 
 	/**
 	 * Gets the entity files.
@@ -79,7 +79,7 @@ public interface EntityFileService {
 	 *            the parent directory
 	 * @return the entity files
 	 */
-	public abstract List<EntityFile> getEntityFiles(Class clazz, Serializable id, EntityFile parentDirectory);
+    List<EntityFile> getEntityFiles(Class clazz, Serializable id, EntityFile parentDirectory);
 
 	/**
 	 * Gets the entity files.
@@ -90,7 +90,7 @@ public interface EntityFileService {
 	 *            the parent directory
 	 * @return the entity files
 	 */
-	public abstract List<EntityFile> getEntityFiles(Object entity, EntityFile parentDirectory);
+    List<EntityFile> getEntityFiles(Object entity, EntityFile parentDirectory);
 
 	/**
 	 * Gets the entity files.
@@ -99,7 +99,7 @@ public interface EntityFileService {
 	 *            the entity
 	 * @return the entity files
 	 */
-	public abstract List<EntityFile> getEntityFiles(Object entity);
+    List<EntityFile> getEntityFiles(Object entity);
 
 	/**
 	 * Delete.
@@ -107,19 +107,19 @@ public interface EntityFileService {
 	 * @param entityFile
 	 *            the entity file
 	 */
-	public abstract void delete(EntityFile entityFile);
+    void delete(EntityFile entityFile);
 
 	/**
 	 * Sync entity file aware.
 	 */
-	public abstract void syncEntityFileAware();
+    void syncEntityFileAware();
 
 	/**
 	 * Get an stored entity file instance for download
 	 * @param entityFile
 	 * @return
 	 */
-	public abstract StoredEntityFile download(EntityFile entityFile);
+    StoredEntityFile download(EntityFile entityFile);
 
 	/**
 	 * Download the EntityFile internal file to a local output file, this is
@@ -128,7 +128,7 @@ public interface EntityFileService {
 	 * @param entityFile
 	 * @param outputFile
 	 */
-	public abstract void download(EntityFile entityFile, File outputFile);
+    void download(EntityFile entityFile, File outputFile);
 
 	/**
 	 * Creates the temporal entity file.
@@ -137,7 +137,7 @@ public interface EntityFileService {
 	 *            the file info
 	 * @return the entity file
 	 */
-	public abstract EntityFile createTemporalEntityFile(UploadedFileInfo fileInfo);
+    EntityFile createTemporalEntityFile(UploadedFileInfo fileInfo);
 
 	/**
 	 * Configure entity file. Setup targetEntity and targetEntityId for
@@ -148,10 +148,10 @@ public interface EntityFileService {
 	 * @param entityFile
 	 *            the entity file
 	 */
-	public abstract void configureEntityFile(Object target, EntityFile entityFile);
+    void configureEntityFile(Object target, EntityFile entityFile);
 
-	public abstract void syncEntityFileAware(Object target);
+	void syncEntityFileAware(Object target);
 
-	public EntityFile getEntityFile(String uuid);
+	EntityFile getEntityFile(String uuid);
 
 }

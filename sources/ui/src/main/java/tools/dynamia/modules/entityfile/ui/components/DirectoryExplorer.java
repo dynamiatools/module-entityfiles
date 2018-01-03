@@ -113,7 +113,7 @@ public class DirectoryExplorer extends Window implements ChildrenLoader<FileInfo
     }
 
     @Override
-    public void onEvent(Event event) throws Exception {
+    public void onEvent(Event event) {
         Treeitem item = tree.getSelectedItem();
         if (item != null) {
             DirectoryTreeNode node = item.getValue();

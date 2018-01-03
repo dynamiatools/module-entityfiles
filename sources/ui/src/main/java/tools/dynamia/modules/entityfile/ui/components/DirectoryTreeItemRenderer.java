@@ -21,7 +21,7 @@ import tools.dynamia.ui.icons.IconsTheme;
 public class DirectoryTreeItemRenderer implements TreeitemRenderer<DirectoryTreeNode>, EventListener<Event> {
 
     @Override
-    public void render(Treeitem item, DirectoryTreeNode data, int index) throws Exception {
+    public void render(Treeitem item, DirectoryTreeNode data, int index) {
 
         item.setValue(data);
         item.setLabel(data.getData().getName());
@@ -32,7 +32,7 @@ public class DirectoryTreeItemRenderer implements TreeitemRenderer<DirectoryTree
     }
 
     @Override
-    public void onEvent(Event event) throws Exception {
+    public void onEvent(Event event) {
         Treeitem item = (Treeitem) event.getTarget();
         DirectoryTreeNode node = item.getValue();
         if (item.isOpen()) {

@@ -39,7 +39,7 @@ public class EntityFileUtils {
 
 			view.setHeight(null);
 			EntityFileController controller = (EntityFileController) view.getController();
-			controller.setTargetEntity((AbstractEntity) obj);
+			controller.setTargetEntity(obj);
 			controller.doQuery();
 			ZKUtil.showDialog("Archivos Asociados", view, "80%", "80%");
 

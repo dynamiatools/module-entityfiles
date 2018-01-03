@@ -4,14 +4,14 @@ import tools.dynamia.modules.entityfile.domain.EntityFile;
 
 public interface EntityFileStorage {
 
-    public String getId();
+    String getId();
 
-    public String getName();
+    String getName();
 
-    public void upload(EntityFile entityFile, UploadedFileInfo fileInfo);
+    void upload(EntityFile entityFile, UploadedFileInfo fileInfo);
 
-    public StoredEntityFile download(EntityFile entityFile);
+    StoredEntityFile download(EntityFile entityFile);
 
-    public void delete(EntityFile entityFile);
+    void delete(EntityFile entityFile);
 
 }

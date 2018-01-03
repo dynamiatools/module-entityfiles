@@ -11,6 +11,6 @@ package tools.dynamia.modules.entityfile;
  */
 public interface EntityFileAccountProvider {
 
-    public Long getAccountId();
+    Long getAccountId();
 
 }

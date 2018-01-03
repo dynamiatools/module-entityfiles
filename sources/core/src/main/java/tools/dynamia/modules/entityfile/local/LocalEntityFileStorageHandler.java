@@ -39,7 +39,7 @@ public class LocalEntityFileStorageHandler extends ResourceHttpRequestHandler {
             accountProvider = Containers.get().findObject(EntityFileAccountProvider.class);
             if (accountProvider == null) {
                 accountProvider = () -> 0L;
-            };
+            }
         }
 
         File file = null;
