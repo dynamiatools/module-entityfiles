@@ -2,97 +2,105 @@ package tools.dynamia.modules.entityfile;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import tools.dynamia.io.FileInfo;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 
 public class UploadedFileInfo {
 
-	private String fullName;
-	private String contentType;
-	private InputStream inputStream;
-	private EntityFile parent;
-	private boolean shared;
-	private String subfolder;
-	private String storedFileName;
+    private String fullName;
+    private String contentType;
+    private InputStream inputStream;
+    private EntityFile parent;
+    private boolean shared;
+    private String subfolder;
+    private String storedFileName;
 
-	public UploadedFileInfo() {
-		// TODO Auto-generated constructor stub
-	}
+    public UploadedFileInfo() {
+        // TODO Auto-generated constructor stub
+    }
 
-	public UploadedFileInfo(FileInfo info) throws FileNotFoundException {
-		this.fullName = info.getName();
-		this.inputStream = new FileInputStream(info.getFile());
-	}
+    public UploadedFileInfo(FileInfo info) throws FileNotFoundException {
+        this.fullName = info.getName();
+        this.inputStream = new FileInputStream(info.getFile());
+    }
 
-	public UploadedFileInfo(String fullName, InputStream inputStream) {
-		super();
-		this.fullName = fullName;
-		this.inputStream = inputStream;
-	}
+    public UploadedFileInfo(Path file) throws IOException {
+        this.fullName = file.getFileName().toString();
+        this.inputStream = Files.newInputStream(file);
+    }
 
-	public UploadedFileInfo(String fullName, String contentType, InputStream inputStream) {
-		super();
-		this.fullName = fullName;
-		this.contentType = contentType;
-		this.inputStream = inputStream;
-	}
+    public UploadedFileInfo(String fullName, InputStream inputStream) {
+        super();
+        this.fullName = fullName;
+        this.inputStream = inputStream;
+    }
 
-	public String getStoredFileName() {
-		return storedFileName;
-	}
+    public UploadedFileInfo(String fullName, String contentType, InputStream inputStream) {
+        super();
+        this.fullName = fullName;
+        this.contentType = contentType;
+        this.inputStream = inputStream;
+    }
 
-	public void setStoredFileName(String storedFileName) {
-		this.storedFileName = storedFileName;
-	}
+    public String getStoredFileName() {
+        return storedFileName;
+    }
 
-	public EntityFile getParent() {
-		return parent;
-	}
+    public void setStoredFileName(String storedFileName) {
+        this.storedFileName = storedFileName;
+    }
 
-	public void setParent(EntityFile parent) {
-		this.parent = parent;
-	}
+    public EntityFile getParent() {
+        return parent;
+    }
 
-	public String getFullName() {
-		return fullName;
-	}
+    public void setParent(EntityFile parent) {
+        this.parent = parent;
+    }
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
+    public String getFullName() {
+        return fullName;
+    }
 
-	public String getContentType() {
-		return contentType;
-	}
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public InputStream getInputStream() {
-		return inputStream;
-	}
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
+    public InputStream getInputStream() {
+        return inputStream;
+    }
 
-	public boolean isShared() {
-		return shared;
-	}
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
 
-	public void setShared(boolean shared) {
-		this.shared = shared;
-	}
+    public boolean isShared() {
+        return shared;
+    }
 
-	public String getSubfolder() {
-		return subfolder;
-	}
+    public void setShared(boolean shared) {
+        this.shared = shared;
+    }
 
-	public void setSubfolder(String subfolder) {
-		this.subfolder = subfolder;
-	}
+    public String getSubfolder() {
+        return subfolder;
+    }
+
+    public void setSubfolder(String subfolder) {
+        this.subfolder = subfolder;
+    }
 
 }
