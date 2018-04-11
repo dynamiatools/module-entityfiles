@@ -63,6 +63,7 @@ public class LocalEntityFileStorage implements EntityFileStorage {
     private String generateURL(EntityFile entityFile) {
         String serverPath = HttpUtils.getServerPath();
         String url = serverPath + LOCAL_FILE_HANDLER + entityFile.getName() + "?uuid=" + entityFile.getUuid();
+        url = url.replace(" ", "%20");
         return url;
     }
 
