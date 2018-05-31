@@ -36,7 +36,7 @@ public class NewFileAction extends AbstractEntityFileAction {
 					info.setParent(evt.getEntityFile());
 					service.createEntityFile(info, evt.getTargetEntity());
 				}
-				evt.getView().getController().doQuery();
+				evt.getCrudView().getController().doQuery();
 				UIMessages.showMessage("Archivo(s) Cargado(s) Correctamente");
 			} else {
 				UIMessages.showMessage("Debe seleccionar al menos un archivo", MessageType.ERROR);

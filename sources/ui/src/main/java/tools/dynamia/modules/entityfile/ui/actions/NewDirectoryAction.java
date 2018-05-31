@@ -35,7 +35,7 @@ public class NewDirectoryAction extends AbstractEntityFileAction {
                 } else {
                     service.createDirectory(evt.getTargetEntity(), dirName, "");
                 }
-                evt.getView().getController().doQuery();
+                evt.getCrudView().getController().doQuery();
             } else {
                 UIMessages.showMessage("Ingrese nombre del nuevo directorio", MessageType.ERROR);
             }

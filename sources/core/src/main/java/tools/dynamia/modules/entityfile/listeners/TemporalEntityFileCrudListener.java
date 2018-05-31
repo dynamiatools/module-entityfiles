@@ -43,7 +43,7 @@ public class TemporalEntityFileCrudListener extends CrudServiceListenerAdapter<O
 	}
 
 	private void checkEntityFiles(Object entity) {
-		if (DomainUtils.isJPAEntity(entity) && !(entity instanceof EntityFile)) {
+		if (DomainUtils.isEntity(entity) && !(entity instanceof EntityFile)) {
 			List<PropertyInfo> properties = BeanUtils.getPropertiesInfo(entity.getClass());
 			for (PropertyInfo propertyInfo : properties) {
 				if (propertyInfo.is(EntityFile.class)) {

@@ -114,9 +114,9 @@ class EntityFileServiceImpl implements EntityFileService {
     @Override
     public void configureEntityFile(Object target, EntityFile entityFile) {
         if (target != null) {
-            if (DomainUtils.isJPAEntity(target)) {
+            if (DomainUtils.isEntity(target)) {
                 entityFile.setTargetEntity(target.getClass().getName());
-                Serializable id = DomainUtils.getJPAIdValue(target);
+                Serializable id = DomainUtils.findEntityId(target);
 
                 if (id == null) {
                     throw new EntityFileException("Null id for entity " + target.getClass() + " -> " + target);
@@ -165,12 +165,12 @@ class EntityFileServiceImpl implements EntityFileService {
     @Override
     public List<EntityFile> getEntityFiles(Object entity) {
 
-        return getEntityFiles(entity.getClass(), DomainUtils.getJPAIdValue(entity), null);
+        return getEntityFiles(entity.getClass(), DomainUtils.findEntityId(entity), null);
     }
 
     @Override
     public List<EntityFile> getEntityFiles(Object entity, EntityFile parentDirectory) {
-        return getEntityFiles(entity.getClass(), DomainUtils.getJPAIdValue(entity), parentDirectory);
+        return getEntityFiles(entity.getClass(), DomainUtils.findEntityId(entity), parentDirectory);
     }
 
     @Override
@@ -286,7 +286,7 @@ class EntityFileServiceImpl implements EntityFileService {
         if (target != null && target instanceof EntityFileAware) {
             logger.info("Processing EntityFileAware for " + target.getClass() + " - " + target);
             EntityFileAware efa = (EntityFileAware) target;
-            efa.setFilesCount(counttEntityFiles(target.getClass(), DomainUtils.getJPAIdValue(target)));
+            efa.setFilesCount(counttEntityFiles(target.getClass(), DomainUtils.findEntityId(target)));
             crudService.update(target);
         }
     }

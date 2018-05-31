@@ -12,7 +12,7 @@ public abstract class AbstractEntityFileAction extends AbstractCrudAction {
     @Override
     public void actionPerformed(CrudActionEvent evt) {
         EntityFileController controller = (EntityFileController) evt.getController();
-        actionPerformed(new EntityFileActionEvent(controller.getTargetEntity(), evt.getData(), evt.getSource(), evt.getView(), controller));
+        actionPerformed(new EntityFileActionEvent(controller.getTargetEntity(), evt.getData(), evt.getSource(), evt.getCrudView(), controller));
     }
 
     public abstract void actionPerformed(EntityFileActionEvent evt);
