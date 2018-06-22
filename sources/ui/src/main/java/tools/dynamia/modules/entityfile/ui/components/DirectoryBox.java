@@ -16,7 +16,7 @@ import tools.dynamia.zk.ComponentAliasIndex;
 
 /**
  *
- * @author mario
+ * @author Mario Serrano Leones
  */
 public class DirectoryBox extends Bandbox {
 

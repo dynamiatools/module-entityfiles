@@ -18,7 +18,7 @@ import tools.dynamia.modules.entityfile.ui.util.EntityFileUtils;
 
 /**
  *
- * @author mario
+ * @author Mario Serrano Leones
  */
 @InstallAction
 public class FileAction extends AbstractCrudAction {

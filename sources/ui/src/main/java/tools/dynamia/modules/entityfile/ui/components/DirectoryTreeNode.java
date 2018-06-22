@@ -11,7 +11,7 @@ import tools.dynamia.zk.crud.ui.LazyEntityTreeNode;
 
 /**
  *
- * @author mario
+ * @author Mario Serrano Leones
  */
 public class DirectoryTreeNode extends LazyEntityTreeNode<FileInfo> {
 

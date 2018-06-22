@@ -9,7 +9,7 @@ package tools.dynamia.modules.entityfile;
  * Use this interface in entitys to know exactly how many files the entity has attached. The EntityFile module automatically count the files each time you
  * attach a file to entity
  *
- * @author mario
+ * @author Mario Serrano Leones
  */
 public interface EntityFileAware {
 

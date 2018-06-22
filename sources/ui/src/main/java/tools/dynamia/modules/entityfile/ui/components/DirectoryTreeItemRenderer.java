@@ -16,7 +16,7 @@ import tools.dynamia.ui.icons.IconsTheme;
 
 /**
  *
- * @author mario
+ * @author Mario Serrano Leones
  */
 public class DirectoryTreeItemRenderer implements TreeitemRenderer<DirectoryTreeNode>, EventListener<Event> {
 

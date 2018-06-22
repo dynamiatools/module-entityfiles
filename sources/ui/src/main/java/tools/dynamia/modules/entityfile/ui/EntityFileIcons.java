@@ -11,7 +11,7 @@ import tools.dynamia.ui.icons.InstallIcons;
 
 /**
  *
- * @author mario
+ * @author Mario Serrano Leones
  */
 @InstallIcons
 public class EntityFileIcons extends AbstractIconsProvider{

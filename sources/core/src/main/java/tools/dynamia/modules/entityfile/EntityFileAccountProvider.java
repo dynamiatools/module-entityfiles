@@ -7,7 +7,7 @@ package tools.dynamia.modules.entityfile;
 
 /**
  *
- * @author mario
+ * @author Mario Serrano Leones
  */
 public interface EntityFileAccountProvider {
 

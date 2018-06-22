@@ -13,7 +13,7 @@ import tools.dynamia.zk.crud.cfg.ConfigPage;
 
 /**
  *
- * @author mario
+ * @author Mario Serrano Leones
  */
 @Provider
 public class EntityFilesInstaller implements ModuleProvider {
