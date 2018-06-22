@@ -11,18 +11,7 @@
  */
 package tools.dynamia.modules.entityfile.domain;
 
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.BatchSize;
-
 import tools.dynamia.commons.StringUtils;
 import tools.dynamia.domain.BaseEntity;
 import tools.dynamia.domain.contraints.NotEmpty;
@@ -32,6 +21,10 @@ import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Table(name = "mod_entity_files")
@@ -206,7 +199,7 @@ public class EntityFile extends BaseEntity {
 
     public String getSizeAsString() {
         if (size != null) {
-            return IOUtils.formatFileSize(size.longValue());
+            return IOUtils.formatFileSize(size);
         } else {
             return null;
         }
