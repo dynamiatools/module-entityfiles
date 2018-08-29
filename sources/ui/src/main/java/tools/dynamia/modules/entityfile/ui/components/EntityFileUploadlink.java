@@ -1,7 +1,6 @@
 package tools.dynamia.modules.entityfile.ui.components;
 
-import java.io.File;
-
+import tools.dynamia.commons.Messages;
 import tools.dynamia.integration.Containers;
 import tools.dynamia.io.FileInfo;
 import tools.dynamia.modules.entityfile.EntityFileException;
@@ -11,6 +10,8 @@ import tools.dynamia.modules.entityfile.service.EntityFileService;
 import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
 import tools.dynamia.zk.ui.Uploadlink;
+
+import java.io.File;
 
 public class EntityFileUploadlink extends Uploadlink {
 
@@ -42,6 +43,9 @@ public class EntityFileUploadlink extends Uploadlink {
         this.entityFile = entityFile;
         if (entityFile != null) {
             configureFileInfo();
+        } else {
+            setUploadedFile(null);
+            setLabel(Messages.get(Uploadlink.class, "upload"));
         }
     }
 
