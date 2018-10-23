@@ -39,7 +39,7 @@ import java.util.Optional;
  * @author djinn
  */
 @Service
-class EntityFileServiceImpl implements EntityFileService {
+public class EntityFileServiceImpl implements EntityFileService {
 
     @Autowired
     private Parameters appParams;
