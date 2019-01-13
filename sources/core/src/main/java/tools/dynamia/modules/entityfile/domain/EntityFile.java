@@ -1,11 +1,11 @@
 /**
  * Dynamia Soluciones IT S.A.S Todos los Derechos Reservados (c) - 2015
- *
+ * <p>
  * Prohibida la reproduccion parcial o total de este archivo de código fuente en proyectos de software NO realizados por Dynamia Soluciones IT S.A.S. Cualquier
  * otro archivo de código fuente o librería que haga referencia a este tendrá la misma licencia.
- *
+ * <p>
  * mas info: http://www.dynamiasoluciones.com/licencia.html
- *
+ * <p>
  * Desarrollado por: Ing. Mario A. Serrano Leones
  * Email: mario@dynamiasoluciones.com
  */
@@ -13,6 +13,7 @@ package tools.dynamia.modules.entityfile.domain;
 
 import org.hibernate.annotations.BatchSize;
 import tools.dynamia.commons.StringUtils;
+import tools.dynamia.commons.URLable;
 import tools.dynamia.domain.BaseEntity;
 import tools.dynamia.domain.contraints.NotEmpty;
 import tools.dynamia.integration.Containers;
@@ -29,7 +30,7 @@ import java.util.List;
 @Entity
 @Table(name = "mod_entity_files")
 @BatchSize(size = 50)
-public class EntityFile extends BaseEntity {
+public class EntityFile extends BaseEntity implements URLable {
 
     @OneToMany(mappedBy = "parent")
     private List<EntityFile> children;
@@ -246,4 +247,8 @@ public class EntityFile extends BaseEntity {
         return service.download(this);
     }
 
+    @Override
+    public String toURL() {
+        return getStoredEntityFile().getUrl();
+    }
 }

@@ -1,10 +1,6 @@
 package tools.dynamia.modules.entityfile.local;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import tools.dynamia.domain.query.Parameters;
 import tools.dynamia.domain.services.CrudService;
 import tools.dynamia.integration.sterotypes.Service;
@@ -17,11 +13,15 @@ import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.web.util.HttpUtils;
 
+import java.io.File;
+import java.io.IOException;
+
 @Service
 public class LocalEntityFileStorage implements EntityFileStorage {
 
     public static final String ID = "LocalStorage";
     private static final String LOCAL_FILES_LOCATION = "LOCAL_FILES_LOCATION";
+    private static final String LOCAL_USE_HTTPS = "LOCAL_USE_HTTPS";
     private static final String DEFAULT_LOCATION = System.getProperty("user.home") + "/localentityfiles";
     static final String LOCAL_FILE_HANDLER = "/storage/";
 
@@ -62,6 +62,17 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 
     private String generateURL(EntityFile entityFile) {
         String serverPath = HttpUtils.getServerPath();
+        boolean useHttps = false;
+        try {
+            useHttps = Boolean.parseBoolean(appParams.getValue(LOCAL_USE_HTTPS, "false"));
+        } catch (Exception e) {
+            //ignore
+        }
+
+        if (useHttps && serverPath.startsWith("http:")) {
+            serverPath = serverPath.replace("http:", "https:");
+        }
+
         String url = serverPath + LOCAL_FILE_HANDLER + entityFile.getName() + "?uuid=" + entityFile.getUuid();
         url = url.replace(" ", "%20");
         return url;
