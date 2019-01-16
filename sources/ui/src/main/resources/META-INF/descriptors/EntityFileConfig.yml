@@ -22,6 +22,11 @@ fields:
     params:
       parameterName: GLOBAL_REPORTS_LOCATION
       cacheable: true
+  contextPath:
+    component: textbox
+    params:
+      parameterName: LOCAL_CONTEXT_PATH
+      cacheable: true
   useHttps:
     label: Use HTTPS for Local Storage
     component: checkbox

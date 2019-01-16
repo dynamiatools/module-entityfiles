@@ -22,6 +22,7 @@ public class LocalEntityFileStorage implements EntityFileStorage {
     public static final String ID = "LocalStorage";
     private static final String LOCAL_FILES_LOCATION = "LOCAL_FILES_LOCATION";
     private static final String LOCAL_USE_HTTPS = "LOCAL_USE_HTTPS";
+    private static final String LOCAL_CONTEXT_PATH = "LOCAL_CONTEXT_PATH";
     private static final String DEFAULT_LOCATION = System.getProperty("user.home") + "/localentityfiles";
     static final String LOCAL_FILE_HANDLER = "/storage/";
 
@@ -73,7 +74,18 @@ public class LocalEntityFileStorage implements EntityFileStorage {
             serverPath = serverPath.replace("http:", "https:");
         }
 
-        String url = serverPath + LOCAL_FILE_HANDLER + entityFile.getName() + "?uuid=" + entityFile.getUuid();
+        String context;
+        try {
+            context = appParams.getValue(LOCAL_CONTEXT_PATH, "");
+        } catch (Exception e) {
+            context = "";
+        }
+
+        if (context == null) {
+            context = "";
+        }
+
+        String url = serverPath + context + LOCAL_FILE_HANDLER + entityFile.getName() + "?uuid=" + entityFile.getUuid();
         url = url.replace(" ", "%20");
         return url;
     }
