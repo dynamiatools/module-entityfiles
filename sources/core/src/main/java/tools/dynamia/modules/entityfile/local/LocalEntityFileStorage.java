@@ -85,8 +85,10 @@ public class LocalEntityFileStorage implements EntityFileStorage {
             context = "";
         }
 
-        String url = serverPath + context + LOCAL_FILE_HANDLER + entityFile.getName() + "?uuid=" + entityFile.getUuid();
-        url = url.replace(" ", "%20");
+        String fileName = entityFile.getName();
+        fileName = fileName.replace(" ", "%20");
+        String url = serverPath + context + LOCAL_FILE_HANDLER + fileName + "?uuid=" + entityFile.getUuid();
+
         return url;
     }
 
