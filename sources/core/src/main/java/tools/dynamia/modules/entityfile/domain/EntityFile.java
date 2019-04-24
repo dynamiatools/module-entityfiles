@@ -62,6 +62,7 @@ public class EntityFile extends BaseEntity implements URLable {
     private String storedFileName;
 
     private Long accountId;
+    private String externalRef;
 
     public String getStoredFileName() {
         return storedFileName;
@@ -250,5 +251,13 @@ public class EntityFile extends BaseEntity implements URLable {
     @Override
     public String toURL() {
         return getStoredEntityFile().getUrl();
+    }
+
+    public String getExternalRef() {
+        return externalRef;
+    }
+
+    public void setExternalRef(String externalRef) {
+        this.externalRef = externalRef;
     }
 }
