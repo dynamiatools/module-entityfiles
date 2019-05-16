@@ -1,15 +1,26 @@
-/**
- * Dynamia Soluciones IT S.A.S Todos los Derechos Reservados (c) - 2015
- * <p>
- * Prohibida la reproduccion parcial o total de este archivo de código fuente en proyectos de software NO realizados por Dynamia Soluciones IT S.A.S. Cualquier
- * otro archivo de código fuente o librería que haga referencia a este tendrá la misma licencia.
- * <p>
- * mas info: http://www.dynamiasoluciones.com/licencia.html
- * <p>
- * Desarrollado por: Ing. Mario A. Serrano Leones
- * Email: mario@dynamiasoluciones.com
- */
 package tools.dynamia.modules.entityfile.domain;
+
+/*-
+ * #%L
+ * Dynamia Modules - EntityFiles - Core
+ * %%
+ * Copyright (C) 2016 - 2019 Dynamia Soluciones IT SAS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-3.0.html>.
+ * #L%
+ */
 
 import org.hibernate.annotations.BatchSize;
 import tools.dynamia.commons.StringUtils;
