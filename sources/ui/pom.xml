@@ -5,12 +5,11 @@
 	<parent>
 		<artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
 		<groupId>tools.dynamia.modules</groupId>
-		<version>6.1.0</version>
+		<version>6.2.0</version>
 	</parent>
-	<name>Dynamia Modules - EntityFiles - UI (${project.version})</name>
+	<name>Dynamia Modules - EntityFiles - UI</name>
 	<artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
-	<groupId>tools.dynamia.modules</groupId>
-	<version>6.1.0</version>
+	<version>6.2.0</version>
 	<url>http://www.dynamia.tools/modules/entityfiles</url>
 
 	<build>
@@ -43,7 +42,7 @@
 		<dependency>
 			<groupId>tools.dynamia</groupId>
 			<artifactId>tools.dynamia.zk.crud</artifactId>
-			<version>${dynatools.version}</version>
+			<version>${dynamiatools.version}</version>
 			<type>jar</type>
 		</dependency>
 	</dependencies>

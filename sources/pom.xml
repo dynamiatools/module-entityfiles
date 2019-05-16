@@ -5,10 +5,37 @@
     <groupId>tools.dynamia.modules</groupId>
     <artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
     <packaging>pom</packaging>
-    <version>6.1.0</version>
-    <name>Dynamia Modules - EntityFiles (${project.version})</name>
-    <url>http://www.dynamia.tools/modules/entityfiles</url>
+    <version>6.2.0</version>
+    <name>Dynamia Modules - EntityFiles</name>
+    <url>http://www.dynamia.tools/module-entityfiles</url>
+    <description>DynamiaTools extension to attach files to entities </description>
+    <inceptionYear>2016</inceptionYear>
 
+    <organization>
+        <name>Dynamia Soluciones IT SAS</name>
+        <url>http://www.dynamiasoluciones.com</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Mario Serrano Leones</name>
+            <email>mario@dynamiasoluciones.com</email>
+            <organization>Dynamia Soluciones IT</organization>
+            <organizationUrl>https://www.dynamiasoluciones.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License (LGPL v3)</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.en.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/dynamia-projects/module-entityfiles</url>
+    </scm>
 
     <modules>
         <module>core</module>
@@ -19,9 +46,9 @@
 
     <properties>
         <file.encoding>UTF-8</file.encoding>
-        <dynatools.version>3.5.0.Final</dynatools.version>
+        <dynamiatools.version>3.6.0.Final</dynamiatools.version>
         <spring.version>4.2.2.RELEASE</spring.version>
-        <saas.version>2.1.0</saas.version>
+        <saas.version>2.3.0</saas.version>
 
         <java.version>1.8</java.version>
         <maven.compiler>2.3.2</maven.compiler>
@@ -39,6 +66,19 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <encoding>${source.encoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.20</version>
+                <configuration>
+                    <verbose>false</verbose>
+                    <licenseName>lgpl_v3</licenseName>
+                    <roots>
+                        <root>src/main/java</root>
+                        <root>src/test</root>
+                    </roots>
                 </configuration>
             </plugin>
         </plugins>
@@ -73,10 +113,44 @@
 
 
     <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
         <repository>
-            <id>nexus</id>
-               <url>http://nexus.dynamiaweb.com/repository/releases/</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
