@@ -13,13 +13,21 @@ This extension allow attach files to database entities. Files are saved to local
 ```xml
 <dependency>
   <groupId>tools.dynamia.modules</groupId>
-  <artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
-  <version>3.6.0.Final</version>
+  <artifactId>tools.dynamia.modules.entityfiles</artifactId>
+  <version>6.2.1.Final</version>
 </dependency>
+
+<dependency>
+  <groupId>tools.dynamia.modules</groupId>
+  <artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
+  <version>6.2.1.Final</version>
+</dependency>
+
 ```
 
 **Gradle**
 ```groovy
-compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.ui:6.2.0'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles:6.2.1'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.ui:6.2.1'
 ```
 
