@@ -10,12 +10,12 @@ package tools.dynamia.modules.entityfile.local;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
@@ -85,23 +85,13 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 
     private String generateURL(EntityFile entityFile) {
         String serverPath = HttpUtils.getServerPath();
-        boolean useHttps = false;
-        try {
-            useHttps = Boolean.parseBoolean(appParams.getValue(LOCAL_USE_HTTPS, "false"));
-        } catch (Exception e) {
-            //ignore
-        }
+        boolean useHttps = isUseHttps();
 
         if (useHttps && serverPath.startsWith("http:")) {
             serverPath = serverPath.replace("http:", "https:");
         }
 
-        String context;
-        try {
-            context = appParams.getValue(LOCAL_CONTEXT_PATH, "");
-        } catch (Exception e) {
-            context = "";
-        }
+        String context = getContextPath();
 
         if (context == null) {
             context = "";
@@ -114,8 +104,40 @@ public class LocalEntityFileStorage implements EntityFileStorage {
         return url;
     }
 
+    private String getContextPath() {
+        String context = System.getProperty(LOCAL_CONTEXT_PATH);
+        try {
+            if (context == null) {
+                context = appParams.getValue(LOCAL_CONTEXT_PATH, "");
+            }
+        } catch (Exception e) {
+            context = "";
+        }
+        return context;
+    }
+
+    private boolean isUseHttps() {
+        boolean useHttps = false;
+
+        String useHttpsProperty = System.getProperty(LOCAL_USE_HTTPS);
+        if (useHttpsProperty != null && (useHttpsProperty.equals("true") || useHttpsProperty.equals("false"))) {
+            useHttps = Boolean.parseBoolean(useHttpsProperty);
+        } else {
+            try {
+                useHttps = Boolean.parseBoolean(appParams.getValue(LOCAL_USE_HTTPS, "false"));
+            } catch (Exception e) {
+                //ignore
+            }
+        }
+        return useHttps;
+    }
+
     public File getParentDir() {
-        String path = appParams.getValue(LOCAL_FILES_LOCATION, DEFAULT_LOCATION);
+
+        String path = System.getProperty(LOCAL_FILES_LOCATION);
+        if (path == null) {
+            path = appParams.getValue(LOCAL_FILES_LOCATION, DEFAULT_LOCATION);
+        }
         return new File(path);
     }
 
