@@ -333,12 +333,6 @@ public class EntityFileServiceImpl implements EntityFileService {
         }
     }
 
-    @PostConstruct
-    private void init() {
-        fixuuid();
-        syncEntityFileAware();
-
-    }
 
     private void fixuuid() {
         crudService.executeWithinTransaction(() -> {

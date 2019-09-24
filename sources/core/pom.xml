@@ -5,11 +5,11 @@
     <parent>
         <artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
         <groupId>tools.dynamia.modules</groupId>
-        <version>6.2.1</version>
+        <version>6.2.2</version>
     </parent>
     <name>Dynamia Modules - EntityFiles - Core</name>
     <artifactId>tools.dynamia.modules.entityfiles</artifactId>
-    <version>6.2.1</version>
+    <version>6.2.2</version>
     <url>http://www.dynamia.tools/modules/entityfiles</url>
 
     <build>
