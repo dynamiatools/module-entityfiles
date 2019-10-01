@@ -12,7 +12,7 @@
 	<name>Dynamia Modules - EntityFiles - S3</name>
 	<artifactId>tools.dynamia.modules.entityfiles.s3</artifactId>
 	<version>6.2.2</version>
-	<url>http://www.dynamia.tools/modules/entityfiles</url>
+	<url>https://www.dynamia.tools/modules/entityfiles</url>
 
 	<build>
 		<plugins>

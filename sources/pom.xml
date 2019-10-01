@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <version>6.2.2</version>
     <name>Dynamia Modules - EntityFiles</name>
-    <url>http://www.dynamia.tools/module-entityfiles</url>
+    <url>https://www.dynamia.tools/module-entityfiles</url>
     <description>DynamiaTools extension to attach files to entities </description>
     <inceptionYear>2016</inceptionYear>
 
