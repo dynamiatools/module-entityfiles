@@ -84,6 +84,7 @@ public class LocalEntityFileStorage implements EntityFileStorage {
     }
 
     private String generateURL(EntityFile entityFile) {
+
         String serverPath = HttpUtils.getServerPath();
         boolean useHttps = isUseHttps();
 
@@ -92,6 +93,7 @@ public class LocalEntityFileStorage implements EntityFileStorage {
         }
 
         String context = getContextPath();
+
 
         if (context == null) {
             context = "";
