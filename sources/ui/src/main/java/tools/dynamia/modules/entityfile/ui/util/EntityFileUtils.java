@@ -10,12 +10,12 @@ package tools.dynamia.modules.entityfile.ui.util;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
@@ -28,6 +28,9 @@ import java.io.InputStream;
 import org.zkoss.util.media.Media;
 import org.zkoss.zul.A;
 
+import org.zkoss.zul.Label;
+import org.zkoss.zul.Vlayout;
+import org.zkoss.zul.Window;
 import tools.dynamia.domain.AbstractEntity;
 import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.UploadedFileInfo;
@@ -41,44 +44,55 @@ import tools.dynamia.zk.util.ZKUtil;
 
 public class EntityFileUtils {
 
-	public static UploadedFileInfo build(Media media) {
-		InputStream is = null;
-		if (media.isBinary()) {
-			is = media.getStreamData();
-		} else {
-			is = new ByteArrayInputStream(media.getStringData().getBytes());
-		}
+    public static UploadedFileInfo build(Media media) {
+        InputStream is = null;
+        if (media.isBinary()) {
+            is = media.getStreamData();
+        } else {
+            is = new ByteArrayInputStream(media.getStringData().getBytes());
+        }
 
-		UploadedFileInfo info = new UploadedFileInfo(media.getName(), media.getContentType(), is);
+        UploadedFileInfo info = new UploadedFileInfo(media.getName(), media.getContentType(), is);
 
-		return info;
-	}
+        return info;
+    }
 
-	public static void showFileExplorer(Object obj) {
-		if (obj != null) {
+    public static void showFileExplorer(Object obj) {
+        if (obj != null) {
 
-			CrudView view = (CrudView) Viewers.getView(EntityFile.class, "crud", null);
+            CrudView view = (CrudView) Viewers.getView(EntityFile.class, "crud", null);
 
-			view.setHeight(null);
-			EntityFileController controller = (EntityFileController) view.getController();
-			controller.setTargetEntity(obj);
-			controller.doQuery();
-			ZKUtil.showDialog("Archivos Asociados", view, "80%", "80%");
+            view.setHeight(null);
+            EntityFileController controller = (EntityFileController) view.getController();
+            controller.setTargetEntity(obj);
+            controller.doQuery();
+            ZKUtil.showDialog("Archivos Asociados", view, "80%", "80%");
 
-		} else {
-			UIMessages.showMessage("Debe seleccionar un elemento para ver los archivos asociados", MessageType.INFO);
-		}
-	}
+        } else {
+            UIMessages.showMessage("Debe seleccionar un elemento para ver los archivos asociados", MessageType.INFO);
+        }
+    }
 
-	public static void showDownloadDialog(StoredEntityFile sef) {
-		A downloadLink = new A("Descargar " + sef.getEntityFile().getName());
-		downloadLink.setHref(sef.getUrl());
-		downloadLink.setTarget("_blank");
+    public static void showDownloadDialog(StoredEntityFile sef) {
+        Vlayout vlayout = new Vlayout();
+        vlayout.setStyle("text-align: center; background: white !important; margin: 10px");
+        vlayout.appendChild(new Label(sef.getEntityFile().getName()));
+        vlayout.appendChild(new Label(sef.getEntityFile().getDescription()));
 
-		ZKUtil.showDialog("Descarga de Archivo", downloadLink, "300px", "200px");
+        A downloadLink = new A("Descargar ");
+        downloadLink.setHref(sef.getUrl());
+        downloadLink.setTarget("_blank");
+        downloadLink.setZclass("btn btn-primary");
+        downloadLink.setIconSclass("fa fa-arrow-down");
+        downloadLink.setStyle("margin: 20px");
+        vlayout.appendChild(downloadLink);
 
-		UIMessages.showMessage("Clic en el link para descargar  " + sef.getEntityFile().getName());
+        Window window = ZKUtil.showDialog("Descargar Archivo", vlayout, "400px", null);
+        window.setStyle("background: white !important");
+        window.setContentStyle("background: white !important");
 
-	}
+        UIMessages.showMessage("Clic en el link para descargar  " + sef.getEntityFile().getName());
+
+    }
 
 }
