@@ -23,6 +23,7 @@ package tools.dynamia.modules.entityfile.local;
  */
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import tools.dynamia.domain.query.Parameters;
 import tools.dynamia.domain.services.CrudService;
 import tools.dynamia.integration.sterotypes.Service;
@@ -53,6 +54,9 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 
     @Autowired
     private CrudService crudService;
+
+    @Autowired
+    private Environment environment;
 
     @Override
     public String getId() {
@@ -121,7 +125,7 @@ public class LocalEntityFileStorage implements EntityFileStorage {
     private boolean isUseHttps() {
         boolean useHttps = false;
 
-        String useHttpsProperty = System.getProperty(LOCAL_USE_HTTPS);
+        String useHttpsProperty = environment.getProperty(LOCAL_USE_HTTPS);
         if (useHttpsProperty != null && (useHttpsProperty.equals("true") || useHttpsProperty.equals("false"))) {
             useHttps = Boolean.parseBoolean(useHttpsProperty);
         } else {
@@ -136,8 +140,8 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 
     public File getParentDir() {
 
-        String path = System.getProperty(LOCAL_FILES_LOCATION);
-        if (path == null) {
+        String path = environment.getProperty(LOCAL_FILES_LOCATION);
+        if (path == null || path.isEmpty()) {
             path = appParams.getValue(LOCAL_FILES_LOCATION, DEFAULT_LOCATION);
         }
         return new File(path);
