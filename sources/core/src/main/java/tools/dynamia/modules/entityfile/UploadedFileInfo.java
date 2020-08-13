@@ -22,10 +22,7 @@ package tools.dynamia.modules.entityfile;
  * #L%
  */
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -41,9 +38,14 @@ public class UploadedFileInfo {
     private boolean shared;
     private String subfolder;
     private String storedFileName;
+    private Long accountId;
 
     public UploadedFileInfo() {
-        // TODO Auto-generated constructor stub
+        //default
+    }
+
+    public UploadedFileInfo(File file) throws FileNotFoundException {
+        this(new FileInfo(file));
     }
 
     public UploadedFileInfo(FileInfo info) throws FileNotFoundException {
@@ -125,4 +127,11 @@ public class UploadedFileInfo {
         this.subfolder = subfolder;
     }
 
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
 }

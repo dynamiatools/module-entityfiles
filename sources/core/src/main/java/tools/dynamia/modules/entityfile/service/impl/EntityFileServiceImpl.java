@@ -44,7 +44,6 @@ import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.local.LocalEntityFileStorage;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.File;
@@ -105,7 +104,6 @@ public class EntityFileServiceImpl implements EntityFileService {
     @Override
     @Transactional
     public EntityFile createEntityFile(UploadedFileInfo fileInfo, Object target, String description) {
-        target = crudService.reload(target);
         logger.info("Creating new entity file for " + target + ", file: " + fileInfo.getFullName());
         EntityFile entityFile = new EntityFile();
         entityFile.setDescription(description);
@@ -116,7 +114,10 @@ public class EntityFileServiceImpl implements EntityFileService {
         entityFile.setSubfolder(fileInfo.getSubfolder());
         entityFile.setStoredFileName(fileInfo.getStoredFileName());
         configureEntityFile(target, entityFile);
-        configureEntityFileAccount(entityFile);
+        entityFile.setAccountId(fileInfo.getAccountId());
+        if (entityFile.getAccountId() == null) {
+            configureEntityFileAccount(entityFile);
+        }
         entityFile.setType(EntityFileType.getFileType(entityFile.getExtension()));
         entityFile.setParent(fileInfo.getParent());
         entityFile.setState(EntityFileState.VALID);
