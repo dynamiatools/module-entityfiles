@@ -20,7 +20,7 @@ package tools.dynamia.modules.entityfile.domain;
 import org.hibernate.annotations.BatchSize;
 import tools.dynamia.commons.StringUtils;
 import tools.dynamia.commons.URLable;
-import tools.dynamia.domain.BaseEntity;
+import tools.dynamia.domain.jpa.BaseEntity;
 import tools.dynamia.domain.contraints.NotEmpty;
 import tools.dynamia.integration.Containers;
 import tools.dynamia.io.IOUtils;
