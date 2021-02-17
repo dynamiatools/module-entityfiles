@@ -109,8 +109,9 @@ public class EntityFileServiceImpl implements EntityFileService {
         entityFile.setSubfolder(fileInfo.getSubfolder());
         entityFile.setStoredFileName(fileInfo.getStoredFileName());
         configureEntityFile(target, entityFile);
-        entityFile.setAccountId(fileInfo.getAccountId());
-        if (entityFile.getAccountId() == null) {
+        if (fileInfo.getAccountId() != null) {
+            entityFile.setAccountId(fileInfo.getAccountId());
+        } else {
             configureEntityFileAccount(entityFile);
         }
         entityFile.setType(EntityFileType.getFileType(entityFile.getExtension()));

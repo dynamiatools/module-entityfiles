@@ -69,6 +69,7 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 
         try {
             IOUtils.copy(fileInfo.getInputStream(), realFile);
+            entityFile.setSize(realFile.length());
         } catch (IOException e) {
             throw new EntityFileException("Error upload local file " + realFile, e);
         }
