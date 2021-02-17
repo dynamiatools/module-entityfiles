@@ -17,7 +17,10 @@
 
 package tools.dynamia.modules.entityfile.ui;
 
+import tools.dynamia.domain.query.QueryConditions;
+import tools.dynamia.domain.util.DomainUtils;
 import tools.dynamia.integration.Containers;
+import tools.dynamia.modules.entityfile.EntityFileAccountProvider;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
@@ -89,4 +92,22 @@ public class EntityFileController extends TreeCrudController<EntityFile> {
         return targetEntity;
     }
 
+    @Override
+    protected void beforeQuery() {
+        if (targetEntity != null) {
+            setParemeter("targetEntity", QueryConditions.eq(getTargetEntity().getClass().getName()));
+
+            Object id = DomainUtils.findEntityId(getTargetEntity());
+            if (id instanceof Long) {
+                setParemeter("targetEntityId", QueryConditions.eq(id));
+            } else {
+                setParemeter("targetEntitySId", QueryConditions.eq(id.toString()));
+            }
+        }
+
+        EntityFileAccountProvider provider = Containers.get().findObject(EntityFileAccountProvider.class);
+        if (provider != null) {
+            setParemeter("accountId", provider.getAccountId());
+        }
+    }
 }
