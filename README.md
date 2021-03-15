@@ -1,4 +1,5 @@
 [![Maven Central](https://img.shields.io/maven-central/v/tools.dynamia.modules/tools.dynamia.modules.entityfiles)](https://search.maven.org/search?q=tools.dynamia.modules.entityfiles)
+![Java Version Required](https://img.shields.io/badge/java-%3E%3D11-blue)
 
 # EntityFiles Module
 
