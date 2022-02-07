@@ -23,12 +23,12 @@
 	<parent>
 		<groupId>tools.dynamia.modules</groupId>
 		<artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
-		<version>6.4.0</version>
+		<version>6.5.0</version>
 	</parent>
 
 	<name>Dynamia Modules - EntityFiles - S3</name>
 	<artifactId>tools.dynamia.modules.entityfiles.s3</artifactId>
-	<version>6.4.0</version>
+	<version>6.5.0</version>
 	<url>https://www.dynamia.tools/modules/entityfiles</url>
 
 	<build>
@@ -55,13 +55,13 @@
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>
-			<version>1.11.875</version>
+			<version>1.12.131</version>
 		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
