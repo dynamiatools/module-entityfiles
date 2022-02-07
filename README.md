@@ -1,5 +1,5 @@
 [![Maven Central](https://img.shields.io/maven-central/v/tools.dynamia.modules/tools.dynamia.modules.entityfiles)](https://search.maven.org/search?q=tools.dynamia.modules.entityfiles)
-![Java Version Required](https://img.shields.io/badge/java-%3E%3D11-blue)
+![Java Version Required](https://img.shields.io/badge/java-11+-blue)
 
 # EntityFiles Module
 
@@ -10,7 +10,7 @@ metadata are store in the database in table `mod_entity_files` using JPA entity 
 
 - Core: Domain and API
 - UI: Actions and views for user interface integration.
-- S3 for Amazon Simple Storage Service
+- S3: Support to store files in Amazon S3 Bucket
 
 ## Installation
 
@@ -22,13 +22,13 @@ metadata are store in the database in table `mod_entity_files` using JPA entity 
     <dependency>
         <groupId>tools.dynamia.modules</groupId>
         <artifactId>tools.dynamia.modules.entityfiles</artifactId>
-        <version>6.4.0</version>
+        <version>6.5.0</version>
     </dependency>
 
     <dependency>
         <groupId>tools.dynamia.modules</groupId>
         <artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
-        <version>6.4.0</version>
+        <version>6.5.0</version>
     </dependency>
 </dependencies>
 ```
@@ -36,8 +36,8 @@ metadata are store in the database in table `mod_entity_files` using JPA entity 
 **Gradle**
 
 ```groovy
-compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles:6.4.0'
-compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.ui:6.4.0'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles:6.5.0'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.ui:6.5.0'
 ```
 
 ## Usage
@@ -82,10 +82,11 @@ Examples:
 ```Java
 
 //somewhere in your code
-class Somewhere {
+@Component
+class SomeSpringCompoonent{
 
     @Autowired
-    EntityFileService service;
+    private EntityFileService service;
 
     public void attachPhoto(File file, Person entity) {
         var fileInfo = new UploadFileInfo(file);
