@@ -35,7 +35,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "mod_entity_files")
-@BatchSize(size = 50)
+@BatchSize(size = 80)
 public class EntityFile extends BaseEntity implements URLable {
 
     @OneToMany(mappedBy = "parent")
