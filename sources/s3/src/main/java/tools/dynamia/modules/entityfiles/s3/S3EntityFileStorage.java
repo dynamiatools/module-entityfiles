@@ -21,8 +21,13 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import tools.dynamia.commons.SimpleCache;
 import tools.dynamia.commons.logger.LoggingService;
 import tools.dynamia.commons.logger.SLF4JLoggingService;
 import tools.dynamia.io.ImageUtil;
@@ -40,7 +45,6 @@ import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -50,21 +54,30 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.Permission;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
+/**
+ * {@link EntityFileStorage} implementation that store files in Amazon S3 service.
+ * The following environment variables are required AWS_ACCESS_KEY_ID, AWS_SECRET_KEY, AWS_S3_ENDPOINT, AWS_S3_BUCKET. The
+ * values are loaded using Spring {@link Environment} service
+ */
 @Service
 public class S3EntityFileStorage implements EntityFileStorage {
 
+    public static final String AWS_ACCESS_KEY_ID = "AWS_ACCESS_KEY_ID";
+    public static final String AWS_SECRET_KEY = "AWS_SECRET_KEY";
+    public static final String AWS_S3_ENDPOINT = "AWS_S3_ENDPOINT";
+    public static final String AWS_S3_BUCKET = "AWS_S3_BUCKET";
     private final LoggingService logger = new SLF4JLoggingService(S3EntityFileStorage.class);
 
-    private final Map<String, String> URL_CACHE = new HashMap<String, String>();
+    private final SimpleCache<String, String> URL_CACHE = new SimpleCache<>();
 
     public static final String ID = "AWSS3Storage";
 
-    private final String accessKey = System.getProperty("AWS_ACCESS_KEY_ID", System.getenv("AWS_ACCESS_KEY_ID"));
-    private final String secretKey = System.getProperty("AWS_SECRET_KEY", System.getenv("AWS_SECRET_KEY"));
-    private final String endpoint = System.getProperty("AWS_S3_ENDPOINT", System.getenv("AWS_S3_ENDPOINT"));
-    private final String bucketName = System.getProperty("AWS_S3_BUCKET", System.getenv("AWS_S3_BUCKET"));
+
+    @Autowired
+    private Environment environment;
 
     private AmazonS3 connection;
+
 
     @Override
     public String getId() {
@@ -89,6 +102,8 @@ public class S3EntityFileStorage implements EntityFileStorage {
             metadata.addUserMetadata("accountId", entityFile.getAccountId().toString());
             metadata.addUserMetadata("uuid", entityFile.getUuid());
             metadata.addUserMetadata("creator", entityFile.getCreator());
+            metadata.addUserMetadata("description", entityFile.getDescription());
+
 
             PutObjectRequest request = new PutObjectRequest(getBucketName(), folder + fileName, fileInfo.getInputStream(), metadata);
             request.setCannedAcl(CannedAccessControlList.Private);
@@ -120,15 +135,13 @@ public class S3EntityFileStorage implements EntityFileStorage {
             String folder = getAccountFolderName(entityFile.getAccountId());
             if (entityFile.isShared()) {
                 url = generateStaticURL(getBucketName(), folder + fileName);
-                URL_CACHE.put(urlKey, url);
+                URL_CACHE.add(urlKey, url);
             } else {
                 url = generateSignedURL(getBucketName(), folder + fileName);
             }
         }
 
-        StoredEntityFile storedEntityFile = new S3StoredEntityFile(entityFile, url, new File(fileName));
-
-        return storedEntityFile;
+        return new S3StoredEntityFile(entityFile, url, new File(fileName));
     }
 
     private String generateSignedURL(String bucketName, String fileName) {
@@ -143,8 +156,10 @@ public class S3EntityFileStorage implements EntityFileStorage {
     }
 
     private String generateStaticURL(String bucketName, String fileName) {
-        return String.format("http://%s.%s/%s", bucketName, endpoint, fileName);
+        String endpoint = getEndpoint();
+        return String.format("https://%s.%s/%s", bucketName, endpoint, fileName);
     }
+
 
     private String getFileName(EntityFile entityFile) {
         String subfolder = "";
@@ -164,13 +179,17 @@ public class S3EntityFileStorage implements EntityFileStorage {
 
         if (connection == null) {
             ClientConfiguration clientConfig = new ClientConfiguration();
-            clientConfig.setProtocol(Protocol.HTTP);
+            clientConfig.setProtocol(Protocol.HTTPS);
 
-            AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
-            connection = new AmazonS3Client(credentials, clientConfig);
-            connection.setEndpoint(endpoint);
+            AWSCredentials credentials = new BasicAWSCredentials(getAccessKey(), getSecretKey());
+            connection = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials))
+                    .withClientConfiguration(clientConfig)
+                    .build();
 
-            if (!connection.doesBucketExist(bucketName)) {
+            connection.setEndpoint(getEndpoint());
+
+            String bucketName = getBucketName();
+            if (!connection.doesBucketExistV2(bucketName)) {
                 connection.createBucket(bucketName);
             }
 
@@ -179,8 +198,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
     }
 
     private String getAccountFolderName(Long accountId) {
-        String name = "account" + accountId + "/";
-        return name;
+        return "account" + accountId + "/";
     }
 
     private String generateThumbnailURL(EntityFile entityFile, int w, int h) {
@@ -197,7 +215,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
                 }
 
                 url = generateStaticURL(getBucketName(), folder + thumbfileName);
-                URL_CACHE.put(urlKey, url);
+                URL_CACHE.add(urlKey, url);
             }
             return url;
         } else {
@@ -206,7 +224,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
     }
 
     private void createAndUploadThumbnail(EntityFile entityFile, String bucketName, String folder, String fileName, String thumbfileName,
-            int w, int h) throws AmazonClientException {
+                                          int w, int h) throws AmazonClientException {
         try {
             File localDestination = File.createTempFile(System.currentTimeMillis() + "file", entityFile.getName());
             File localThumbDestination = File.createTempFile(System.currentTimeMillis() + "thumb", entityFile.getName());
@@ -219,6 +237,9 @@ public class S3EntityFileStorage implements EntityFileStorage {
 
             // metadata
             ObjectMetadata metadata = new ObjectMetadata();
+            metadata.addUserMetadata("thumbnail", "true");
+            metadata.addUserMetadata("name", entityFile.getName());
+            metadata.addUserMetadata("description", entityFile.getDescription());
             metadata.setContentType("image/" + entityFile.getExtension());
             request.setMetadata(metadata);
 
@@ -243,14 +264,35 @@ public class S3EntityFileStorage implements EntityFileStorage {
         return true;
     }
 
-    private String getBucketName() {
-
-        return bucketName;
-    }
 
     @Override
     public void delete(EntityFile entityFile) {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+
+    public void resetConnection() {
+        if (connection != null) {
+            connection.shutdown();
+            connection = null;
+        }
+    }
+
+
+    public String getBucketName() {
+        return environment.getProperty(AWS_S3_BUCKET);
+    }
+
+    public String getEndpoint() {
+        return environment.getProperty(AWS_S3_ENDPOINT);
+    }
+
+    public String getAccessKey() {
+        return environment.getProperty(AWS_ACCESS_KEY_ID);
+    }
+
+    public String getSecretKey() {
+        return environment.getProperty(AWS_SECRET_KEY);
     }
 
     class S3StoredEntityFile extends StoredEntityFile {
@@ -263,7 +305,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
         public String getThumbnailUrl(int width, int height) {
             return generateThumbnailURL(getEntityFile(), width, width);
         }
-
     }
+
 
 }
