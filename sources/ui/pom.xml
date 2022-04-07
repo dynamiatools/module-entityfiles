@@ -45,12 +45,7 @@
 	</build>
 
 	<dependencies>
-		<dependency>
-			<groupId>hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<version>1.8.0.10</version>
-			<scope>test</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>tools.dynamia.modules.entityfiles</artifactId>
