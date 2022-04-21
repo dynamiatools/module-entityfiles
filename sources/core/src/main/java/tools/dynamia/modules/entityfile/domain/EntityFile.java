@@ -17,11 +17,12 @@
 
 package tools.dynamia.modules.entityfile.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.BatchSize;
 import tools.dynamia.commons.StringUtils;
 import tools.dynamia.commons.URLable;
-import tools.dynamia.domain.jpa.BaseEntity;
 import tools.dynamia.domain.contraints.NotEmpty;
+import tools.dynamia.domain.jpa.BaseEntity;
 import tools.dynamia.integration.Containers;
 import tools.dynamia.io.IOUtils;
 import tools.dynamia.modules.entityfile.StoredEntityFile;
@@ -34,7 +35,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
-@Table(name = "mod_entity_files",indexes = {
+@Table(name = "mod_entity_files", indexes = {
         @Index(name = "idx_account", columnList = "accountId"),
         @Index(name = "idx_uuid", columnList = "uuid")
 })
@@ -42,6 +43,7 @@ import java.util.List;
 public class EntityFile extends BaseEntity implements URLable {
 
     @OneToMany(mappedBy = "parent")
+    @JsonIgnore
     private List<EntityFile> children;
     @NotNull(message = "Enter EntityFile targetEntity name")
     private String targetEntity;
@@ -54,6 +56,7 @@ public class EntityFile extends BaseEntity implements URLable {
     private String extension = "dir";
     private String contentType;
     @ManyToOne
+    @JsonIgnore
     private EntityFile parent;
     private boolean shared;
     @Column(name = "fileSize")
@@ -249,6 +252,7 @@ public class EntityFile extends BaseEntity implements URLable {
      *
      * @return StoredEntityFile
      */
+    @JsonIgnore
     public StoredEntityFile getStoredEntityFile() {
         EntityFileService service = Containers.get().findObject(EntityFileService.class);
         if (service == null) {
