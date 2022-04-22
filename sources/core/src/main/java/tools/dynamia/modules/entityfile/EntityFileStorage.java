@@ -31,4 +31,8 @@ public interface EntityFileStorage {
 
     void delete(EntityFile entityFile);
 
+    default void reloadParams(){
+
+    }
+
 }

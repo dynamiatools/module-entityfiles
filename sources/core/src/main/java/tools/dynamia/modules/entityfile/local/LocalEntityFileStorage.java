@@ -17,8 +17,8 @@
 
 package tools.dynamia.modules.entityfile.local;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import tools.dynamia.domain.ValidationError;
 import tools.dynamia.domain.query.Parameters;
 import tools.dynamia.domain.services.CrudService;
 import tools.dynamia.integration.sterotypes.Service;
@@ -44,14 +44,17 @@ public class LocalEntityFileStorage implements EntityFileStorage {
     private static final String DEFAULT_LOCATION = System.getProperty("user.home") + "/localentityfiles";
     static final String LOCAL_FILE_HANDLER = "/storage/";
 
-    @Autowired
-    private Parameters appParams;
+    private final Parameters appParams;
 
-    @Autowired
-    private CrudService crudService;
+    private final CrudService crudService;
 
-    @Autowired
-    private Environment environment;
+    private final Environment environment;
+
+    public LocalEntityFileStorage(Parameters appParams, CrudService crudService, Environment environment) {
+        this.appParams = appParams;
+        this.crudService = crudService;
+        this.environment = environment;
+    }
 
     @Override
     public String getId() {
@@ -201,4 +204,30 @@ public class LocalEntityFileStorage implements EntityFileStorage {
 
     }
 
+    public void copy(EntityFile entityFile, EntityFileStorage otherStorage) {
+        if (otherStorage instanceof LocalEntityFileStorage) {
+            throw new ValidationError("Cannot move to Local Storage");
+        }
+
+        if (ID.equals(entityFile.getStorageInfo())) {
+            try {
+                var localFile = getRealFile(entityFile);
+                if (localFile.exists()) {
+                    var uploadInfo = new UploadedFileInfo(localFile);
+                    uploadInfo.setStoredFileName(entityFile.getStoredFileName());
+                    otherStorage.upload(entityFile, uploadInfo);
+                } else {
+                    throw new EntityFileException("EntityFile local file " + localFile.getName() + " dont exits");
+                }
+            } catch (Exception e) {
+                throw new EntityFileException("Error moving entity file " + entityFile.getName() + " (" + entityFile.getUuid() + ") to new storage " + otherStorage, e);
+            }
+        }
+
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

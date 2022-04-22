@@ -108,6 +108,7 @@ public class EntityFileServiceImpl implements EntityFileService {
         entityFile.setShared(fileInfo.isShared());
         entityFile.setSubfolder(fileInfo.getSubfolder());
         entityFile.setStoredFileName(fileInfo.getStoredFileName());
+
         configureEntityFile(target, entityFile);
         if (fileInfo.getAccountId() != null) {
             entityFile.setAccountId(fileInfo.getAccountId());
@@ -117,6 +118,7 @@ public class EntityFileServiceImpl implements EntityFileService {
         entityFile.setType(EntityFileType.getFileType(entityFile.getExtension()));
         entityFile.setParent(fileInfo.getParent());
         entityFile.setState(EntityFileState.VALID);
+
         EntityFileStorage storage = getCurrentStorage();
         storage.upload(entityFile, fileInfo);
         entityFile.setStorageInfo(storage.getId());

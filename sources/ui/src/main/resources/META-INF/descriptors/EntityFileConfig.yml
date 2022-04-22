@@ -33,3 +33,32 @@ fields:
     params:
       parameterName: LOCAL_USE_HTTPS
       cacheable: true
+
+  s3BucketName:
+    label: Bucket Name
+    params:
+      parameterName: AWS_S3_BUCKET
+      cacheable: true
+  s3Endpoint:
+    label: Endpoint
+    params:
+      parameterName: AWS_S3_ENDPOINT
+      cacheable: true
+  s3User:
+    label: Identity
+    params:
+      parameterName: AWS_ACCESS_KEY_ID
+      cacheable: true
+  s3Secret:
+    label: Secret
+    params:
+      parameterName: AWS_SECRET_KEY
+      cacheable: true
+
+groups:
+  s3:
+    label: Amazon Web Service (S3)
+    fields: [ s3BucketName,s3Endpoint,s3User,s3Secret ]
+
+layout:
+  columns: 4

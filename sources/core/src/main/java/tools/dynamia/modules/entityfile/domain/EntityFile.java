@@ -70,6 +70,7 @@ public class EntityFile extends BaseEntity implements URLable {
     private String uuid = StringUtils.randomString();
     @Column(length = 1000)
     private String storageInfo;
+
     private String subfolder;
     private String storedFileName;
 

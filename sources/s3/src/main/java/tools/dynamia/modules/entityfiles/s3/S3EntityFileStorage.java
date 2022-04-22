@@ -17,19 +17,27 @@
 
 package tools.dynamia.modules.entityfiles.s3;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
+import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-
 import tools.dynamia.commons.SimpleCache;
 import tools.dynamia.commons.logger.LoggingService;
 import tools.dynamia.commons.logger.SLF4JLoggingService;
+import tools.dynamia.domain.query.ApplicationParameters;
 import tools.dynamia.io.ImageUtil;
 import tools.dynamia.modules.entityfile.EntityFileException;
 import tools.dynamia.modules.entityfile.EntityFileStorage;
@@ -38,21 +46,11 @@ import tools.dynamia.modules.entityfile.UploadedFileInfo;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.Protocol;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AccessControlList;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.GroupGrantee;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.Permission;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 /**
  * {@link EntityFileStorage} implementation that store files in Amazon S3 service.
@@ -69,14 +67,13 @@ public class S3EntityFileStorage implements EntityFileStorage {
     private final LoggingService logger = new SLF4JLoggingService(S3EntityFileStorage.class);
 
     private final SimpleCache<String, String> URL_CACHE = new SimpleCache<>();
+    private final SimpleCache<String, String> PARAMS_CACHE = new SimpleCache<>();
 
     public static final String ID = "AWSS3Storage";
 
 
     @Autowired
     private Environment environment;
-
-    private AmazonS3 connection;
 
 
     @Override
@@ -102,21 +99,28 @@ public class S3EntityFileStorage implements EntityFileStorage {
             metadata.addUserMetadata("accountId", entityFile.getAccountId().toString());
             metadata.addUserMetadata("uuid", entityFile.getUuid());
             metadata.addUserMetadata("creator", entityFile.getCreator());
-            metadata.addUserMetadata("description", entityFile.getDescription());
+            metadata.addUserMetadata("databaseId", String.valueOf(entityFile.getId()));
+            metadata.setContentLength(fileInfo.getLength());
+            metadata.setContentType(URLConnection.guessContentTypeFromName(entityFile.getName()));
 
 
-            PutObjectRequest request = new PutObjectRequest(getBucketName(), folder + fileName, fileInfo.getInputStream(), metadata);
+            final var key = folder + fileName;
+            final var bucket = getBucketName();
+            PutObjectRequest request;
+            if (fileInfo.getSource() instanceof File) {
+                request = new PutObjectRequest(bucket, key, (File) fileInfo.getSource());
+                request.setMetadata(metadata);
+            } else {
+                request = new PutObjectRequest(getBucketName(), key, fileInfo.getInputStream(), metadata);
+            }
             request.setCannedAcl(CannedAccessControlList.Private);
-            AccessControlList acl = new AccessControlList();
-            request.setAccessControlList(acl);
 
-            // ACL
             if (entityFile.isShared()) {
-                acl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
                 request.setCannedAcl(CannedAccessControlList.PublicRead);
             }
 
-            getConnection().putObject(request);
+            var result = getConnection().putObject(request);
+            logger.info("EntityFile " + entityFile + " uploaded to S3 Bucket " + getBucketName() + " / " + key);
 
         } catch (AmazonClientException amazonClientException) {
             logger.error("Error uploading entity file " + entityFile.getName() + " to S3", amazonClientException);
@@ -167,7 +171,8 @@ public class S3EntityFileStorage implements EntityFileStorage {
             subfolder = entityFile.getSubfolder() + "/";
         }
 
-        String storedFileName = entityFile.getUuid() + "_" + entityFile.getName();
+        var name = entityFile.getName().toLowerCase().trim().replace(" ", "_").replace("-", "_");
+        String storedFileName = entityFile.getUuid() + "_" + name;
         if (entityFile.getStoredFileName() != null && !entityFile.getStoredFileName().isEmpty()) {
             storedFileName = entityFile.getStoredFileName();
         }
@@ -176,25 +181,17 @@ public class S3EntityFileStorage implements EntityFileStorage {
     }
 
     private AmazonS3 getConnection() {
+        ClientConfiguration clientConfig = new ClientConfiguration();
+        clientConfig.setProtocol(Protocol.HTTPS);
 
-        if (connection == null) {
-            ClientConfiguration clientConfig = new ClientConfiguration();
-            clientConfig.setProtocol(Protocol.HTTPS);
+        AWSCredentials credentials = new BasicAWSCredentials(getAccessKey(), getSecretKey());
 
-            AWSCredentials credentials = new BasicAWSCredentials(getAccessKey(), getSecretKey());
-            connection = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials))
-                    .withClientConfiguration(clientConfig)
-                    .build();
-
-            connection.setEndpoint(getEndpoint());
-
-            String bucketName = getBucketName();
-            if (!connection.doesBucketExistV2(bucketName)) {
-                connection.createBucket(bucketName);
-            }
-
-        }
-        return connection;
+        return AmazonS3ClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(Regions.US_EAST_1)
+                .withRegionalUsEast1EndpointEnabled(true)
+                .withClientConfiguration(clientConfig)
+                .build();
     }
 
     private String getAccountFolderName(Long accountId) {
@@ -208,7 +205,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
             if (url == null) {
                 String folder = getAccountFolderName(entityFile.getAccountId());
                 String fileName = getFileName(entityFile);
-                String thumbfileName = "thumbs/" + w + "x" + h + "/" + fileName;
+                String thumbfileName = w + "x" + h + "/" + fileName;
 
                 if (!objectExists(getBucketName(), folder + thumbfileName)) {
                     createAndUploadThumbnail(entityFile, getBucketName(), folder, fileName, thumbfileName, w, h);
@@ -226,28 +223,34 @@ public class S3EntityFileStorage implements EntityFileStorage {
     private void createAndUploadThumbnail(EntityFile entityFile, String bucketName, String folder, String fileName, String thumbfileName,
                                           int w, int h) throws AmazonClientException {
         try {
+            final var key = folder + fileName;
             File localDestination = File.createTempFile(System.currentTimeMillis() + "file", entityFile.getName());
             File localThumbDestination = File.createTempFile(System.currentTimeMillis() + "thumb", entityFile.getName());
 
-            getConnection().getObject(new GetObjectRequest(bucketName, folder + fileName), localDestination);
+
+            var url = download(entityFile).getUrl();
+            Files.copy(new URL(url).openStream(), localDestination.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             ImageUtil.resizeImage(localDestination, localThumbDestination, entityFile.getExtension(), w, h);
 
-            PutObjectRequest request = new PutObjectRequest(bucketName, folder + thumbfileName, localThumbDestination);
 
             // metadata
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.addUserMetadata("thumbnail", "true");
             metadata.addUserMetadata("name", entityFile.getName());
             metadata.addUserMetadata("description", entityFile.getDescription());
+            metadata.addUserMetadata("uuid", entityFile.getUuid());
+            metadata.addUserMetadata("width", String.valueOf(w));
+            metadata.addUserMetadata("height", String.valueOf(h));
             metadata.setContentType("image/" + entityFile.getExtension());
+
+            PutObjectRequest request = new PutObjectRequest(bucketName, folder + thumbfileName, localThumbDestination);
             request.setMetadata(metadata);
 
-            // ACL
-            AccessControlList acl = new AccessControlList();
-            acl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
-            request.setCannedAcl(CannedAccessControlList.PublicRead);
-            request.setAccessControlList(acl);
+            if (entityFile.isShared()) {
+                request.setCannedAcl(CannedAccessControlList.PublicRead);
+            }
+
             getConnection().putObject(request);
 
         } catch (Exception e) {
@@ -272,27 +275,40 @@ public class S3EntityFileStorage implements EntityFileStorage {
 
 
     public void resetConnection() {
-        if (connection != null) {
-            connection.shutdown();
-            connection = null;
-        }
+
     }
 
 
     public String getBucketName() {
-        return environment.getProperty(AWS_S3_BUCKET);
+        return getParameter(AWS_S3_BUCKET);
     }
 
     public String getEndpoint() {
-        return environment.getProperty(AWS_S3_ENDPOINT);
+        return getParameter(AWS_S3_ENDPOINT);
     }
 
     public String getAccessKey() {
-        return environment.getProperty(AWS_ACCESS_KEY_ID);
+        return getParameter(AWS_ACCESS_KEY_ID);
+    }
+
+    private String getParameter(String name) {
+        var param = PARAMS_CACHE.getOrLoad(name, s -> {
+            var value = ApplicationParameters.get().getValue(name);
+            if (value == null) {
+                value = environment.getProperty(name);
+            }
+            return value;
+        });
+        return param;
     }
 
     public String getSecretKey() {
-        return environment.getProperty(AWS_SECRET_KEY);
+        return getParameter(AWS_SECRET_KEY);
+    }
+
+    @Override
+    public void reloadParams() {
+        PARAMS_CACHE.clear();
     }
 
     class S3StoredEntityFile extends StoredEntityFile {
@@ -308,4 +324,8 @@ public class S3EntityFileStorage implements EntityFileStorage {
     }
 
 
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

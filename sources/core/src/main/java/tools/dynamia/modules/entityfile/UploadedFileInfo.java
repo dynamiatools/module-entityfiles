@@ -17,12 +17,15 @@
 
 package tools.dynamia.modules.entityfile;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import tools.dynamia.io.FileInfo;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class UploadedFileInfo {
 
@@ -35,28 +38,40 @@ public class UploadedFileInfo {
     private String storedFileName;
     private Long accountId;
 
+    private long length;
+
+    private Object source;
+
     public UploadedFileInfo() {
         //default
     }
 
-    public UploadedFileInfo(File file) throws FileNotFoundException {
+    public UploadedFileInfo(File file) {
         this(new FileInfo(file));
     }
 
-    public UploadedFileInfo(FileInfo info) throws FileNotFoundException {
+    public UploadedFileInfo(FileInfo info) {
         this.fullName = info.getName();
-        this.inputStream = new FileInputStream(info.getFile());
+        this.length = info.getFile().length();
+        this.source = info.getFile();
     }
 
-    public UploadedFileInfo(Path file) throws IOException {
-        this.fullName = file.getFileName().toString();
-        this.inputStream = Files.newInputStream(file);
+    public UploadedFileInfo(Path path) {
+        this.fullName = path.getFileName().toString();
+        this.source = path;
+        try {
+            this.length = Files.size(path);
+        } catch (IOException e) {
+            //ignore
+        }
+
     }
 
     public UploadedFileInfo(String fullName, InputStream inputStream) {
         super();
         this.fullName = fullName;
         this.inputStream = inputStream;
+        this.source = inputStream;
     }
 
     public UploadedFileInfo(String fullName, String contentType, InputStream inputStream) {
@@ -64,6 +79,7 @@ public class UploadedFileInfo {
         this.fullName = fullName;
         this.contentType = contentType;
         this.inputStream = inputStream;
+        this.source = inputStream;
     }
 
     public String getStoredFileName() {
@@ -99,6 +115,17 @@ public class UploadedFileInfo {
     }
 
     public InputStream getInputStream() {
+        if (inputStream == null) {
+            try {
+                if (source instanceof File) {
+                    inputStream = new FileInputStream((File) source);
+                } else if (source instanceof Path) {
+                    inputStream = Files.newInputStream((Path) source);
+                }
+            } catch (IOException e) {
+                throw new EntityFileException(e);
+            }
+        }
         return inputStream;
     }
 
@@ -128,5 +155,17 @@ public class UploadedFileInfo {
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
+    }
+
+    public long getLength() {
+        return length;
+    }
+
+    public void setLength(long length) {
+        this.length = length;
+    }
+
+    public Object getSource() {
+        return source;
     }
 }
