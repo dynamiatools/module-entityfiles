@@ -94,30 +94,25 @@ public class S3EntityFileStorage implements EntityFileStorage {
             String fileName = getFileName(entityFile);
 
             // Metadata
+
+            long length = fileInfo.getLength();
+            if (length <= 0 && fileInfo.getSource() instanceof File) {
+                length = ((File) fileInfo.getSource()).length();
+            }
+
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.addUserMetadata("name", entityFile.getName());
             metadata.addUserMetadata("accountId", entityFile.getAccountId().toString());
             metadata.addUserMetadata("uuid", entityFile.getUuid());
             metadata.addUserMetadata("creator", entityFile.getCreator());
             metadata.addUserMetadata("databaseId", String.valueOf(entityFile.getId()));
-            metadata.setContentLength(fileInfo.getLength());
+            metadata.setContentLength(length);
             metadata.setContentType(URLConnection.guessContentTypeFromName(entityFile.getName()));
 
 
             final var key = folder + fileName;
             final var bucket = getBucketName();
-            PutObjectRequest request;
-            if (fileInfo.getSource() instanceof File) {
-                request = new PutObjectRequest(bucket, key, (File) fileInfo.getSource());
-                request.setMetadata(metadata);
-            } else {
-                request = new PutObjectRequest(getBucketName(), key, fileInfo.getInputStream(), metadata);
-            }
-            request.setCannedAcl(CannedAccessControlList.Private);
-
-            if (entityFile.isShared()) {
-                request.setCannedAcl(CannedAccessControlList.PublicRead);
-            }
+            PutObjectRequest request = new PutObjectRequest(bucket, key, fileInfo.getInputStream(), metadata);
+            request.setCannedAcl(entityFile.isShared() ? CannedAccessControlList.PublicRead : CannedAccessControlList.Private);
 
             var result = getConnection().putObject(request);
             logger.info("EntityFile " + entityFile + " uploaded to S3 Bucket " + getBucketName() + " / " + key);
@@ -161,6 +156,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
 
     private String generateStaticURL(String bucketName, String fileName) {
         String endpoint = getEndpoint();
+        fileName = fileName.replace(" ", "%20");
         return String.format("https://%s.%s/%s", bucketName, endpoint, fileName);
     }
 
@@ -171,7 +167,15 @@ public class S3EntityFileStorage implements EntityFileStorage {
             subfolder = entityFile.getSubfolder() + "/";
         }
 
-        var name = entityFile.getName().toLowerCase().trim().replace(" ", "_").replace("-", "_");
+        var name = entityFile.getName().toLowerCase().trim()
+                .replace(" ", "_")
+                .replace("-", "_")
+                .replace("\u00F1", "n")
+                .replace("\u00E1", "a")
+                .replace("\u00E9", "e")
+                .replace("\u00ED", "i")
+                .replace("\u00F3", "o")
+                .replace("\u00FA", "u");
         String storedFileName = entityFile.getUuid() + "_" + name;
         if (entityFile.getStoredFileName() != null && !entityFile.getStoredFileName().isEmpty()) {
             storedFileName = entityFile.getStoredFileName();
@@ -199,7 +203,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
     }
 
     private String generateThumbnailURL(EntityFile entityFile, int w, int h) {
-        if (entityFile.getType() == EntityFileType.IMAGE) {
+        if (entityFile.getType() == EntityFileType.IMAGE || EntityFileType.getFileType(entityFile.getExtension()) == EntityFileType.IMAGE) {
             String urlKey = entityFile.getUuid() + w + "x" + h;
             String url = URL_CACHE.get(urlKey);
             if (url == null) {
@@ -237,19 +241,16 @@ public class S3EntityFileStorage implements EntityFileStorage {
             // metadata
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.addUserMetadata("thumbnail", "true");
-            metadata.addUserMetadata("name", entityFile.getName());
             metadata.addUserMetadata("description", entityFile.getDescription());
             metadata.addUserMetadata("uuid", entityFile.getUuid());
             metadata.addUserMetadata("width", String.valueOf(w));
             metadata.addUserMetadata("height", String.valueOf(h));
             metadata.setContentType("image/" + entityFile.getExtension());
+            metadata.setContentLength(localThumbDestination.length());
 
             PutObjectRequest request = new PutObjectRequest(bucketName, folder + thumbfileName, localThumbDestination);
             request.setMetadata(metadata);
-
-            if (entityFile.isShared()) {
-                request.setCannedAcl(CannedAccessControlList.PublicRead);
-            }
+            request.setCannedAcl(CannedAccessControlList.PublicRead);
 
             getConnection().putObject(request);
 
@@ -309,6 +310,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
     @Override
     public void reloadParams() {
         PARAMS_CACHE.clear();
+        URL_CACHE.clear();
     }
 
     class S3StoredEntityFile extends StoredEntityFile {
