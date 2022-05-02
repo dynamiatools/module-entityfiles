@@ -36,7 +36,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "mod_entity_files", indexes = {
-        @Index(name = "idx_account", columnList = "accountId"),
+        
         @Index(name = "idx_uuid", columnList = "uuid")
 })
 @BatchSize(size = 80)
