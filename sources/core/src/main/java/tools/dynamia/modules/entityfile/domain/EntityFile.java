@@ -292,4 +292,9 @@ public class EntityFile extends BaseEntity implements URLable {
     public void url(String url) {
         setRemoteURL(url);
     }
+
+    @Override
+    public void name(String name) {
+        setStoredFileName(name);
+    }
 }
