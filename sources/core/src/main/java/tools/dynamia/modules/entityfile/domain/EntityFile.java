@@ -36,7 +36,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "mod_entity_files", indexes = {
-        
         @Index(name = "idx_uuid", columnList = "uuid")
 })
 @BatchSize(size = 80)
@@ -73,6 +72,9 @@ public class EntityFile extends BaseEntity implements URLable {
 
     private String subfolder;
     private String storedFileName;
+
+    @Column(length = 500)
+    private String remoteURL;
 
     private Long accountId;
     private String externalRef;
@@ -264,6 +266,9 @@ public class EntityFile extends BaseEntity implements URLable {
 
     @Override
     public String toURL() {
+        if (remoteURL != null && !remoteURL.isBlank()) {
+            return remoteURL;
+        }
         return getStoredEntityFile().getUrl();
     }
 
@@ -273,5 +278,18 @@ public class EntityFile extends BaseEntity implements URLable {
 
     public void setExternalRef(String externalRef) {
         this.externalRef = externalRef;
+    }
+
+    public String getRemoteURL() {
+        return remoteURL;
+    }
+
+    public void setRemoteURL(String remoteURL) {
+        this.remoteURL = remoteURL;
+    }
+
+    @Override
+    public void url(String url) {
+        setRemoteURL(url);
     }
 }
