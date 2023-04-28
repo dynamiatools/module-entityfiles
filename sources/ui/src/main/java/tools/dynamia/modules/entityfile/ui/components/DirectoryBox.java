@@ -1,6 +1,6 @@
 
 /*
- * Copyright (C) 2021 Dynamia Soluciones IT S.A.S - NIT 900302344-1
+ * Copyright (C) 2023 Dynamia Soluciones IT S.A.S - NIT 900302344-1
  * Colombia / South America
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ import tools.dynamia.zk.ComponentAliasIndex;
 public class DirectoryBox extends Bandbox {
 
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -7769832324226733919L;
 
@@ -55,10 +55,10 @@ public class DirectoryBox extends Bandbox {
         explorer = new DirectoryExplorer();
         popup = new Bandpopup();
         popup.appendChild(explorer);
-        
+
         popup.setWidth("400px");
         popup.setHeight("300px");
-        
+
         appendChild(popup);
 
         explorer.addEventListener(Events.ON_CHANGE, event -> {
@@ -68,6 +68,6 @@ public class DirectoryBox extends Bandbox {
 
     }
 
-    
+
 
 }

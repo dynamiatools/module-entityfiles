@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (C) 2021 Dynamia Soluciones IT S.A.S - NIT 900302344-1
+  ~ Copyright (C) 2023 Dynamia Soluciones IT S.A.S - NIT 900302344-1
   ~ Colombia / South America
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,11 +22,11 @@
 	<parent>
 		<artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
 		<groupId>tools.dynamia.modules</groupId>
-		<version>6.6.0</version>
+		<version>6.7.0</version>
 	</parent>
 	<name>Dynamia Modules - EntityFiles UI</name>
 	<artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
-	<version>6.6.0</version>
+	<version>6.7.0</version>
 	<url>https://www.dynamia.tools/modules/entityfiles</url>
 
 	<build>

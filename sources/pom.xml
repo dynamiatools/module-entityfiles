@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2021 Dynamia Soluciones IT S.A.S - NIT 900302344-1
+  ~ Copyright (C) 2023 Dynamia Soluciones IT S.A.S - NIT 900302344-1
   ~ Colombia / South America
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@
     <groupId>tools.dynamia.modules</groupId>
     <artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
     <packaging>pom</packaging>
-    <version>6.6.0</version>
+    <version>6.7.0</version>
     <name>Dynamia Modules - EntityFiles</name>
     <url>https://dynamia.tools/modules/entityfiles</url>
     <description>DynamiaTools extension to attach files to entities</description>
@@ -30,7 +30,7 @@
 
     <organization>
         <name>Dynamia Soluciones IT SAS</name>
-        <url>http://www.dynamiasoluciones.com</url>
+        <url>https://www.dynamiasoluciones.com</url>
     </organization>
 
     <developers>
@@ -63,11 +63,11 @@
 
     <properties>
         <file.encoding>UTF-8</file.encoding>
-        <dynamiatools.version>4.1.0</dynamiatools.version>
-        <springboot.version>2.7.3</springboot.version>
-        <aws.version>1.12.297</aws.version>
+        <dynamiatools.version>4.2.0</dynamiatools.version>
+        <springboot.version>2.7.11</springboot.version>
+        <aws.version>1.12.457</aws.version>
         <java.version>11</java.version>
-        <maven.compiler>3.8.1</maven.compiler>
+        <maven.compiler>3.11.0</maven.compiler>
         <source.encoding>UTF-8</source.encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

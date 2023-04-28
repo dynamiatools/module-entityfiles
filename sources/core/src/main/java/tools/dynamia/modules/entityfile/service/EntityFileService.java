@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Dynamia Soluciones IT S.A.S - NIT 900302344-1
+ * Copyright (C) 2023 Dynamia Soluciones IT S.A.S - NIT 900302344-1
  * Colombia / South America
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -140,7 +140,7 @@ public interface EntityFileService {
 	/**
 	 * Download the EntityFile internal file to a local output file, this is
 	 * usefull when entityfiles are stored in difernte localtion
-	 * 
+	 *
 	 * @param entityFile
 	 * @param outputFile
 	 */
