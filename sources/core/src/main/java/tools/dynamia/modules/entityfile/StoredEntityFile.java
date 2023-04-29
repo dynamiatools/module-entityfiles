@@ -48,7 +48,7 @@ public abstract class StoredEntityFile implements Serializable {
 	}
 
 	public String getThumbnailUrl() {
-		return getThumbnailUrl(100, 100);
+		return getThumbnailUrl(200, 200);
 	}
 
 	public abstract String getThumbnailUrl(int width, int height);
