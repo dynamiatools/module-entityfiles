@@ -22,13 +22,13 @@ metadata are store in the database in table `mod_entity_files` using JPA entity 
     <dependency>
         <groupId>tools.dynamia.modules</groupId>
         <artifactId>tools.dynamia.modules.entityfiles</artifactId>
-        <version>6.6.0</version>
+        <version>6.7.0</version>
     </dependency>
 
     <dependency>
         <groupId>tools.dynamia.modules</groupId>
         <artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
-        <version>6.6.0</version>
+        <version>6.7.0</version>
     </dependency>
 </dependencies>
 ```
@@ -36,8 +36,8 @@ metadata are store in the database in table `mod_entity_files` using JPA entity 
 **Gradle**
 
 ```groovy
-compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles:6.6.0'
-compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.ui:6.6.0'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles:6.7.0'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.ui:6.7.0'
 ```
 
 ## Usage
