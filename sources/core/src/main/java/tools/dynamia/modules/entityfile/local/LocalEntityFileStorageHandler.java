@@ -19,7 +19,7 @@ package tools.dynamia.modules.entityfile.local;
 
 import java.io.File;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
