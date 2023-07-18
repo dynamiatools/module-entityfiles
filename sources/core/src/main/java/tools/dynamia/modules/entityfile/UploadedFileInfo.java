@@ -41,6 +41,7 @@ public class UploadedFileInfo {
     private long length;
 
     private Object source;
+    private String externalRef;
 
     public UploadedFileInfo() {
         //default
@@ -167,5 +168,13 @@ public class UploadedFileInfo {
 
     public Object getSource() {
         return source;
+    }
+
+    public String getExternalRef() {
+        return externalRef;
+    }
+
+    public void setExternalRef(String externalRef) {
+        this.externalRef = externalRef;
     }
 }

@@ -108,6 +108,7 @@ public class EntityFileServiceImpl implements EntityFileService {
         entityFile.setShared(fileInfo.isShared());
         entityFile.setSubfolder(fileInfo.getSubfolder());
         entityFile.setStoredFileName(fileInfo.getStoredFileName());
+        entityFile.setExternalRef(fileInfo.getExternalRef());
 
         configureEntityFile(target, entityFile);
         if (fileInfo.getAccountId() != null) {
