@@ -18,11 +18,12 @@
 
 package tools.dynamia.modules.entityfile.ui;
 
+import tools.dynamia.crud.cfg.ConfigPage;
 import tools.dynamia.integration.sterotypes.Provider;
 import tools.dynamia.navigation.Module;
 import tools.dynamia.navigation.ModuleProvider;
 import tools.dynamia.navigation.PageGroup;
-import tools.dynamia.zk.crud.cfg.ConfigPage;
+
 
 /**
  *

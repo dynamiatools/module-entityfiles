@@ -63,8 +63,8 @@
 
     <properties>
         <file.encoding>UTF-8</file.encoding>
-        <dynamiatools.version>5.0.3</dynamiatools.version>
-        <springboot.version>3.0.6</springboot.version>
+        <dynamiatools.version>5.0.5</dynamiatools.version>
+        <springboot.version>3.0.9</springboot.version>
         <aws.version>1.12.481</aws.version>
         <java.version>17</java.version>
         <maven.compiler>3.11.0</maven.compiler>

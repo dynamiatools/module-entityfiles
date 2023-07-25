@@ -5,6 +5,7 @@ import tools.dynamia.actions.ActionEvent;
 import tools.dynamia.actions.InstallAction;
 import tools.dynamia.commons.logger.LoggingService;
 import tools.dynamia.commons.logger.SLF4JLoggingService;
+import tools.dynamia.crud.cfg.AbstractConfigPageAction;
 import tools.dynamia.domain.ValidationError;
 import tools.dynamia.domain.query.QueryConditions;
 import tools.dynamia.domain.query.QueryParameters;
@@ -17,7 +18,6 @@ import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.domain.enums.EntityFileState;
 import tools.dynamia.modules.entityfile.local.LocalEntityFileStorage;
 import tools.dynamia.ui.UIMessages;
-import tools.dynamia.zk.crud.cfg.AbstractConfigPageAction;
 import tools.dynamia.zk.ui.LongOperationMonitorWindow;
 import tools.dynamia.zk.util.LongOperation;
 import tools.dynamia.zk.util.ZKUtil;
@@ -39,6 +39,7 @@ class MoveEntityFileLocalToRemoteStorageAction extends AbstractConfigPageAction 
         this.localStorage = localStorage;
         setName("Move Local to Remote");
         setApplicableConfig("EntityFileCFG");
+        setType("warning");
     }
 
     @Override
