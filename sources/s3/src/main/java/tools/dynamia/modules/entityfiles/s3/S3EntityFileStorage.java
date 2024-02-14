@@ -46,10 +46,12 @@ import tools.dynamia.modules.entityfile.UploadedFileInfo;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 /**
@@ -95,9 +97,21 @@ public class S3EntityFileStorage implements EntityFileStorage {
 
             // Metadata
 
+            File tmpFile = null;
+            long sourceLength = 0;
             long length = fileInfo.getLength();
-            if (length <= 0 && fileInfo.getSource() instanceof File) {
-                length = ((File) fileInfo.getSource()).length();
+
+
+            if (fileInfo.getSource() instanceof File file) {
+                sourceLength = file.length();
+                tmpFile = file;
+            } else if (fileInfo.getInputStream() instanceof Path path) {
+                sourceLength = path.toFile().length();
+                tmpFile = path.toFile();
+            }
+
+            if (length <= 0 && sourceLength > 0) {
+                length = sourceLength;
             }
 
             ObjectMetadata metadata = new ObjectMetadata();
@@ -116,6 +130,12 @@ public class S3EntityFileStorage implements EntityFileStorage {
 
             var result = getConnection().putObject(request);
             logger.info("EntityFile " + entityFile + " uploaded to S3 Bucket " + getBucketName() + " / " + key);
+
+
+            if (tmpFile != null && tmpFile.delete()) {
+                logger.info("Deleted temporal file: " + tmpFile);
+            }
+
 
         } catch (AmazonClientException amazonClientException) {
             logger.error("Error uploading entity file " + entityFile.getName() + " to S3", amazonClientException);
