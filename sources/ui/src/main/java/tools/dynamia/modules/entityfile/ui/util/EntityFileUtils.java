@@ -22,6 +22,8 @@ import org.zkoss.zul.A;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Vlayout;
 import org.zkoss.zul.Window;
+import tools.dynamia.io.IOUtils;
+import tools.dynamia.modules.entityfile.EntityFileException;
 import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.UploadedFileInfo;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
@@ -33,21 +35,29 @@ import tools.dynamia.zk.crud.CrudView;
 import tools.dynamia.zk.util.ZKUtil;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 
 public class EntityFileUtils {
 
     public static UploadedFileInfo build(Media media) {
-        InputStream is = null;
-        if (media.isBinary()) {
-            is = media.getStreamData();
-        } else {
-            is = new ByteArrayInputStream(media.getStringData().getBytes());
+        try {
+            File tmpFile = File.createTempFile("entityfiles-", media.getName());
+            InputStream is = null;
+            if (media.isBinary()) {
+                is = media.getStreamData();
+            } else {
+                is = new ByteArrayInputStream(media.getStringData().getBytes());
+            }
+            IOUtils.copy(is, tmpFile);
+            UploadedFileInfo info = new UploadedFileInfo(tmpFile);
+            info.setFullName(media.getName());
+            info.setLength(tmpFile.length());
+
+            return info;
+        } catch (Exception e) {
+            throw new EntityFileException("Unable to upload file " + media.getName(), e);
         }
-
-        UploadedFileInfo info = new UploadedFileInfo(media.getName(), media.getContentType(), is);
-
-        return info;
     }
 
     public static void showFileExplorer(Object obj) {
@@ -59,7 +69,7 @@ public class EntityFileUtils {
             EntityFileController controller = (EntityFileController) view.getController();
             controller.setTargetEntity(obj);
             controller.doQuery();
-            ZKUtil.showDialog("Archivos Asociados - " + obj.toString(), view, "85%", "80%");
+            ZKUtil.showDialog("Archivos Asociados - " + obj, view, "85%", "80%");
 
         } else {
             UIMessages.showMessage("Debe seleccionar un elemento para ver los archivos asociados", MessageType.INFO);

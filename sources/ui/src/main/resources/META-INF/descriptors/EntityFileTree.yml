@@ -11,7 +11,7 @@ fields:
     label: Nombre
     params:
       header:
-        width: 400px
+        width: 460px
 
   creationDate:
     label: Fecha
@@ -34,8 +34,9 @@ fields:
   sizeAsString:
     label: Tam
     params:
-      style: float:right
+
       header:
+        align: right
         width: 100px
 
   description:

@@ -29,6 +29,7 @@ public class ViewFileURLAction extends AbstractEntityFileAction implements Reada
         setName("URL");
         setGroup(ActionGroup.get("FILES"));
         setMenuSupported(true);
+        setPosition(4);
     }
 
     @Override

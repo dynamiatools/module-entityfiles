@@ -37,8 +37,11 @@ public class NewFileAction extends AbstractEntityFileAction {
 
 	public NewFileAction() {
 		setName("Nuevo Archivo");
-		setImage("icons:add");
+		setImage("add");
 		setGroup(ActionGroup.get("FILES"));
+		setBackground(".green");
+		setColor("white");
+		setPosition(0);
 	}
 
 	@Override

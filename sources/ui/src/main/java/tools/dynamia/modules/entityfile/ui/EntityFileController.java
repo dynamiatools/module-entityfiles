@@ -24,6 +24,8 @@ import tools.dynamia.modules.entityfile.EntityFileAccountProvider;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
+import tools.dynamia.ui.icons.Icons;
+import tools.dynamia.ui.icons.IconsTheme;
 import tools.dynamia.zk.crud.TreeCrudController;
 import tools.dynamia.zk.crud.ui.EntityTreeNode;
 import tools.dynamia.zk.crud.ui.LazyEntityTreeNode;
@@ -74,8 +76,15 @@ public class EntityFileController extends TreeCrudController<EntityFile> {
                 break;
             case FILE:
             case IMAGE:
+
                 node = new EntityTreeNode(entity, entity.getName());
-                node.setIcon(entity.getExtension());
+
+                var icon = IconsTheme.get().getIcon(entity.getExtension() + "-file");
+                if (icon != null && icon.getName() != null) {
+                    node.setIcon(icon.getName());
+                } else {
+                    node.setIcon("entityfile");
+                }
                 break;
             default:
                 break;

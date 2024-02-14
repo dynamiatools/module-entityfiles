@@ -38,6 +38,7 @@ public class NewDirectoryAction extends AbstractEntityFileAction {
         setImage("folder2");
         setGroup(ActionGroup.get("FILES"));
         setMenuSupported(true);
+        setPosition(3);
     }
 
     @Override
