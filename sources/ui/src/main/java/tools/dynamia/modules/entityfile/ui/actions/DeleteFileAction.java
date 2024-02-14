@@ -38,6 +38,7 @@ public class DeleteFileAction extends AbstractEntityFileAction {
         setImage("icons:delete");
         setGroup(ActionGroup.get("FILES"));
         setMenuSupported(true);
+        setPosition(5);
     }
 
     @Override

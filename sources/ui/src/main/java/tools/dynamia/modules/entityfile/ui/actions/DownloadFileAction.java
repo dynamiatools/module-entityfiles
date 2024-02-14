@@ -35,6 +35,9 @@ public class DownloadFileAction extends AbstractEntityFileAction implements Read
         setImage("icons:download");
         setGroup(ActionGroup.get("FILES"));
         setMenuSupported(true);
+        setBackground(".blue");
+        setColor("white");
+        setPosition(2);
     }
 
     @Override

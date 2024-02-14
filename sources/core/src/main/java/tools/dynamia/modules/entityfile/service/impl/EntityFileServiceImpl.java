@@ -41,10 +41,12 @@ import tools.dynamia.modules.entityfile.service.EntityFileService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,6 +111,7 @@ public class EntityFileServiceImpl implements EntityFileService {
         entityFile.setSubfolder(fileInfo.getSubfolder());
         entityFile.setStoredFileName(fileInfo.getStoredFileName());
         entityFile.setExternalRef(fileInfo.getExternalRef());
+        entityFile.setSize(fileInfo.getLength());
 
         configureEntityFile(target, entityFile);
         if (fileInfo.getAccountId() != null) {
@@ -183,8 +186,11 @@ public class EntityFileServiceImpl implements EntityFileService {
 
     @Override
     public List<EntityFile> getEntityFiles(Object entity) {
-
-        return getEntityFiles(entity.getClass(), DomainUtils.findEntityId(entity), null);
+        if (entity != null) {
+            return getEntityFiles(entity.getClass(), DomainUtils.findEntityId(entity), null);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
