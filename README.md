@@ -15,7 +15,7 @@ metadata are store in the database in table `mod_entity_files` using JPA entity 
 
 ## Installation
 
-**Maven**
+### Maven
 
 ```xml
 
@@ -23,22 +23,32 @@ metadata are store in the database in table `mod_entity_files` using JPA entity 
     <dependency>
         <groupId>tools.dynamia.modules</groupId>
         <artifactId>tools.dynamia.modules.entityfiles</artifactId>
-        <version>7.0.0</version>
+        <version>7.0.2</version>
     </dependency>
 
     <dependency>
         <groupId>tools.dynamia.modules</groupId>
         <artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
-        <version>7.0.0</version>
+        <version>7.0.2</version>
     </dependency>
 </dependencies>
 ```
 
-**Gradle**
+#### AWS S3 Support
+```xml
+    <dependency>
+        <groupId>tools.dynamia.modules</groupId>
+        <artifactId>tools.dynamia.modules.entityfiles.s3</artifactId>
+        <version>7.0.2</version>
+    </dependency>
+```
+
+### Gradle
 
 ```groovy
-compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles:7.0.0'
-compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.ui:7.0.0'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles:7.0.2'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.ui:7.0.2'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.s3:7.0.2'
 ```
 
 ## Usage
