@@ -30,16 +30,18 @@ import tools.dynamia.zk.crud.TreeCrudController;
 import tools.dynamia.zk.crud.ui.EntityTreeNode;
 import tools.dynamia.zk.crud.ui.LazyEntityTreeNode;
 
+import java.io.Serial;
 import java.util.List;
 
 public class EntityFileController extends TreeCrudController<EntityFile> {
 
-    private EntityFileService service;
+    private final EntityFileService service;
     private Object targetEntity;
 
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = 7926996145692421296L;
 
     public EntityFileController() {

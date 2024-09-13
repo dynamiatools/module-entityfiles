@@ -27,6 +27,8 @@ import org.zkoss.zul.Bandpopup;
 import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
 
+import java.io.Serial;
+
 /**
  *
  * @author Mario Serrano Leones
@@ -36,15 +38,13 @@ public class DirectoryBox extends Bandbox {
     /**
 	 *
 	 */
-	private static final long serialVersionUID = -7769832324226733919L;
+	@Serial
+    private static final long serialVersionUID = -7769832324226733919L;
 
 	static {
         BindingComponentIndex.getInstance().put("value", DirectoryBox.class);
         ComponentAliasIndex.getInstance().add(DirectoryBox.class);
     }
-
-    private DirectoryExplorer explorer;
-    private Bandpopup popup;
 
     public DirectoryBox() {
         this(null);
@@ -52,8 +52,8 @@ public class DirectoryBox extends Bandbox {
 
     public DirectoryBox(String value) throws WrongValueException {
         super(value);
-        explorer = new DirectoryExplorer();
-        popup = new Bandpopup();
+        DirectoryExplorer explorer = new DirectoryExplorer();
+        Bandpopup popup = new Bandpopup();
         popup.appendChild(explorer);
 
         popup.setWidth("400px");

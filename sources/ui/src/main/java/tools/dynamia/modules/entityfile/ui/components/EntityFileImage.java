@@ -30,15 +30,18 @@ import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
 import tools.dynamia.zk.ImageCache;
 
+import java.io.Serial;
+
 public class EntityFileImage extends Image {
 
-    private static SimpleCache<Long, String> URL_CACHE = new SimpleCache<>();
-    private static SimpleCache<Long, String> URL_THUMB_CACHE = new SimpleCache<>();
+    private static final SimpleCache<Long, String> URL_CACHE = new SimpleCache<>();
+    private static final SimpleCache<Long, String> URL_THUMB_CACHE = new SimpleCache<>();
 
 
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = -2182747459195865750L;
 
     static {

@@ -76,8 +76,8 @@ public class DirectoryExplorer extends Window implements ChildrenLoader<FileInfo
     private void initModel() {
         FileInfo file = new FileInfo(new File("/"));
 
-        rootNode = new EntityTreeNode<FileInfo>(file);
-        treeModel = new EntityTreeModel<FileInfo>(rootNode);
+        rootNode = new EntityTreeNode<>(file);
+        treeModel = new EntityTreeModel<>(rootNode);
         for (EntityTreeNode<FileInfo> entityTreeNode : getSubdirectories(file)) {
             rootNode.addChild(entityTreeNode);
         }
@@ -86,18 +86,14 @@ public class DirectoryExplorer extends Window implements ChildrenLoader<FileInfo
     }
 
     private Collection<EntityTreeNode<FileInfo>> getSubdirectories(FileInfo file) {
-        File[] subs = file.getFile().listFiles(new FileFilter() {
-
-            @Override
-            public boolean accept(File pathname) {
-                if (pathname.isDirectory()) {
-                    if (!isShowHiddenFolders()) {
-                        return !pathname.isHidden() && !pathname.getName().startsWith(".");
-                    }
-                    return true;
+        File[] subs = file.getFile().listFiles(pathname -> {
+            if (pathname.isDirectory()) {
+                if (!isShowHiddenFolders()) {
+                    return !pathname.isHidden() && !pathname.getName().startsWith(".");
                 }
-                return false;
+                return true;
             }
+            return false;
         });
 
         List<EntityTreeNode<FileInfo>> subdirectories = new ArrayList<EntityTreeNode<FileInfo>>();
@@ -107,13 +103,7 @@ public class DirectoryExplorer extends Window implements ChildrenLoader<FileInfo
             }
         }
 
-        Collections.sort(subdirectories, new Comparator<EntityTreeNode<FileInfo>>() {
-
-            @Override
-            public int compare(EntityTreeNode<FileInfo> o1, EntityTreeNode<FileInfo> o2) {
-                return o1.getData().getName().compareTo(o2.getData().getName());
-            }
-        });
+        subdirectories.sort(Comparator.comparing(o -> o.getData().getName()));
 
         return subdirectories;
     }
