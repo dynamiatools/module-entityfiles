@@ -18,6 +18,9 @@
 
 package tools.dynamia.modules.entityfile.service.impl;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,7 +104,7 @@ public class EntityFileServiceImpl implements EntityFileService {
     @Override
     @Transactional
     public EntityFile createEntityFile(UploadedFileInfo fileInfo, Object target, String description) {
-        logger.info("Creating new entity file for " + target + ", file: " + fileInfo.getFullName());
+        logger.info("Creating new entity file for " + (target != null ? target : "temporal entity") + ", file: " + fileInfo.getFullName());
         EntityFile entityFile = new EntityFile();
         entityFile.setDescription(description);
         entityFile.setContentType(fileInfo.getContentType());
@@ -294,8 +297,11 @@ public class EntityFileServiceImpl implements EntityFileService {
     @Override
     public EntityFile getEntityFile(String uuid) {
         try {
-            return crudService.findSingle(EntityFile.class, QueryParameters.with("uuid", QueryConditions.eq(uuid))
-                    .add("accountId", QueryConditions.isNotNull()));
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<EntityFile> query = cb.createQuery(EntityFile.class);
+            Root<EntityFile> root = query.from(EntityFile.class);
+            query.select(root).where(cb.equal(root.get("uuid"), uuid));
+            return entityManager.createQuery(query).setMaxResults(1).getSingleResult();
         } catch (Exception e) {
             logger.error("Error loading entity file with uuid: " + uuid + ".  " + e.getMessage(), e);
 

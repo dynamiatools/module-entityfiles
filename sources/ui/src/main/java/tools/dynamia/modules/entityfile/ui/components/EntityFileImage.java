@@ -53,7 +53,7 @@ public class EntityFileImage extends Image {
     private boolean thumbnail = false;
     private int thumbnailHeight = 64;
     private int thumbnailWidth = 64;
-    private String noPhotoPath = "/zkau/web/tools/images/no-photo.jpg";
+    private String noPhotoPath = "/static/dynamia-tools/images/no-photo.jpg";
 
     public EntityFile getValue() {
         return entityFile;

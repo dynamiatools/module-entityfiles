@@ -21,6 +21,7 @@ import org.zkoss.zul.Messagebox;
 import tools.dynamia.actions.ActionGroup;
 import tools.dynamia.actions.InstallAction;
 import tools.dynamia.actions.ReadableOnly;
+import tools.dynamia.ui.UIMessages;
 
 @InstallAction
 public class ViewFileURLAction extends AbstractEntityFileAction implements ReadableOnly {
@@ -35,7 +36,8 @@ public class ViewFileURLAction extends AbstractEntityFileAction implements Reada
     @Override
     public void actionPerformed(EntityFileActionEvent evt) {
         if (evt.getEntityFile() != null) {
-            Messagebox.show(evt.getEntityFile().getStoredEntityFile().getUrl());
+            String url = evt.getEntityFile().getStoredEntityFile().getUrl();
+            UIMessages.showMessageDialog("<pre>" + url + "</pre>");
         }
     }
 }

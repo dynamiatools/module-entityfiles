@@ -65,7 +65,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
     public static final String AWS_S3_REGION = "AWS_S3_REGION";
     public static final String AWS_S3_BUCKET = "AWS_S3_BUCKET";
     private static final Logger log = LoggerFactory.getLogger(S3EntityFileStorage.class);
-    private final LoggingService logger = new SLF4JLoggingService(S3EntityFileStorage.class, "S3");
+    private final LoggingService logger = new SLF4JLoggingService(S3EntityFileStorage.class, "S3: ");
 
     private final SimpleCache<String, String> URL_CACHE = new SimpleCache<>();
     private final SimpleCache<String, String> PARAMS_CACHE = new SimpleCache<>();
@@ -126,10 +126,10 @@ public class S3EntityFileStorage implements EntityFileStorage {
 
 
             final var metadata = Map.of(
-                    "accountId", entityFile.getAccountId().toString(),
+                    "accountId", entityFile.getAccountId() != null ? entityFile.getAccountId().toString() : "",
                     "uuid", entityFile.getUuid(),
-                    "creator", entityFile.getCreator(),
-                    "databaseId", String.valueOf(entityFile.getId())
+                    "creator", entityFile.getCreator() != null ? entityFile.getCreator() : "anonymous",
+                    "databaseId", entityFile.getId() != null ? String.valueOf(entityFile.getId()) : ""
             );
 
             final var contentType = URLConnection.guessContentTypeFromName(entityFile.getName());
@@ -198,8 +198,8 @@ public class S3EntityFileStorage implements EntityFileStorage {
 
 
         PresignedGetObjectRequest presignedRequest = S3Utils.generatePresignedObjetRequest(bucketName, fileName, Duration.ofMinutes(30));
-        logger.info("Presigned URL: [{}]", presignedRequest.url().toString());
-        logger.info("HTTP method: [{}]", presignedRequest.httpRequest().method());
+        logger.info("Presigned URL: " + presignedRequest.url().toString());
+        logger.info("HTTP method: " + presignedRequest.httpRequest().method());
 
         return presignedRequest.url().toExternalForm();
 
