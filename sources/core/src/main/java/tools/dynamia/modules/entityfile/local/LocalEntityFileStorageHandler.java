@@ -23,7 +23,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import tools.dynamia.commons.StringUtils;
 import tools.dynamia.integration.Containers;
@@ -36,21 +35,21 @@ import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
 
-public class LocalEntityFileStorageHandler extends ResourceHttpRequestHandler {
+public class LocalEntityFileStorageHandler {
 
     private static final String UUID = "/uuid/";
-    private LocalEntityFileStorage storage;
-    private EntityFileService service;
+    private final LocalEntityFileStorage storage;
+    private final EntityFileService service;
     private EntityFileAccountProvider accountProvider;
 
-    @Override
-    protected Resource getResource(HttpServletRequest request) {
-        if (service == null) {
-            service = Containers.get().findObject(EntityFileService.class);
-        }
-        if (storage == null) {
-            storage = Containers.get().findObject(LocalEntityFileStorage.class);
-        }
+    public LocalEntityFileStorageHandler(LocalEntityFileStorage storage, EntityFileService service) {
+        this.storage = storage;
+        this.service = service;
+    }
+
+
+    public Resource getResource(String fileName, String uuid, HttpServletRequest request) {
+
 
         if (accountProvider == null) {
             accountProvider = Containers.get().findObject(EntityFileAccountProvider.class);
@@ -60,22 +59,10 @@ public class LocalEntityFileStorageHandler extends ResourceHttpRequestHandler {
         }
 
         File file = null;
-        String uuid = getParam(request, "uuid", null);
-
-        if (uuid == null) {
-            String path = request.getPathInfo();
-            if (path.contains(UUID)) {
-                uuid = path.substring(path.lastIndexOf(UUID) + UUID.length());
-                uuid = StringUtils.removeFilenameExtension(uuid);
-            }
-        }
-
-        if (uuid == null) {
-            return null;
-        }
-
         Long currentAccountId = accountProvider.getAccountId();
         EntityFile entityFile = service.getEntityFile(uuid);
+
+
 
         if (entityFile != null && (currentAccountId == null || currentAccountId.equals(0L) || entityFile.isShared() || entityFile.getAccountId().equals(currentAccountId))) {
 

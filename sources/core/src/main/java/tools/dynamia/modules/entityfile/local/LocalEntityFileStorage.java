@@ -18,6 +18,8 @@
 package tools.dynamia.modules.entityfile.local;
 
 import org.springframework.core.env.Environment;
+import tools.dynamia.commons.logger.LoggingService;
+import tools.dynamia.commons.logger.SLF4JLoggingService;
 import tools.dynamia.domain.ValidationError;
 import tools.dynamia.domain.query.Parameters;
 import tools.dynamia.domain.services.CrudService;
@@ -36,6 +38,8 @@ import java.io.IOException;
 
 @Service
 public class LocalEntityFileStorage implements EntityFileStorage {
+
+    private final LoggingService logger = new SLF4JLoggingService(LocalEntityFileStorage.class, "Local: ");
 
     public static final String ID = "LocalStorage";
     private static final String LOCAL_FILES_LOCATION = "LOCAL_FILES_LOCATION";
@@ -71,9 +75,12 @@ public class LocalEntityFileStorage implements EntityFileStorage {
         File realFile = getRealFile(entityFile);
 
         try {
+
             IOUtils.copy(fileInfo.getInputStream(), realFile);
             entityFile.setSize(realFile.length());
+            logger.info("Uploaded to server: " + realFile);
         } catch (IOException e) {
+            logger.error("Error upload local file " + realFile, e);
             throw new EntityFileException("Error upload local file " + realFile, e);
         }
 

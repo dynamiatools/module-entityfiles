@@ -18,6 +18,7 @@
 package tools.dynamia.modules.entityfile.ui.components;
 
 import java.io.FileInputStream;
+import java.io.Serial;
 import java.net.URL;
 
 import org.zkoss.util.media.AMedia;
@@ -42,6 +43,7 @@ public class EntityFileDownloadlink extends Toolbarbutton {
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = -2182747459195865750L;
 
     static {

@@ -25,11 +25,14 @@ import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
 import tools.dynamia.zk.util.ZKUtil;
 
+import java.io.Serial;
+
 public class FilesCountImage extends A {
 
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private IconSize iconSize = IconSize.SMALL;
 	private String icon = "attachment";
@@ -50,10 +53,9 @@ public class FilesCountImage extends A {
 
 	public void setValue(int value) {
 		try {
-			int count = value;
-			if (count > 0) {
+            if (value > 0) {
 				ZKUtil.configureComponentIcon(icon, this, iconSize);
-				setTooltiptext(count + " archivos adjuntos");
+				setTooltiptext(value + " archivos adjuntos");
 			} else {
 				setImage(null);
 				getChildren().clear();

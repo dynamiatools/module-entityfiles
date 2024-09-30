@@ -29,12 +29,14 @@ import tools.dynamia.zk.ComponentAliasIndex;
 import tools.dynamia.zk.ui.Uploadlink;
 
 import java.io.File;
+import java.io.Serial;
 
 public class EntityFileUploadlink extends Uploadlink {
 
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = -2182747459195865750L;
 
     static {
@@ -43,7 +45,7 @@ public class EntityFileUploadlink extends Uploadlink {
     }
 
     private EntityFile entityFile;
-    private EntityFileService service = Containers.get().findObject(EntityFileService.class);
+    private final EntityFileService service = Containers.get().findObject(EntityFileService.class);
     private boolean shared;
     private String subfolder;
     private String storedFileName;

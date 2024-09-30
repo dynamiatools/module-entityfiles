@@ -115,6 +115,10 @@ public class UploadedFileInfo {
         this.contentType = contentType;
     }
 
+    public boolean hasInputStream() {
+        return inputStream != null;
+    }
+
     public InputStream getInputStream() {
         if (inputStream == null) {
             try {

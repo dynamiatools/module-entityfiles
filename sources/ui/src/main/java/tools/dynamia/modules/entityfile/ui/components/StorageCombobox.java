@@ -17,6 +17,7 @@
 
 package tools.dynamia.modules.entityfile.ui.components;
 
+import java.io.Serial;
 import java.util.Optional;
 
 import org.zkoss.zul.Combobox;
@@ -33,6 +34,7 @@ public class StorageCombobox extends Combobox {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 3507817129731334840L;
 
 	static {

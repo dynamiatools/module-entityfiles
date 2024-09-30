@@ -39,10 +39,11 @@ fields:
     params:
       parameterName: AWS_S3_BUCKET
       cacheable: true
-  s3Endpoint:
-    label: Endpoint
+  s3Region:
+    label: Region
     params:
-      parameterName: AWS_S3_ENDPOINT
+      parameterName: AWS_S3_REGION
+      defaultValue: us-east-1
       cacheable: true
   s3User:
     label: Identity
@@ -58,7 +59,7 @@ fields:
 groups:
   s3:
     label: Amazon Web Service (S3)
-    fields: [ s3BucketName,s3Endpoint,s3User,s3Secret ]
+    fields: [ s3BucketName,s3Region,s3User,s3Secret ]
 
 layout:
   columns: 4
