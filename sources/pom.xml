@@ -22,7 +22,7 @@
     <groupId>tools.dynamia.modules</groupId>
     <artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
     <packaging>pom</packaging>
-    <version>7.2.0</version>
+    <version>7.2.1</version>
     <name>Dynamia Modules - EntityFiles</name>
     <url>https://dynamia.tools/modules/entityfiles</url>
     <description>DynamiaTools extension to attach files to entities</description>
@@ -65,7 +65,7 @@
         <file.encoding>UTF-8</file.encoding>
         <dynamiatools.version>5.2.1</dynamiatools.version>
         <springboot.version>3.3.3</springboot.version>
-        <aws.version>2.28.11</aws.version>
+        <aws.version>2.28.20</aws.version>
         <java.version>17</java.version>
         <maven.compiler>3.13.0</maven.compiler>
         <source.encoding>UTF-8</source.encoding>

@@ -22,11 +22,11 @@
 	<parent>
 		<artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
 		<groupId>tools.dynamia.modules</groupId>
-		<version>7.2.0</version>
+		<version>7.2.1</version>
 	</parent>
 	<name>Dynamia Modules - EntityFiles UI</name>
 	<artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
-	<version>7.2.0</version>
+	<version>7.2.1</version>
 	<url>https://www.dynamia.tools/modules/entityfiles</url>
 
 	<build>
