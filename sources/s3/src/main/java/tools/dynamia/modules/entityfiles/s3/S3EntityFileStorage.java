@@ -153,6 +153,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
                 logger.info("Uploading input stream from " + fileInfo.getFullName() + " to " + key);
                 body = AsyncRequestBody.fromInputStream(fileInfo.getInputStream(), length, executorService);
             }
+            entityFile.setUploading(true);
             getClient().putObject(request, body)
                     .whenComplete((response, throwable) -> {
                         if (throwable != null) {
@@ -165,6 +166,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
                         if (fileToUpload != null && fileToUpload.delete()) {
                             logger.info("Deleted temporal file: " + fileToUpload);
                         }
+                        entityFile.setUploading(false);
                     });
 
 
@@ -258,19 +260,28 @@ public class S3EntityFileStorage implements EntityFileStorage {
      */
     protected String generateThumbnailURL(EntityFile entityFile, int w, int h) {
         if (entityFile.getType() == EntityFileType.IMAGE || EntityFileType.getFileType(entityFile.getExtension()) == EntityFileType.IMAGE) {
+            if (entityFile.isUploading()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+
+                }
+            }
+
             String urlKey = entityFile.getUuid() + w + "x" + h;
             String url = URL_CACHE.get(urlKey);
             if (url == null) {
+                String bucketName = getBucketName();
                 String folder = getAccountFolderName(entityFile.getAccountId());
                 String fileName = getFileName(entityFile);
                 String thumbfileName = w + "x" + h + "/" + fileName;
 
-                if (!objectExists(getBucketName(), folder + thumbfileName)) {
-                    createAndUploadThumbnail(entityFile, getBucketName(), folder, fileName, thumbfileName, w, h);
+                if (!objectExists(bucketName, folder + thumbfileName)) {
+                    url = createAndUploadThumbnail(entityFile, bucketName, folder, fileName, thumbfileName, w, h);
                 }
-
-                url = generateStaticURL(getBucketName(), folder + thumbfileName);
-                URL_CACHE.add(urlKey, url);
+                if (url != null) {
+                    URL_CACHE.add(urlKey, url);
+                }
             }
             return url;
         } else {
@@ -281,24 +292,19 @@ public class S3EntityFileStorage implements EntityFileStorage {
     /**
      * Create and upload thumbnail
      */
-    protected void createAndUploadThumbnail(EntityFile entityFile, String bucketName, String folder, String fileName, String thumbfileName,
-                                            int w, int h) {
+    protected String createAndUploadThumbnail(EntityFile entityFile, String bucketName, String folder, String fileName, String thumbfileName,
+                                              int w, int h) {
         try {
 
             File localDestination = File.createTempFile(System.currentTimeMillis() + "file", entityFile.getName());
             File localThumbDestination = File.createTempFile(System.currentTimeMillis() + "thumb", entityFile.getName());
-
-
             var url = download(entityFile).getUrl();
             Files.copy(new URL(url).openStream(), localDestination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
             ImageUtil.resizeImage(localDestination, localThumbDestination, entityFile.getExtension(), w, h);
-
 
             // metadata
             var metadata = Map.of(
                     "thumbnail", "true",
-                    "description", entityFile.getDescription(),
                     "uuid", entityFile.getUuid(),
                     "width", String.valueOf(w),
                     "height", String.valueOf(h));
@@ -307,25 +313,21 @@ public class S3EntityFileStorage implements EntityFileStorage {
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(key)
+                    .metadata(metadata)
                     .contentLength(localThumbDestination.length())
                     .contentType("image/" + entityFile.getExtension())
                     .acl(ObjectCannedACL.PUBLIC_READ)
                     .build();
 
 
-            getClient().putObject(request, AsyncRequestBody.fromFile(localThumbDestination))
-                    .whenComplete((putObjectResponse, throwable) -> {
-                        if (throwable != null) {
-                            logger.error("Error uploading thumbnail " + localDestination, throwable);
-                        } else {
-                            logger.info("Thumbnail uploaded " + key);
-                        }
+            var future = getClient().putObject(request, AsyncRequestBody.fromFile(localThumbDestination));
+            var response = future.get();
+            localThumbDestination.delete();
 
-                        localThumbDestination.delete();
-                    });
-
+            return generateStaticURL(bucketName, key);
         } catch (Exception e) {
             logger.error("Error creating thumbnail for " + entityFile.getName() + "  " + w + "x" + h + "  " + fileName, e);
+            return null;
         }
     }
 
