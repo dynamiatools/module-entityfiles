@@ -22,7 +22,7 @@
     <groupId>tools.dynamia.modules</groupId>
     <artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
     <packaging>pom</packaging>
-    <version>7.2.0</version>
+    <version>7.2.1</version>
     <name>Dynamia Modules - EntityFiles</name>
     <url>https://dynamia.tools/modules/entityfiles</url>
     <description>DynamiaTools extension to attach files to entities</description>
@@ -63,9 +63,9 @@
 
     <properties>
         <file.encoding>UTF-8</file.encoding>
-        <dynamiatools.version>5.2.1</dynamiatools.version>
-        <springboot.version>3.3.3</springboot.version>
-        <aws.version>2.28.11</aws.version>
+        <dynamiatools.version>5.3.1</dynamiatools.version>
+        <springboot.version>3.4.1</springboot.version>
+        <aws.version>2.29.47</aws.version>
         <java.version>17</java.version>
         <maven.compiler>3.13.0</maven.compiler>
         <source.encoding>UTF-8</source.encoding>
@@ -99,7 +99,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.10.0</version>
+                <version>3.11.2</version>
                 <configuration>
                     <failOnError>false</failOnError>
                     <doclint>none</doclint>
@@ -122,7 +122,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.16.1</version>
+            <version>2.18.0</version>
         </dependency>
 
         <dependency>
@@ -175,7 +175,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.4</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

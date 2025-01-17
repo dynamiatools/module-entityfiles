@@ -80,6 +80,9 @@ public class EntityFile extends BaseEntity implements URLable {
     private Long accountId;
     private String externalRef;
 
+    @Transient
+    private boolean uploading;
+
     public String getStoredFileName() {
         return storedFileName;
     }
@@ -297,5 +300,13 @@ public class EntityFile extends BaseEntity implements URLable {
     @Override
     public void name(String name) {
         setStoredFileName(name);
+    }
+
+    public boolean isUploading() {
+        return uploading;
+    }
+
+    public void setUploading(boolean uploading) {
+        this.uploading = uploading;
     }
 }
