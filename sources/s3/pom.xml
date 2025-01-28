@@ -23,12 +23,12 @@
 	<parent>
 		<groupId>tools.dynamia.modules</groupId>
 		<artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
-		<version>7.2.1</version>
+		<version>7.2.2</version>
 	</parent>
 
 	<name>Dynamia Modules - EntityFiles - S3</name>
 	<artifactId>tools.dynamia.modules.entityfiles.s3</artifactId>
-	<version>7.2.1</version>
+	<version>7.2.2</version>
 	<url>https://www.dynamia.tools/modules/entityfiles</url>
 
 	<build>
