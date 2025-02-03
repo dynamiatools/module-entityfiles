@@ -2,6 +2,7 @@ package tools.dynamia.modules.entityfiles.s3;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
@@ -33,6 +34,17 @@ public class S3Utils {
      */
     public static AwsCredentials getCredentials(String accessKey, String secretKey) {
         return AwsBasicCredentials.create(accessKey, secretKey);
+    }
+
+    /**
+     * Get credentials provider from access key and secret key
+     *
+     * @param accessKey the access key
+     * @param secretKey the secret key
+     * @return the aws credentials provider
+     */
+    public static AwsCredentialsProvider credentialsProvider(String accessKey, String secretKey) {
+        return () -> getCredentials(accessKey, secretKey);
     }
 
     /**
@@ -89,11 +101,18 @@ public class S3Utils {
      * @param bucketName the bucket name
      * @param key        the key
      * @param duration   the duration
+     * @param accessKey  the access key
+     * @param secretKey  the secret key
+     * @param region     the region
      * @return the presigned URL
      */
-    public static PresignedGetObjectRequest generatePresignedObjetRequest(String bucketName, String key, Duration duration) {
+    public static PresignedGetObjectRequest generatePresignedObjetRequest(String bucketName, String key, Duration duration,
+                                                                          String accessKey, String secretKey, String region) {
 
-        try (S3Presigner presigner = S3Presigner.create()) {
+        try (S3Presigner presigner = S3Presigner.builder()
+                .credentialsProvider(credentialsProvider(accessKey, secretKey))
+                .region(Region.of(region))
+                .build()) {
 
             GetObjectRequest objectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)

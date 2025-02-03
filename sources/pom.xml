@@ -22,7 +22,7 @@
     <groupId>tools.dynamia.modules</groupId>
     <artifactId>tools.dynamia.modules.entityfiles.parent</artifactId>
     <packaging>pom</packaging>
-    <version>7.2.2</version>
+    <version>7.2.3</version>
     <name>Dynamia Modules - EntityFiles</name>
     <url>https://dynamia.tools/modules/entityfiles</url>
     <description>DynamiaTools extension to attach files to entities</description>
