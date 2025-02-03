@@ -65,6 +65,7 @@ public class S3EntityFileStorage implements EntityFileStorage {
     public static final String AWS_S3_REGION = "AWS_S3_REGION";
     public static final String AWS_S3_BUCKET = "AWS_S3_BUCKET";
     private static final Logger log = LoggerFactory.getLogger(S3EntityFileStorage.class);
+    public static final int PRESIGNED_URL_TIMEOUT = 30;
     private final LoggingService logger = new SLF4JLoggingService(S3EntityFileStorage.class, "S3: ");
 
     private final SimpleCache<String, String> URL_CACHE = new SimpleCache<>();
@@ -199,7 +200,8 @@ public class S3EntityFileStorage implements EntityFileStorage {
     protected String generateSignedURL(String bucketName, String fileName) {
 
 
-        PresignedGetObjectRequest presignedRequest = S3Utils.generatePresignedObjetRequest(bucketName, fileName, Duration.ofMinutes(30));
+        PresignedGetObjectRequest presignedRequest = S3Utils.generatePresignedObjetRequest(bucketName, fileName, Duration.ofMinutes(PRESIGNED_URL_TIMEOUT)
+                , getAccessKey(), getSecretKey(), getRegion());
         logger.info("Presigned URL: " + presignedRequest.url().toString());
         logger.info("HTTP method: " + presignedRequest.httpRequest().method());
 
