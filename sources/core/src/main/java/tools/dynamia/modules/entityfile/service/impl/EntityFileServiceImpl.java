@@ -18,10 +18,14 @@
 
 package tools.dynamia.modules.entityfile.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.dynamia.commons.BeanUtils;
@@ -42,9 +46,6 @@ import tools.dynamia.modules.entityfile.enums.EntityFileType;
 import tools.dynamia.modules.entityfile.local.LocalEntityFileStorage;
 import tools.dynamia.modules.entityfile.service.EntityFileService;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
@@ -57,6 +58,7 @@ import java.util.Optional;
  * @author Mario Serrano Leones
  */
 @Service
+@CacheConfig(cacheNames = "entity-files")
 public class EntityFileServiceImpl implements EntityFileService {
 
     @Autowired
@@ -295,6 +297,7 @@ public class EntityFileServiceImpl implements EntityFileService {
     }
 
     @Override
+    @Cacheable
     public EntityFile getEntityFile(String uuid) {
         try {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();

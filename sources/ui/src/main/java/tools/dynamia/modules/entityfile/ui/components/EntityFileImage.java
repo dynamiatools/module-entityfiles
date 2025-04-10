@@ -22,15 +22,18 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zul.Image;
 
 import tools.dynamia.commons.SimpleCache;
+import tools.dynamia.integration.Containers;
 import tools.dynamia.io.IOUtils;
 import tools.dynamia.io.Resource;
 import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
+import tools.dynamia.modules.entityfile.service.EntityFileService;
 import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
 import tools.dynamia.zk.ImageCache;
 
 import java.io.Serial;
+import java.util.Objects;
 
 public class EntityFileImage extends Image {
 
@@ -54,6 +57,7 @@ public class EntityFileImage extends Image {
     private int thumbnailHeight = 64;
     private int thumbnailWidth = 64;
     private String noPhotoPath = "/static/dynamia-tools/images/no-photo.jpg";
+    private String entityFileUuid;
 
     public EntityFile getValue() {
         return entityFile;
@@ -62,6 +66,10 @@ public class EntityFileImage extends Image {
     public void setValue(EntityFile entityFile) {
         this.entityFile = entityFile;
         loadImage();
+    }
+
+    public void setValue(String uuid) {
+        setEntityFileUuid(uuid);
     }
 
     private void loadImage() {
@@ -176,6 +184,27 @@ public class EntityFileImage extends Image {
         if (file != null && file.getId() != null) {
             URL_CACHE.remove(file.getId());
             URL_THUMB_CACHE.remove(file.getId());
+        }
+    }
+
+    public String getEntityFileUuid() {
+        return entityFileUuid;
+    }
+
+    public void setEntityFileUuid(String entityFileUuid) {
+        var old = this.entityFileUuid;
+        if (!Objects.equals(old, entityFileUuid)) {
+            this.entityFileUuid = entityFileUuid;
+            loadEntityFileByUuid();
+        }
+    }
+
+    private void loadEntityFileByUuid() {
+        if (entityFileUuid != null && !entityFileUuid.isBlank()) {
+            var service = Containers.get().findObject(EntityFileService.class);
+            if (service != null) {
+                setValue(service.getEntityFile(entityFileUuid));
+            }
         }
     }
 }
