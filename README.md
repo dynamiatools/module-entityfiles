@@ -1,5 +1,5 @@
 [![Maven Central](https://img.shields.io/maven-central/v/tools.dynamia.modules/tools.dynamia.modules.entityfiles)](https://search.maven.org/search?q=tools.dynamia.modules.entityfiles)
-![Java Version Required](https://img.shields.io/badge/java-17-blue)
+![Java Version Required](https://img.shields.io/badge/java-21-blue)
 [![Maven Build](https://github.com/dynamiatools/module-entityfiles/actions/workflows/maven.yml/badge.svg)](https://github.com/dynamiatools/module-entityfiles/actions/workflows/maven.yml)
 [![Release and Deploy](https://github.com/dynamiatools/module-entityfiles/actions/workflows/release.yml/badge.svg)](https://github.com/dynamiatools/module-entityfiles/actions/workflows/release.yml)
 
@@ -24,13 +24,13 @@ metadata are store in the database in table `mod_entity_files` using JPA entity 
     <dependency>
         <groupId>tools.dynamia.modules</groupId>
         <artifactId>tools.dynamia.modules.entityfiles</artifactId>
-        <version>7.1.0</version>
+        <version>7.4.0</version>
     </dependency>
 
     <dependency>
         <groupId>tools.dynamia.modules</groupId>
         <artifactId>tools.dynamia.modules.entityfiles.ui</artifactId>
-        <version>7.1.0</version>
+        <version>7.4.0</version>
     </dependency>
 </dependencies>
 ```
@@ -40,16 +40,16 @@ metadata are store in the database in table `mod_entity_files` using JPA entity 
     <dependency>
         <groupId>tools.dynamia.modules</groupId>
         <artifactId>tools.dynamia.modules.entityfiles.s3</artifactId>
-        <version>7.1.0</version>
+        <version>7.4.0</version>
     </dependency>
 ```
 
 ### Gradle
 
 ```groovy
-compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles:7.1.0'
-compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.ui:7.1.0'
-compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.s3:7.1.0'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles:7.4.0'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.ui:7.4.0'
+compile 'tools.dynamia.modules:tools.dynamia.modules.entityfiles.s3:7.4.0'
 ```
 
 ## Usage
