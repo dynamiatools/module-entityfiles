@@ -17,26 +17,18 @@
 
 package tools.dynamia.modules.entityfile.ui.components;
 
-import java.io.FileInputStream;
-import java.io.Serial;
-import java.net.URL;
-
 import org.zkoss.util.media.AMedia;
 import org.zkoss.util.media.Media;
-import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Filedownload;
 import org.zkoss.zul.Toolbarbutton;
-
-import tools.dynamia.commons.StringUtils;
 import tools.dynamia.modules.entityfile.StoredEntityFile;
 import tools.dynamia.modules.entityfile.domain.EntityFile;
 import tools.dynamia.modules.entityfile.ui.util.EntityFileUtils;
-import tools.dynamia.web.util.HttpUtils;
 import tools.dynamia.zk.BindingComponentIndex;
 import tools.dynamia.zk.ComponentAliasIndex;
-import tools.dynamia.zk.util.ZKUtil;
+
+import java.io.Serial;
 
 public class EntityFileDownloadlink extends Toolbarbutton {
 
